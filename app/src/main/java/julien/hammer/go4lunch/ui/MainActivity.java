@@ -1,8 +1,10 @@
-package julien.hammer.go4lunch;
+package julien.hammer.go4lunch.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import julien.hammer.go4lunch.R;
 
 public class MainActivity extends AppCompatActivity {
 
