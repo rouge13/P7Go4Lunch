@@ -4,11 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -18,6 +22,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import julien.hammer.go4lunch.R;
 
 public class MapsFragment extends Fragment {
+    LocationManager locationManager;
+    String latitude, longitude;
+    FusedLocationProviderClient clientLocation;
+
+
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -49,10 +58,15 @@ public class MapsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
     }
+
+
+
 }

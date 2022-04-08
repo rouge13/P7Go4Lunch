@@ -6,4 +6,7 @@
     <string name="bottom_navigation_menu_map_view">Map View</string>
     <string name="bottom_navigation_menu_list_view">List View</string>
     <string name="bottom_navigation_menu_workmates">Workmates</string>
+
+    <string name="title_list_view">List View</string>
+    <string name="title_workmates_view">Workmates</string>
 </resources>
