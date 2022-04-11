@@ -11,12 +11,12 @@
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/listFragment"
-        android:name="julien.hammer.go4lunch.ListFragment"
+        android:name="julien.hammer.go4lunch.ui.list.ListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/workmatesFragment"
-        android:name="julien.hammer.go4lunch.WorkmatesFragment"
+        android:name="julien.hammer.go4lunch.ui.workmates.WorkmatesFragment"
         android:label="fragment_workmates"
         tools:layout="@layout/fragment_workmates" />
 

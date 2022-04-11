@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch;
+package julien.hammer.go4lunch.ui.workmates;
 
 import android.os.Bundle;
 
@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import julien.hammer.go4lunch.R;
 
 /**
  * A simple {@link Fragment} subclass.

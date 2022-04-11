@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import julien.hammer.go4lunch.ListFragment;
-import julien.hammer.go4lunch.WorkmatesFragment;
+import julien.hammer.go4lunch.ui.list.ListFragment;
+import julien.hammer.go4lunch.ui.workmates.WorkmatesFragment;
 import julien.hammer.go4lunch.ui.map.MapsFragment;
 
 /**

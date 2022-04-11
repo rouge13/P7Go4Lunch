@@ -26,11 +26,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import julien.hammer.go4lunch.R;
+import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 
 public class MapsFragment extends Fragment {
-    LocationManager locationManager;
-    String latitude, longitude;
-    FusedLocationProviderClient clientLocation;
+    private LocationViewModel mLocationViewModel;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
