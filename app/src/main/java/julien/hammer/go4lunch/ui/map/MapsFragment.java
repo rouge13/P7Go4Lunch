@@ -1,10 +1,14 @@
 package julien.hammer.go4lunch.ui.map;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 
+import android.Manifest;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,15 +23,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import julien.hammer.go4lunch.R;
 
 public class MapsFragment extends Fragment {
     LocationManager locationManager;
     String latitude, longitude;
     FusedLocationProviderClient clientLocation;
-
-
-
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -58,7 +61,17 @@ public class MapsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+//        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
+//        clientLocation.getLastLocation()
+//                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+//                    @Override
+//                    public void onSuccess(Location location) {
+//                        // Got last known location. In some rare situations this can be null.
+//                        if (location != null) {
+//                            // Logic to handle location object
+//                        }
+//                    }
+//                });
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);

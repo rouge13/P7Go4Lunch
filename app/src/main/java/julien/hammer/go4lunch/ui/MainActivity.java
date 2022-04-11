@@ -5,6 +5,8 @@ import static androidx.navigation.fragment.FragmentKt.findNavController;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -14,11 +16,18 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 import com.google.android.gms.maps.MapFragment;
@@ -29,31 +38,33 @@ import julien.hammer.go4lunch.ListFragment;
 import julien.hammer.go4lunch.R;
 import julien.hammer.go4lunch.WorkmatesFragment;
 import julien.hammer.go4lunch.ui.map.MapsFragment;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView mBottomNavigation;
     private ViewPager viewPager;
     private ViewPagerAdapter mViewPagerAdapter;
-
+    private final int REQUEST_LOCATION_PERMISSION = 1;
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadFragment(new MapsFragment());
+//        loadFragment(new MapsFragment());
         mBottomNavigation = findViewById(R.id.buttom_navigation_view);
         mBottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mapsFragment:
-                    new MapsFragment();
+                    viewPager.setCurrentItem(0);
                     return true;
                 case R.id.listFragment:
-                    new ListFragment();
+                    viewPager.setCurrentItem(1);
                     return true;
                 case R.id.workmatesFragment:
-                    new WorkmatesFragment();
+                    viewPager.setCurrentItem(2);
                     return true;
             }
             return false;
@@ -62,18 +73,31 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mViewPagerAdapter);
+        requestLocationPermission();
     }
 
-    private boolean loadFragment(Fragment fragment) {
-        if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.container_frame_layout, fragment);
-            ft.commit();
-            return true;
-        }
-        return false;
-    }
 
+
+
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//
+//        // Forward results to EasyPermissions
+//        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+//    }
+//
+//    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+//    public void requestLocationPermission() {
+//        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
+//        if(EasyPermissions.hasPermissions(this, perms)) {
+//            Toast.makeText(this, "Permission already granted", Toast.LENGTH_SHORT).show();
+//        }
+//        else {
+//            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+//        }
+//    }
 
 
 
