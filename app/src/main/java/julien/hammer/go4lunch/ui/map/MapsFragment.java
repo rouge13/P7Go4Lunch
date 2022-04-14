@@ -4,10 +4,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 
 import android.Manifest;
+import android.app.Application;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -19,16 +22,70 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.concurrent.Executor;
+
 import julien.hammer.go4lunch.R;
+import julien.hammer.go4lunch.data.location.LocationRepository;
+import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
+import julien.hammer.go4lunch.di.ViewModelFactory;
 import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 
 public class MapsFragment extends Fragment {
+    // 1 - FOR DATA
+    private LocationViewModel locationViewModel;
+
+
+    // -------------------
+    // DATA
+    // -------------------
+
+    // 2 - Configuring ViewModel
+
+//    private void configureViewModel() {
+//        this.locationViewModel = new ViewModelProvider(
+//                this,
+//                ViewModelFactory.getInstance(
+//                        new PermissionCheck(getActivity().getContext()),
+//                        new LocationRepository(
+//                                LocationServices.getFusedLocationProviderClient(getActivity())
+//                        )
+//                )
+//        ).get(LocationViewModel.class);
+//        //this.locationViewModel.init();
+//    }
+
+    private void configureViewModel() {
+        this.locationViewModel = new ViewModelProvider(
+                this,
+                ViewModelFactory.getInstance(
+                        new LocationRepository(
+                                LocationServices.getFusedLocationProviderClient(getActivity())
+                        ),
+                        (Executor) this
+//                        new Executor() {
+//                            @Override
+//                            public void execute(Runnable command) {
+//
+//                            }
+//                        }
+
+                )
+        ).get(LocationViewModel.class);
+        //this.locationViewModel.init();
+    }
+
+
+//    // -- Get all the projects
+//    private void getProjects() {
+//        this.locationViewModel.getProjects().observe(this,this::updateProjects);
+//    }
     private LocationViewModel mLocationViewModel;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -79,6 +136,19 @@ public class MapsFragment extends Fragment {
         }
     }
 
+    @BindingAdapter("initMap")
+    public static void initMap(final MapView mapView, final LatLng latLng) {
 
+        if (mapView != null) {
+            mapView.onCreate(new Bundle());
+            mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    // Add a marker
+                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker in India"));
+                }
+            });
+        }
+    }
 
 }
