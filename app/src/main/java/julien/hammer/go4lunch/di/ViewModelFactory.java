@@ -30,6 +30,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private static ViewModelFactory factory;
     private static PermissionCheck permissionChecker;
     private final Executor ioExecutor = Executors.newFixedThreadPool(4);
+    private FusedLocationProviderClient mFusedLocationClient;
 
     private ViewModelFactory() {
         locationDataSource = new LocationRepository(LocationServices.getFusedLocationProviderClient());

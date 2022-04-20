@@ -90,10 +90,10 @@ public class MapsFragment extends SupportMapFragment {
 //    }
 
 
-//    // -- Get all the projects
-//    private void getProjects() {
-//        this.locationViewModel.getProjects().observe(this,this::updateProjects);
-//    }
+    // -- Get all the Last Location
+    private void getTheLastLocation() {
+        this.locationViewModel.getLocationLiveData().observe(this,this::updateProjects);
+    }
     private LocationViewModel mLocationViewModel;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
