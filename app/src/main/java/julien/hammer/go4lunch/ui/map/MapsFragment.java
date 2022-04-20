@@ -37,7 +37,7 @@ import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
 import julien.hammer.go4lunch.di.ViewModelFactory;
 import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends SupportMapFragment {
     // 1 - FOR DATA
     private LocationViewModel locationViewModel;
 
@@ -64,22 +64,30 @@ public class MapsFragment extends Fragment {
     private void configureViewModel() {
         this.locationViewModel = new ViewModelProvider(
                 this,
-                ViewModelFactory.getInstance(
-                        new LocationRepository(
-                                LocationServices.getFusedLocationProviderClient(getActivity())
-                        ),
-                        (Executor) this
+                ViewModelFactory.getInstance()
+        ).get(LocationViewModel.class);
+        //this.locationViewModel.init();
+    }
+
+//    private void configureViewModel() {
+//        this.locationViewModel = new ViewModelProvider(
+//                this,
+//                ViewModelFactory.getInstance(
+//                        new LocationRepository(
+//                                LocationServices.getFusedLocationProviderClient(getActivity())
+//                        ),
+//
 //                        new Executor() {
 //                            @Override
 //                            public void execute(Runnable command) {
 //
 //                            }
 //                        }
-
-                )
-        ).get(LocationViewModel.class);
-        //this.locationViewModel.init();
-    }
+//
+//                )
+//        ).get(LocationViewModel.class);
+//        //this.locationViewModel.init();
+//    }
 
 
 //    // -- Get all the projects
@@ -106,17 +114,20 @@ public class MapsFragment extends Fragment {
         }
     };
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_maps, container, false);
-    }
+//    @Nullable
+//    @Override
+//    public View onCreateView(@NonNull LayoutInflater inflater,
+//                             @Nullable ViewGroup container,
+//                             @Nullable Bundle savedInstanceState) {
+//        return inflater.inflate(R.layout.fragment_maps, container, false);
+//    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        configureViewModel();
+        getMapAsync(callback);
+
 //        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
 //        clientLocation.getLastLocation()
 //                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -129,26 +140,26 @@ public class MapsFragment extends Fragment {
 //                    }
 //                });
 
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(callback);
-        }
+//        SupportMapFragment mapFragment =
+//                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+//        if (mapFragment != null) {
+//            mapFragment.getMapAsync(callback);
+//        }
     }
 
-    @BindingAdapter("initMap")
-    public static void initMap(final MapView mapView, final LatLng latLng) {
-
-        if (mapView != null) {
-            mapView.onCreate(new Bundle());
-            mapView.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    // Add a marker
-                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker in India"));
-                }
-            });
-        }
-    }
+//    @BindingAdapter("initMap")
+//    public static void initMap(final MapView mapView, final LatLng latLng) {
+//
+//        if (mapView != null) {
+//            mapView.onCreate(new Bundle());
+//            mapView.getMapAsync(new OnMapReadyCallback() {
+//                @Override
+//                public void onMapReady(GoogleMap googleMap) {
+//                    // Add a marker
+//                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker in India"));
+//                }
+//            });
+//        }
+//    }
 
 }
