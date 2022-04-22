@@ -39,7 +39,7 @@ public class LocationRepository {
 
     @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     public void startLocationRequest() {
-        fusedLocationProviderClient.getLastLocation();
+//        locationMutableLiveData.setValue(fusedLocationProviderClient.getLastLocation().getResult());
 //        if (callback == null) {
 //            callback = new LocationCallback() {
 //                @Override
@@ -61,11 +61,33 @@ public class LocationRepository {
 //                callback,
 //                Looper.getMainLooper()
 //        );
+
+        if (callback == null) {
+            callback = new LocationCallback() {
+                @Override
+                public void onLocationResult(@NonNull LocationResult locationResult) {
+                    Location location = locationResult.getLastLocation();
+
+                    locationMutableLiveData.setValue(location);
+                }
+            };
+        }
+
+        fusedLocationProviderClient.removeLocationUpdates(callback);
+
+        fusedLocationProviderClient.requestLocationUpdates(
+                LocationRequest.create()
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setSmallestDisplacement(SMALLEST_DISPLACEMENT_THRESHOLD_METER)
+                        .setInterval(LOCATION_REQUEST_INTERVAL_MS),
+                callback,
+                Looper.getMainLooper()
+        );
     }
 
-//    public void stopLocationRequest() {
-//        if (callback != null) {
-//            fusedLocationProviderClient.removeLocationUpdates(callback);
-//        }
-//    }
+    public void stopLocationRequest() {
+        if (callback != null) {
+            fusedLocationProviderClient.removeLocationUpdates(callback);
+        }
+    }
 }

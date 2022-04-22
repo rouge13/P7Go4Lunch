@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import julien.hammer.go4lunch.MainApplication;
 import julien.hammer.go4lunch.data.location.LocationRepository;
 import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
 import julien.hammer.go4lunch.viewmodel.LocationViewModel;
@@ -28,19 +30,30 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     private final LocationRepository locationDataSource;
 //    private final Executor executor;
     private static ViewModelFactory factory;
-    private static PermissionCheck permissionChecker;
-    private final Executor ioExecutor = Executors.newFixedThreadPool(4);
-    private FusedLocationProviderClient mFusedLocationClient;
+    private static PermissionCheck permissionCheck;
+//    private final Executor ioExecutor = Executors.newFixedThreadPool(4);
 
-    private ViewModelFactory() {
-        locationDataSource = new LocationRepository(LocationServices.getFusedLocationProviderClient());
+    private ViewModelFactory(@NonNull PermissionCheck permissionCheck,
+                             @NonNull LocationRepository locationDataSource) {
+        ViewModelFactory.permissionCheck = permissionCheck;
+        this.locationDataSource = locationDataSource;
     }
 
     public static ViewModelFactory getInstance() {
         if (factory == null) {
             synchronized (ViewModelFactory.class) {
                 if (factory == null) {
-                    factory = new ViewModelFactory();
+                    Application application = MainApplication.getApplication();
+                    factory = new ViewModelFactory(
+                            new PermissionCheck(
+                                    application
+                            ),
+                            new LocationRepository(
+                                    LocationServices.getFusedLocationProviderClient(
+                                            application
+                                    )
+                            )
+                    );
 
                 }
             }
@@ -52,7 +65,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LocationViewModel.class)) {
-            return (T) new LocationViewModel(permissionChecker,locationDataSource);
+            return (T) new LocationViewModel(
+                    permissionCheck,
+                    locationDataSource
+            );
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

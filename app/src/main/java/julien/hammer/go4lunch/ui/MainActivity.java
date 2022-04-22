@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import julien.hammer.go4lunch.R;
+import julien.hammer.go4lunch.ui.map.MapsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mBottomNavigation = findViewById(R.id.buttom_navigation_view);
         mBottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -41,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mViewPagerAdapter);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, MapsFragment.newInstance())
+                    .commitNow();
+        }
     }
 
 

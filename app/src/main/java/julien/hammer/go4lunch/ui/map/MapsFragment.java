@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,6 +30,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 import julien.hammer.go4lunch.R;
@@ -40,7 +42,9 @@ import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 public class MapsFragment extends SupportMapFragment {
     // 1 - FOR DATA
     private LocationViewModel locationViewModel;
-
+    public static MapsFragment newInstance() {
+        return new MapsFragment();
+    }
 
     // -------------------
     // DATA
@@ -90,11 +94,11 @@ public class MapsFragment extends SupportMapFragment {
 //    }
 
 
-    // -- Get all the Last Location
-    private void getTheLastLocation() {
-        this.locationViewModel.getLocationLiveData().observe(this,this::updateProjects);
-    }
-    private LocationViewModel mLocationViewModel;
+//    // -- Get all the Last Location
+//    private void getTheLastLocation() {
+//        this.locationViewModel.getLocationLiveData().observe(this,this::updateProjects);
+//    }
+//    private LocationViewModel mLocationViewModel;
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -108,24 +112,42 @@ public class MapsFragment extends SupportMapFragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            LatLng sydney = new LatLng(-34, 151);
-            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            LatLng userLocation = new LatLng(
+                    Objects.requireNonNull(
+                        locationViewModel.getLocationLiveData().getValue()).getLatitude(),
+                    Objects.requireNonNull(
+                            locationViewModel.getLocationLiveData().getValue()).getLongitude()
+            );
+            googleMap.addMarker(new MarkerOptions().position(userLocation).title("Marker User Location Last Saved"));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+//            LatLng sydney = new LatLng(-34, 151);
+//            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
     };
 
-//    @Nullable
-//    @Override
-//    public View onCreateView(@NonNull LayoutInflater inflater,
-//                             @Nullable ViewGroup container,
-//                             @Nullable Bundle savedInstanceState) {
-//        return inflater.inflate(R.layout.fragment_maps, container, false);
-//    }
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_maps, container, false);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         configureViewModel();
+        ActivityCompat.requestPermissions(
+                requireActivity(),
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                0
+        );
+
+//        if (locationViewModel == null) {
+//            initMap();
+//        }
+//        getMapAsync(callback);
         getMapAsync(callback);
 
 //        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -146,6 +168,15 @@ public class MapsFragment extends SupportMapFragment {
 //            mapFragment.getMapAsync(callback);
 //        }
     }
+//
+//    private void initMap() {
+//        //Init map
+//        SupportMapFragment mapFragment =
+//                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+//        if (mapFragment != null) {
+//            getMapAsync(callback);
+//        }
+//    }
 
 //    @BindingAdapter("initMap")
 //    public static void initMap(final MapView mapView, final LatLng latLng) {
@@ -160,6 +191,13 @@ public class MapsFragment extends SupportMapFragment {
 //                }
 //            });
 //        }
+//    }
+////
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//
+//        locationViewModel.refresh();
 //    }
 
 }
