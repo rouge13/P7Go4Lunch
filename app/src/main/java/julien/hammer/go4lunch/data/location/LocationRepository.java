@@ -32,7 +32,6 @@ public class LocationRepository {
         this.fusedLocationProviderClient = fusedLocationProviderClient;
     }
 
-
     public LiveData<Location> getLocationLiveData() {
         return locationMutableLiveData;
     }

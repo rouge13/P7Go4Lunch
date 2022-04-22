@@ -39,7 +39,7 @@ import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
 import julien.hammer.go4lunch.di.ViewModelFactory;
 import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 
-public class MapsFragment extends SupportMapFragment {
+public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private LocationViewModel locationViewModel;
     public static MapsFragment newInstance() {
@@ -99,7 +99,7 @@ public class MapsFragment extends SupportMapFragment {
 //        this.locationViewModel.getLocationLiveData().observe(this,this::updateProjects);
 //    }
 //    private LocationViewModel mLocationViewModel;
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+//    private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
          * Manipulates the map once available.
@@ -112,6 +112,10 @@ public class MapsFragment extends SupportMapFragment {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
+//            LatLng userLocation = new LatLng( (Location)
+//                    Objects.requireNonNull(
+//                            locationViewModel.getLocationLiveData()
+//            );
             LatLng userLocation = new LatLng(
                     Objects.requireNonNull(
                         locationViewModel.getLocationLiveData().getValue()).getLatitude(),
@@ -124,7 +128,7 @@ public class MapsFragment extends SupportMapFragment {
 //            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
         }
-    };
+//    };
 
     @Nullable
     @Override
@@ -138,17 +142,27 @@ public class MapsFragment extends SupportMapFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         configureViewModel();
-        ActivityCompat.requestPermissions(
-                requireActivity(),
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 0
         );
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+//                .findFragmentById(R.id.map);
+        assert mapFragment != null;
+        mapFragment.getMapAsync(this);
+
+//        ActivityCompat.requestPermissions(
+//                requireActivity(),
+//                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+//                0
+//        );
 
 //        if (locationViewModel == null) {
 //            initMap();
 //        }
 //        getMapAsync(callback);
-        getMapAsync(callback);
+//         getMapAsync(this);
 
 //        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
 //        clientLocation.getLastLocation()
@@ -199,5 +213,12 @@ public class MapsFragment extends SupportMapFragment {
 //
 //        locationViewModel.refresh();
 //    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        locationViewModel.refresh();
+    }
+
 
 }

@@ -25,7 +25,7 @@ public class LocationViewModel extends ViewModel {
     @NonNull
     private final LocationRepository locationRepository;
 
-    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
+//    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
 
     public LocationViewModel(
             @NonNull PermissionCheck permissionChecker,
@@ -33,7 +33,7 @@ public class LocationViewModel extends ViewModel {
     ) {
         this.permissionCheck = permissionChecker;
         this.locationRepository = locationRepository;
-//        LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
+        LiveData<Location> locationLiveData = locationRepository.getLocationLiveData();
     }
 
     public LiveData<Location> getLocationLiveData() {
@@ -41,15 +41,15 @@ public class LocationViewModel extends ViewModel {
 
     }
 
-//    @SuppressLint("MissingPermission")
-//    public void refresh() {
-//        boolean hasGpsPermission = permissionCheck.hasLocationPermission();
+    @SuppressLint("MissingPermission")
+    public void refresh() {
+        boolean hasGpsPermission = permissionCheck.hasLocationPermission();
 //        hasGpsPermissionLiveData.setValue(hasGpsPermission);
-//
-//        if (hasGpsPermission) {
-//            locationRepository.startLocationRequest();
-//        } else {
-//            locationRepository.stopLocationRequest();
-//        }
-//    }
+
+        if (hasGpsPermission) {
+            locationRepository.startLocationRequest();
+        } else {
+            locationRepository.stopLocationRequest();
+        }
+    }
 }
