@@ -69,9 +69,14 @@ public class LocationRepository {
             callback = new LocationCallback() {
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
-                    Location location = locationResult.getLastLocation();
-//                    locationMutableLiveData.setValue(fusedLocationProviderClient.getLastLocation().getResult());
-                    locationMutableLiveData.setValue(location);
+                    for (Location location : locationResult.getLocations()) {
+                        if (location != null) {
+                            locationMutableLiveData.setValue(location);
+                        }
+                    }
+//                    Location location = locationResult.getLastLocation();
+////                    locationMutableLiveData.setValue(fusedLocationProviderClient.getLastLocation().getResult());
+//                    locationMutableLiveData.setValue(location);
                 }
             };
         }
