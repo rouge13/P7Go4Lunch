@@ -1,23 +1,14 @@
 package julien.hammer.go4lunch.di;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
-import julien.hammer.go4lunch.MainApplication;
+import julien.hammer.go4lunch.ui.MainApplication;
 import julien.hammer.go4lunch.data.location.LocationRepository;
 import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
 import julien.hammer.go4lunch.viewmodel.LocationViewModel;

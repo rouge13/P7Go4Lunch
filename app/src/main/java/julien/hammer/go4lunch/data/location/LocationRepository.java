@@ -1,5 +1,6 @@
 package julien.hammer.go4lunch.data.location;
 
+import android.app.Application;
 import android.location.Location;
 import android.os.Looper;
 
@@ -12,6 +13,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -61,12 +63,14 @@ public class LocationRepository {
 //                Looper.getMainLooper()
 //        );
 
+
+
         if (callback == null) {
             callback = new LocationCallback() {
                 @Override
                 public void onLocationResult(@NonNull LocationResult locationResult) {
                     Location location = locationResult.getLastLocation();
-
+//                    locationMutableLiveData.setValue(fusedLocationProviderClient.getLastLocation().getResult());
                     locationMutableLiveData.setValue(location);
                 }
             };

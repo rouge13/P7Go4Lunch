@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch;
+package julien.hammer.go4lunch.ui;
 
 import android.app.Application;
 

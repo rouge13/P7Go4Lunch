@@ -112,18 +112,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
          */
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            
 //            LatLng userLocation = new LatLng( (Location)
 //                    Objects.requireNonNull(
 //                            locationViewModel.getLocationLiveData()
 //            );
-            LatLng userLocation = new LatLng(
-                    Objects.requireNonNull(
-                        locationViewModel.getLocationLiveData().getValue()).getLatitude(),
-                    Objects.requireNonNull(
-                            locationViewModel.getLocationLiveData().getValue()).getLongitude()
-            );
-            googleMap.addMarker(new MarkerOptions().position(userLocation).title("Marker User Location Last Saved"));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
+//            Location userLocation = new Location(
+//
+//            );
+////            LatLng userLocation = new LatLng(
+////                    Objects.requireNonNull(
+////                        locationViewModel.getLocationLiveData().getValue()).getLatitude(),
+////                    Objects.requireNonNull(
+////                            locationViewModel.getLocationLiveData().getValue()).getLongitude()
+////            );
+//            googleMap.addMarker(new MarkerOptions().position(userLocation).title("Marker User Location Last Saved"));
+//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
 //            LatLng sydney = new LatLng(-34, 151);
 //            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
