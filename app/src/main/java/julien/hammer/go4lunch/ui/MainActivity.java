@@ -1,6 +1,7 @@
 package julien.hammer.go4lunch.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
@@ -10,7 +11,9 @@ import android.os.Bundle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import julien.hammer.go4lunch.R;
+import julien.hammer.go4lunch.di.ViewModelFactory;
 import julien.hammer.go4lunch.ui.map.MapsFragment;
+import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mBottomNavigation = findViewById(R.id.buttom_navigation_view);
+        ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
+        LocationViewModel locationViewModel =
+                new ViewModelProvider(this, locationViewModelFactory).get(LocationViewModel.class);
+        locationViewModel.refresh();
+
         mBottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mapsFragment:
@@ -43,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.view_pager);
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mViewPagerAdapter);
+
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
 //                    .replace(R.id.container, MapsFragment.newInstance())

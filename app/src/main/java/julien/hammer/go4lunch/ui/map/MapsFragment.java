@@ -117,22 +117,30 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         if (ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            configureViewModel();
+//            ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
+//            LocationViewModel locationViewModel =
+//                    new ViewModelProvider(this, locationViewModelFactory).get(LocationViewModel.class);
+//            locationViewModel.refresh();
             locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                googleMap.clear();
 
+                googleMap.clear();
+//                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
+//                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
                 // MOVE THE CAMERA TO THE USER LOCATION
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
 
                 // DISPLAY BLUE DOT FOR USER LOCATION
                 googleMap.setMyLocationEnabled(true);
 
-                // ZOOM IN, ANIMATE CAMERA
-                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
+//                // ZOOM IN, ANIMATE CAMERA
+//                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
+
 //            locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(),location -> );
 //            LatLng userLocation = new LatLng( (Location)
 //                    Objects.requireNonNull(
