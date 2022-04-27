@@ -11,7 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -42,6 +44,7 @@ import julien.hammer.go4lunch.viewmodel.LocationViewModel;
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private LocationViewModel locationViewModel;
+
     public static MapsFragment newInstance() {
         return new MapsFragment();
     }
@@ -101,17 +104,36 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //    private LocationViewModel mLocationViewModel;
 //    private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera.
+     * In this case, we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to
+     * install it inside the SupportMapFragment. This method will only be triggered once the
+     * user has installed Google Play services and returned to the app.
+     */
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                googleMap.clear();
+
+                // MOVE THE CAMERA TO THE USER LOCATION
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15));
+
+                // DISPLAY BLUE DOT FOR USER LOCATION
+                googleMap.setMyLocationEnabled(true);
+
+                // ZOOM IN, ANIMATE CAMERA
+                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
+//            locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(),location -> );
 //            LatLng userLocation = new LatLng( (Location)
 //                    Objects.requireNonNull(
 //                            locationViewModel.getLocationLiveData()
@@ -127,7 +149,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //            LatLng sydney = new LatLng(-34, 151);
 //            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+            });
         }
+    }
+
 //    };
 
     @Nullable
@@ -145,12 +171,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 0
         );
+
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 //        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
 //                .findFragmentById(R.id.map);
-        assert mapFragment != null;
-        mapFragment.getMapAsync(this);
+            assert mapFragment != null;
+            mapFragment.getMapAsync(this);
+
 
 //        ActivityCompat.requestPermissions(
 //                requireActivity(),
