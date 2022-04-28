@@ -15,6 +15,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import julien.hammer.go4lunch.ui.map.MapsFragment;
 
@@ -43,27 +45,42 @@ public class LocationRepository {
 
     @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     public void startLocationRequest() {
-        if (callback == null) {
-            callback = new LocationCallback() {
-                @Override
-                public void onLocationResult(@NonNull LocationResult locationResult) {
-                    Location location = locationResult.getLastLocation();
+        Task<Location> location= fusedLocationProviderClient.getLastLocation();
 
-                    locationMutableLiveData.setValue(location);
-                }
-            };
-        }
+        location.addOnCompleteListener(new OnCompleteListener<Location>(){
 
-        fusedLocationProviderClient.removeLocationUpdates(callback);
+                    @Override
+                    public void onComplete(@NonNull Task<Location> task) {
+                        if(task.isSuccessful()) {
+                            Location userLocation = (Location) task.getResult();
+                            locationMutableLiveData.setValue(userLocation);
+                        }
+                        }
+                    });
 
-        fusedLocationProviderClient.requestLocationUpdates(
-                LocationRequest.create()
-                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                        .setSmallestDisplacement(SMALLEST_DISPLACEMENT_THRESHOLD_METER)
-                        .setInterval(LOCATION_REQUEST_INTERVAL_MS),
-                callback,
-                Looper.getMainLooper()
-        );
+
+
+//        if (callback == null) {
+//            callback = new LocationCallback() {
+//                @Override
+//                public void onLocationResult(@NonNull LocationResult locationResult) {
+//                    Location location = locationResult.getLastLocation();
+//
+//                    locationMutableLiveData.setValue(location);
+//                }
+//            };
+//        }
+
+//        fusedLocationProviderClient.removeLocationUpdates(callback);
+//
+//        fusedLocationProviderClient.requestLocationUpdates(
+//                LocationRequest.create()
+//                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+//                        .setSmallestDisplacement(SMALLEST_DISPLACEMENT_THRESHOLD_METER)
+//                        .setInterval(LOCATION_REQUEST_INTERVAL_MS),
+//                callback,
+//                Looper.getMainLooper()
+//        );
 
 
 
