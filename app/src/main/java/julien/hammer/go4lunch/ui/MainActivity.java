@@ -12,8 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import julien.hammer.go4lunch.R;
 import julien.hammer.go4lunch.di.ViewModelFactory;
-import julien.hammer.go4lunch.ui.map.MapsFragment;
-import julien.hammer.go4lunch.viewmodel.LocationViewModel;
+import julien.hammer.go4lunch.viewmodel.MapsViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,14 +24,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
+        MapsViewModel mapsViewModel =
+                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
+        mapsViewModel.refresh();
         setContentView(R.layout.activity_main);
-
         mBottomNavigation = findViewById(R.id.buttom_navigation_view);
-        ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
-        LocationViewModel locationViewModel =
-                new ViewModelProvider(this, locationViewModelFactory).get(LocationViewModel.class);
-        locationViewModel.refresh();
-
         mBottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.mapsFragment:

@@ -1,49 +1,33 @@
 package julien.hammer.go4lunch.ui.map;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.databinding.BindingAdapter;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-
-import java.util.Objects;
-import java.util.concurrent.Executor;
 
 import julien.hammer.go4lunch.R;
-import julien.hammer.go4lunch.data.location.LocationRepository;
-import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
 import julien.hammer.go4lunch.di.ViewModelFactory;
-import julien.hammer.go4lunch.viewmodel.LocationViewModel;
+import julien.hammer.go4lunch.viewmodel.MapsViewModel;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
-    private LocationViewModel locationViewModel;
+    private MapsViewModel mapsViewModel;
 
     public static MapsFragment newInstance() {
         return new MapsFragment();
@@ -56,7 +40,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 2 - Configuring ViewModel
 
 //    private void configureViewModel() {
-//        this.locationViewModel = new ViewModelProvider(
+//        this.mapsViewModel = new ViewModelProvider(
 //                this,
 //                ViewModelFactory.getInstance(
 //                        new PermissionCheck(getActivity().getContext()),
@@ -64,20 +48,34 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                                LocationServices.getFusedLocationProviderClient(getActivity())
 //                        )
 //                )
-//        ).get(LocationViewModel.class);
-//        //this.locationViewModel.init();
+//        ).get(MapsViewModel.class);
+//        //this.mapsViewModel.init();
+//    }
+
+
+//    @Override
+//    public void onCreate(@Nullable Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
+//        MapsViewModel mapsViewModel =
+//                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
+//        mapsViewModel.refresh();
 //    }
 
     private void configureViewModel() {
-        this.locationViewModel = new ViewModelProvider(
+        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
+        MapsViewModel mapsViewModel =
+                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
+        mapsViewModel.refresh();
+        this.mapsViewModel = new ViewModelProvider(
                 this,
                 ViewModelFactory.getInstance()
-        ).get(LocationViewModel.class);
-        //this.locationViewModel.init();
+        ).get(MapsViewModel.class);
+        //this.mapsViewModel.init();
     }
 
 //    private void configureViewModel() {
-//        this.locationViewModel = new ViewModelProvider(
+//        this.mapsViewModel = new ViewModelProvider(
 //                this,
 //                ViewModelFactory.getInstance(
 //                        new LocationRepository(
@@ -92,16 +90,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                        }
 //
 //                )
-//        ).get(LocationViewModel.class);
-//        //this.locationViewModel.init();
+//        ).get(MapsViewModel.class);
+//        //this.mapsViewModel.init();
 //    }
 
 
 //    // -- Get all the Last Location
 //    private void getTheLastLocation() {
-//        this.locationViewModel.getLocationLiveData().observe(this,this::updateProjects);
+//        this.mapsViewModel.getLocationLiveData().observe(this,this::updateProjects);
 //    }
-//    private LocationViewModel mLocationViewModel;
+//    private MapsViewModel mMapsViewModel;
 //    private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
     /**
@@ -118,17 +116,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
+//        MapsViewModel mapsViewModel =
+//                new ViewModelProvider(this, MapsViewModelFactory).get(MapsViewModel.class);
+
         if (ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             configureViewModel();
-//            ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
-//            LocationViewModel locationViewModel =
-//                    new ViewModelProvider(this, locationViewModelFactory).get(LocationViewModel.class);
-//            locationViewModel.refresh();
-            locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
 
+//            mapsViewModel.refresh();
+//            ViewModelFactory MapsViewModelFactory = ViewModelFactory.getInstance();
+//            MapsViewModel mapsViewModel =
+//                    new ViewModelProvider(this, MapsViewModelFactory).get(MapsViewModel.class);
+//            mapsViewModel.refresh();
+//            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
                 googleMap.clear();
 //                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 //                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
@@ -141,16 +144,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                // ZOOM IN, ANIMATE CAMERA
 //                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
 
-//            locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(),location -> );
+//            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(),location -> );
 //            LatLng userLocation = new LatLng( (Location)
 //                    Objects.requireNonNull(
-//                            locationViewModel.getLocationLiveData()
+//                            mapsViewModel.getLocationLiveData()
 //            );
 //            LatLng userLocation = new LatLng(
 //                    Objects.requireNonNull(
-//                        locationViewModel.getLocationLiveData().getValue()).getLatitude(),
+//                        mapsViewModel.getLocationLiveData().getValue()).getLatitude(),
 //                    Objects.requireNonNull(
-//                            locationViewModel.getLocationLiveData().getValue()).getLongitude()
+//                            mapsViewModel.getLocationLiveData().getValue()).getLongitude()
 //            );
 //            googleMap.addMarker(new MarkerOptions().position(userLocation).title("Marker User Location Last Saved"));
 //            googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
@@ -161,7 +164,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             });
         }
     }
-
 //    };
 
     @Nullable
@@ -175,7 +177,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        configureViewModel();
+        super.onCreate(savedInstanceState);
+//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
+//        MapsViewModel mapsViewModel =
+//                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
+//        mapsViewModel.refresh();
+//        configureViewModel();
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 0
         );
@@ -194,7 +201,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                0
 //        );
 
-//        if (locationViewModel == null) {
+//        if (mapsViewModel == null) {
 //            initMap();
 //        }
 //        getMapAsync(callback);
@@ -247,13 +254,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //    public void onResume() {
 //        super.onResume();
 //
-//        locationViewModel.refresh();
+//        mapsViewModel.refresh();
 //    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        locationViewModel.refresh();
+//        mapsViewModel.refresh();
     }
 
 
