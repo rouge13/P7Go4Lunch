@@ -6,4 +6,19 @@
     <string name="bottom_navigation_menu_map_view">Map View</string>
     <string name="bottom_navigation_menu_list_view">List View</string>
     <string name="bottom_navigation_menu_workmates">Workmates</string>
+
+    <string name="title_list_view">List View</string>
+    <string name="title_workmates_view">Workmates</string>
+
+    <!-- Permission granted -->
+    <string name="title_location_permission">Permission :</string>
+    <string name="text_location_permission">Permission granted for location user</string>
+    <string name="ok">OK !</string>
+
+
+    <string name="dialog_fine_location_rationale_title">Location :</string>
+    <string name="dialog_fine_location_rationale_description">Location granted for location user</string>
+    <string name="yes">YES !</string>
+
+
 </resources>
