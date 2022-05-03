@@ -11,6 +11,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.model.PlacesSearchResult;
 
 import julien.hammer.go4lunch.R;
 import julien.hammer.go4lunch.di.ViewModelFactory;
+import julien.hammer.go4lunch.utils.NearbySearch;
 import julien.hammer.go4lunch.viewmodel.MapsViewModel;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
@@ -135,6 +139,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 googleMap.clear();
 //                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 //                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                    PlacesSearchResult[] placesSearchResults = new NearbySearch().run().results;
+
+                    Log.e("response1Tag", placesSearchResults[0].toString());
+                    Log.e("response2Tag", placesSearchResults[1].toString());
+
+                    double lat1 = placesSearchResults[0].geometry.location.lat;
+                    double lng1 = placesSearchResults[0].geometry.location.lng;
+
+                    double lat2 = placesSearchResults[1].geometry.location.lat;
+                    double lng2 = placesSearchResults[1].geometry.location.lng;
+
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lng2)));
+
+
+
+
                 // MOVE THE CAMERA TO THE USER LOCATION
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
 
@@ -143,6 +165,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
 //                // ZOOM IN, ANIMATE CAMERA
 //                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
+
+
+
 
 //            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(),location -> );
 //            LatLng userLocation = new LatLng( (Location)

@@ -62,4 +62,8 @@ dependencies {
     // For developers using AndroidX in their applications
     implementation 'pub.devrel:easypermissions:3.0.0'
 
+    // For the class NearbySearch
+    implementation 'com.google.maps:google-maps-services:0.11.0'
+
+
 }
