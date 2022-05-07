@@ -12,22 +12,21 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import julien.hammer.go4lunch.R;
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class NearbySearch {
 
-    ExecutorService executor = Executors.newFixedThreadPool(4);
-
-    public PlacesSearchResponse run(){
+    public PlacesSearchResponse run(String apiKey){
         PlacesSearchResponse request = new PlacesSearchResponse();
         GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey("AIzaSyDZP6XY3lk1vTppPe9smEPBx3Qz55AQlFY")
+                .apiKey(apiKey)
                 .build();
         LatLng location = new LatLng(48.5735, 7.7523);
 
         try {
-
             request = PlacesApi.nearbySearchQuery(context, location)
                     .radius(5000)
                     .rankby(RankBy.PROMINENCE)

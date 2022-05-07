@@ -3,12 +3,14 @@ package julien.hammer.go4lunch.ui.map;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.model.PlacesSearchResult;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import julien.hammer.go4lunch.R;
 import julien.hammer.go4lunch.di.ViewModelFactory;
 import julien.hammer.go4lunch.utils.NearbySearch;
@@ -33,6 +39,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private MapsViewModel mapsViewModel;
 
+//    ExecutorService executor = Executors.newSingleThreadExecutor();
+//    Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
     public static MapsFragment newInstance() {
         return new MapsFragment();
     }
@@ -140,19 +148,30 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 //                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    PlacesSearchResult[] placesSearchResults = new NearbySearch().run().results;
+//                    executor.execute(() -> {
+//                        PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key)).results;
+//                        mainExecutor.execute(()->{
+//                            // TO DO
+//
+////                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
+//
+//                        });
+//                    });
 
-                    Log.e("response1Tag", placesSearchResults[0].toString());
-                    Log.e("response2Tag", placesSearchResults[1].toString());
 
-                    double lat1 = placesSearchResults[0].geometry.location.lat;
-                    double lng1 = placesSearchResults[0].geometry.location.lng;
 
-                    double lat2 = placesSearchResults[1].geometry.location.lat;
-                    double lng2 = placesSearchResults[1].geometry.location.lng;
-
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
-                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lng2)));
+//
+//                    Log.e("response1Tag", placesSearchResults[0].toString());
+//                    Log.e("response2Tag", placesSearchResults[1].toString());
+//
+//                    double lat1 = placesSearchResults[0].geometry.location.lat;
+//                    double lng1 = placesSearchResults[0].geometry.location.lng;
+//
+//                    double lat2 = placesSearchResults[1].geometry.location.lat;
+//                    double lng2 = placesSearchResults[1].geometry.location.lng;
+//
+//                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
+//                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lng2)));
 
 
 
