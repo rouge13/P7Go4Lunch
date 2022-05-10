@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.model.PlacesSearchResult;
 
+import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,7 +40,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private MapsViewModel mapsViewModel;
 
-//    ExecutorService executor = Executors.newSingleThreadExecutor();
+    ExecutorService executor = Executors.newSingleThreadExecutor();
 //    Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
     public static MapsFragment newInstance() {
         return new MapsFragment();
@@ -148,15 +149,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 //                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-//                    executor.execute(() -> {
-//                        PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key)).results;
-//                        mainExecutor.execute(()->{
-//                            // TO DO
-//
-////                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
-//
-//                        });
-//                    });
+                    executor.execute(() -> {
+                        Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
+                        PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
+                        mainExecutor.execute(()->{
+                            // TO DO
+                            placesSearchResults[getId()].toString();
+//                            double lat2 = placesSearchResults[1].geometry.location.lat;
+//                    double lng2 = placesSearchResults[1].geometry.location.lng;
+//                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
+
+                        });
+                    });
 
 
 

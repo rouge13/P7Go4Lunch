@@ -1,5 +1,7 @@
 package julien.hammer.go4lunch.utils;
 
+import android.location.Location;
+
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
 import com.google.maps.errors.ApiException;
@@ -19,12 +21,15 @@ import julien.hammer.go4lunch.R;
  */
 public class NearbySearch {
 
-    public PlacesSearchResponse run(String apiKey){
-        PlacesSearchResponse request = new PlacesSearchResponse();
+    public PlacesSearchResponse run(String apiKey, Location userLocation){
+//        LatLng location = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(apiKey)
                 .build();
-        LatLng location = new LatLng(48.5735, 7.7523);
+//        LatLng location = new LatLng(48.5735, 7.7523);
+        LatLng location = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        PlacesSearchResponse request = new PlacesSearchResponse();
 
         try {
             request = PlacesApi.nearbySearchQuery(context, location)
