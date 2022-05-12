@@ -23,10 +23,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.model.PlacesSearchResult;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,6 +41,8 @@ import julien.hammer.go4lunch.viewmodel.MapsViewModel;
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private MapsViewModel mapsViewModel;
+    private GoogleMap mMap;
+//    ExecutorService executor = Executors.newFixedThreadPool(2);
 
     ExecutorService executor = Executors.newSingleThreadExecutor();
 //    Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
@@ -128,7 +132,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        mMap = googleMap;
 //        MapsViewModel mapsViewModel =
 //                new ViewModelProvider(this, MapsViewModelFactory).get(MapsViewModel.class);
 
@@ -145,16 +149,32 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //            mapsViewModel.refresh();
 //            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
                 mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                googleMap.clear();
+                    mMap.clear();
+                    mMap.getUiSettings().setMapToolbarEnabled(false);
 //                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
 //                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-
+                    Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
                     executor.execute(() -> {
-                        Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
+
                         PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
+
                         mainExecutor.execute(()->{
                             // TO DO
-                            placesSearchResults[getId()].toString();
+                            //seachModelsList is the list of all markers
+                            Marker[] allMarkers = new Marker[placesSearchResults.length];
+                            for (int i = 0; i <= (placesSearchResults.length) -1; i++){
+                                double latPlace = placesSearchResults[i].geometry.location.lat;
+                                double longPlace = placesSearchResults[i].geometry.location.lng;
+                                String placeLoc = placesSearchResults[i].name;
+                                if (googleMap != null) {
+//                                    googleMap.setOnMarkerClickListener(this);
+                                    allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeLoc));
+//                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17.0f));
+//                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17));
+//                                    mMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeLoc));
+                                }
+
+                            }
 //                            double lat2 = placesSearchResults[1].geometry.location.lat;
 //                    double lng2 = placesSearchResults[1].geometry.location.lng;
 //                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
@@ -162,29 +182,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         });
                     });
 
-
-
-//
-//                    Log.e("response1Tag", placesSearchResults[0].toString());
-//                    Log.e("response2Tag", placesSearchResults[1].toString());
-//
-//                    double lat1 = placesSearchResults[0].geometry.location.lat;
-//                    double lng1 = placesSearchResults[0].geometry.location.lng;
-//
-//                    double lat2 = placesSearchResults[1].geometry.location.lat;
-//                    double lng2 = placesSearchResults[1].geometry.location.lng;
-//
-//                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
-//                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat2, lng2)));
-
-
-
-
                 // MOVE THE CAMERA TO THE USER LOCATION
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
 
                 // DISPLAY BLUE DOT FOR USER LOCATION
-                googleMap.setMyLocationEnabled(true);
+                    mMap.setMyLocationEnabled(true);
 
 //                // ZOOM IN, ANIMATE CAMERA
 //                googleMap.animateCamera(CameraUpdateFactory.zoomIn());

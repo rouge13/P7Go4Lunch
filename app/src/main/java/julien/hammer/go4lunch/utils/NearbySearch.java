@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import julien.hammer.go4lunch.R;
 
@@ -23,13 +24,12 @@ public class NearbySearch {
 
     public PlacesSearchResponse run(String apiKey, Location userLocation){
 //        LatLng location = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        PlacesSearchResponse request = new PlacesSearchResponse();
 
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(apiKey)
                 .build();
-//        LatLng location = new LatLng(48.5735, 7.7523);
         LatLng location = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-        PlacesSearchResponse request = new PlacesSearchResponse();
 
         try {
             request = PlacesApi.nearbySearchQuery(context, location)
@@ -39,7 +39,6 @@ public class NearbySearch {
                     .language("en")
                     .type(PlaceType.RESTAURANT)
                     .await();
-//                    .await();
         } catch (ApiException | IOException | InterruptedException e) {
             e.printStackTrace();
         } finally {
