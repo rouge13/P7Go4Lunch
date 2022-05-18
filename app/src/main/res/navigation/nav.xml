@@ -6,17 +6,17 @@
     app:startDestination="@id/mapsFragment">
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="julien.hammer.go4lunch.ui.map.MapsFragment"
+        android:name="com.julienhammer.go4lunch.ui.map.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/listFragment"
-        android:name="julien.hammer.go4lunch.ui.list.ListFragment"
+        android:name="com.julienhammer.go4lunch.ui.list.ListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/workmatesFragment"
-        android:name="julien.hammer.go4lunch.ui.workmates.WorkmatesFragment"
+        android:name="com.julienhammer.go4lunch.ui.workmates.WorkmatesFragment"
         android:label="fragment_workmates"
         tools:layout="@layout/fragment_workmates" />
 

@@ -37,7 +37,6 @@
             android:text="@string/restaurant_address"
             android:textSize="12sp"
             app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toStartOf="@id/text_view_opening_hours"
             app:layout_constraintBottom_toTopOf="@+id/text_view_opening_hours"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_view_name" />

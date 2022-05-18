@@ -4,12 +4,20 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\HAMMER\\.android\\my_release_keystore.jks')
+            storePassword '1asc2rg3uk'
+            keyAlias 'key2022'
+            keyPassword '1asc2rg3uk'
+        }
+    }
     compileSdk 31
 
     defaultConfig {
-        applicationId "julien.hammer.go4lunch"
+        applicationId "com.julienhammer.go4lunch"
         minSdk 21
-        targetSdk 29
+        targetSdk 31
         versionCode 1
         versionName "1.0"
 
@@ -25,6 +33,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
         debug {
             resValue "string", "google_map_key", mapsAPIKey
@@ -78,6 +87,9 @@ dependencies {
     implementation 'com.google.maps:google-maps-services:0.11.0'
     implementation 'com.google.android.libraries.places:places:2.6.0'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
+
+    // Used to fix nearbySearch query for Android 30+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
 
 
 }
