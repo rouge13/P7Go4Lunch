@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch.data.permission_check;
+package com.julienhammer.go4lunch.data.permission_check;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;

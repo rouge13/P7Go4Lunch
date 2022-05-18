@@ -1,13 +1,13 @@
-package julien.hammer.go4lunch.ui;
+package com.julienhammer.go4lunch.ui;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import julien.hammer.go4lunch.ui.list.ListFragment;
-import julien.hammer.go4lunch.ui.workmates.WorkmatesFragment;
-import julien.hammer.go4lunch.ui.map.MapsFragment;
+import com.julienhammer.go4lunch.ui.list.ListFragment;
+import com.julienhammer.go4lunch.ui.workmates.WorkmatesFragment;
+import com.julienhammer.go4lunch.ui.map.MapsFragment;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

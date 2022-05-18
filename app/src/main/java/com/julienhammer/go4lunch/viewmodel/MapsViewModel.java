@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch.viewmodel;
+package com.julienhammer.go4lunch.viewmodel;
 
 import android.annotation.SuppressLint;
 import android.location.Location;
@@ -15,9 +15,9 @@ import androidx.lifecycle.ViewModelStoreOwner;
 
 import java.util.concurrent.Executor;
 
-import julien.hammer.go4lunch.data.location.LocationRepository;
-import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
-import julien.hammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.data.location.LocationRepository;
+import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.di.ViewModelFactory;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

@@ -20,5 +20,12 @@
     <string name="dialog_fine_location_rationale_description">Location granted for location user</string>
     <string name="yes">YES !</string>
 
+    <!-- item place -->
+    <string name="restaurant_name">Le Zinc</string>
+    <string name="restaurant_address">French - 12 rue du Faubourg Poissonnière</string>
+    <string name="restaurant_hours_opening">Open until 7pm</string>
+
+    <string name="google_place_image">Place image</string>
+
 
 </resources>

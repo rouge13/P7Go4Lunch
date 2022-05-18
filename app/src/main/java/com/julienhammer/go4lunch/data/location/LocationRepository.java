@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch.data.location;
+package com.julienhammer.go4lunch.data.location;
 
 import android.app.Application;
 import android.location.Location;
@@ -18,7 +18,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import julien.hammer.go4lunch.ui.map.MapsFragment;
+import com.julienhammer.go4lunch.ui.map.MapsFragment;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch.di;
+package com.julienhammer.go4lunch.di;
 
 import android.app.Application;
 
@@ -8,10 +8,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
 
-import julien.hammer.go4lunch.ui.MainApplication;
-import julien.hammer.go4lunch.data.location.LocationRepository;
-import julien.hammer.go4lunch.data.permission_check.PermissionCheck;
-import julien.hammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.ui.MainApplication;
+import com.julienhammer.go4lunch.data.location.LocationRepository;
+import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

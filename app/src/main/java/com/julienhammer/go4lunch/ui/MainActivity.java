@@ -1,4 +1,4 @@
-package julien.hammer.go4lunch.ui;
+package com.julienhammer.go4lunch.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,9 +10,9 @@ import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import julien.hammer.go4lunch.R;
-import julien.hammer.go4lunch.di.ViewModelFactory;
-import julien.hammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
