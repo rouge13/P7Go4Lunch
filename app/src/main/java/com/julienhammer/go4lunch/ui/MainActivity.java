@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,10 +25,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-        MapsViewModel mapsViewModel =
-                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
-        mapsViewModel.refresh();
+        MapsInstanceConfigure();
+        ListInstanceConfigure();
         setContentView(R.layout.activity_main);
         mBottomNavigation = findViewById(R.id.buttom_navigation_view);
         mBottomNavigation.setOnItemSelectedListener(item -> {
@@ -55,7 +54,18 @@ public class MainActivity extends AppCompatActivity {
 //                    .commitNow();
 //        }
     }
-
+    private void MapsInstanceConfigure() {
+        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
+        MapsViewModel mapsViewModel =
+                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
+        mapsViewModel.refresh();
+    }
+    private void ListInstanceConfigure() {
+        ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
+        ListViewModel listViewModel =
+                new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
+        listViewModel.refresh();
+    }
 
 
 

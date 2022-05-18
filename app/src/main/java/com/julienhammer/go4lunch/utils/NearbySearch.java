@@ -5,17 +5,12 @@ import android.location.Location;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
 import com.google.maps.errors.ApiException;
+import com.google.maps.model.LatLng;
 import com.google.maps.model.PlaceType;
 import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.RankBy;
-import com.google.maps.model.LatLng;
-import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
-import com.julienhammer.go4lunch.R;
+import java.io.IOException;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
