@@ -158,7 +158,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
                         mainExecutor.execute(()->{
                             // TO DO
-                            //seachModelsList is the list of all markers
+                            //searchModelsList is the list of all markers
                             Marker[] allMarkers = new Marker[placesSearchResults.length];
                             for (int i = 0; i <= (placesSearchResults.length) -1; i++){
                                 double latPlace = placesSearchResults[i].geometry.location.lat;

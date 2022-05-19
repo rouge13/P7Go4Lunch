@@ -5,23 +5,28 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
-import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.data.places.ListRepository;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class ListViewModel {
+public class ListViewModel extends ViewModel {
     @NonNull
     private final PermissionCheck permissionCheck;
 
     @NonNull
-    private final LocationRepository locationRepository;
+    private final ListRepository listRepository;
 
-    public ListViewModel(@NonNull PermissionCheck permissionCheck, @NonNull LocationRepository locationRepository) {
-        this.permissionCheck = permissionCheck;
-        this.locationRepository = locationRepository;
+    public ListViewModel(
+            @NonNull PermissionCheck permissionChecker,
+            @NonNull ListRepository listRepository
+    ) {
+        this.permissionCheck = permissionChecker;
+        this.listRepository = listRepository;
+        LiveData<Location> locationForPlacesLiveData = listRepository.getLocationForPlacesLiveData();
     }
 
 //    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
@@ -33,8 +38,8 @@ public class ListViewModel {
 //        mapsViewModel.refresh();
 //    }
 
-    public LiveData<Location> getLocationLiveData() {
-        return locationRepository.getLocationLiveData();
+    public LiveData<Location> getLocationForPlacesLiveData() {
+        return listRepository.getLocationForPlacesLiveData();
     }
 
     @SuppressLint("MissingPermission")
@@ -43,9 +48,9 @@ public class ListViewModel {
 //        hasGpsPermissionLiveData.setValue(hasGpsPermission);
 
         if (hasGpsPermission) {
-            locationRepository.startLocationRequest();
+            listRepository.startLocationRequest();
         } else {
-            locationRepository.stopLocationRequest();
+            listRepository.stopLocationRequest();
         }
     }
 }
