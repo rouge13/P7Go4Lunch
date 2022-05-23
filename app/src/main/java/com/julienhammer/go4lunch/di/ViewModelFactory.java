@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
 
-import com.julienhammer.go4lunch.data.places.ListRepository;
 import com.julienhammer.go4lunch.ui.MainApplication;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
@@ -21,19 +20,16 @@ import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final LocationRepository locationDataSource;
-    private final ListRepository listDataSource;
 //    private final Executor executor;
     private static ViewModelFactory factory;
     private static PermissionCheck permissionCheck;
 //    private final Executor ioExecutor = Executors.newFixedThreadPool(4);
 
     private ViewModelFactory(@NonNull PermissionCheck permissionCheck,
-                             @NonNull LocationRepository locationDataSource,
-                             @NonNull ListRepository listDataSource
+                             @NonNull LocationRepository locationDataSource
                              ) {
         ViewModelFactory.permissionCheck = permissionCheck;
         this.locationDataSource = locationDataSource;
-        this.listDataSource = listDataSource;
     }
 
     public static ViewModelFactory getInstance() {
@@ -49,14 +45,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                                     LocationServices.getFusedLocationProviderClient(
                                             application
                                     )
-                            ),
-                            new ListRepository(
-                                    LocationServices.getFusedLocationProviderClient(
-                                            application
                             )
-                        )
                     );
-
                 }
             }
         }
@@ -74,7 +64,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass.isAssignableFrom(ListViewModel.class)) {
             return (T) new ListViewModel(
                     permissionCheck,
-                    listDataSource
+                    locationDataSource
             );
         }
         throw new IllegalArgumentException("Unknown ViewModel class");

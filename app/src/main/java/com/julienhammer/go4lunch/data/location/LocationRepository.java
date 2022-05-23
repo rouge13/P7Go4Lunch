@@ -34,7 +34,7 @@ public class LocationRepository {
     private final FusedLocationProviderClient fusedLocationProviderClient;
 
     @NonNull
-    private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>(null);
+    private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
 
     private LocationCallback callback;
 

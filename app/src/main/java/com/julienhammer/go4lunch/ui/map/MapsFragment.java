@@ -10,10 +10,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +24,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.model.Photo;
 import com.google.maps.model.PlacesSearchResult;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -163,10 +162,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                             for (int i = 0; i <= (placesSearchResults.length) -1; i++){
                                 double latPlace = placesSearchResults[i].geometry.location.lat;
                                 double longPlace = placesSearchResults[i].geometry.location.lng;
-                                String placeLoc = placesSearchResults[i].name;
+                                String placeName = placesSearchResults[i].name;
+                                String placeAddress = placesSearchResults[i].vicinity.toLowerCase();
+                                float placeRating = placesSearchResults[i].rating;
+                                Photo placePhoto = placesSearchResults[i].photos[0];
+                                Integer placeUserRatingsTotal = placesSearchResults[i].userRatingsTotal;
+
                                 if (googleMap != null) {
 //                                    googleMap.setOnMarkerClickListener(this);
-                                    allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeLoc));
+                                    allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
 //                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17.0f));
 //                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17));
 //                                    mMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeLoc));
@@ -224,7 +228,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        super.onCreate(savedInstanceState);
+//        super.onCreate(savedInstanceState);
 //        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
 //        MapsViewModel mapsViewModel =
 //                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);

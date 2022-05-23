@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
-import com.julienhammer.go4lunch.data.places.ListRepository;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -18,15 +18,14 @@ public class ListViewModel extends ViewModel {
     private final PermissionCheck permissionCheck;
 
     @NonNull
-    private final ListRepository listRepository;
+    private final LocationRepository locationRepository;
 
     public ListViewModel(
             @NonNull PermissionCheck permissionChecker,
-            @NonNull ListRepository listRepository
+            @NonNull LocationRepository locationRepository
     ) {
         this.permissionCheck = permissionChecker;
-        this.listRepository = listRepository;
-        LiveData<Location> locationForPlacesLiveData = listRepository.getLocationForPlacesLiveData();
+        this.locationRepository = locationRepository;
     }
 
 //    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
@@ -39,7 +38,7 @@ public class ListViewModel extends ViewModel {
 //    }
 
     public LiveData<Location> getLocationForPlacesLiveData() {
-        return listRepository.getLocationForPlacesLiveData();
+        return locationRepository.getLocationLiveData();
     }
 
     @SuppressLint("MissingPermission")
@@ -48,9 +47,9 @@ public class ListViewModel extends ViewModel {
 //        hasGpsPermissionLiveData.setValue(hasGpsPermission);
 
         if (hasGpsPermission) {
-            listRepository.startLocationRequest();
+            locationRepository.startLocationRequest();
         } else {
-            listRepository.stopLocationRequest();
+            locationRepository.stopLocationRequest();
         }
     }
 }

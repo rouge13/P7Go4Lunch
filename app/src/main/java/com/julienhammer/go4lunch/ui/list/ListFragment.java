@@ -5,17 +5,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -26,7 +24,6 @@ import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
-import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -82,10 +79,16 @@ public class ListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+//        // Inflate the layout for this fragment
+//        bindingItemPlace = ItemPlaceBinding.inflate(inflater, container, false);
+//
+//        return bindingItemPlace.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         configureListViewModel();
-        // Inflate the layout for this fragment
-        bindingItemPlace = ItemPlaceBinding.inflate(inflater, container, false);
-        return bindingItemPlace.getRoot();
         listViewModel.getLocationForPlacesLiveData().observe(getViewLifecycleOwner(), location -> {
             Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
             executor.execute(() -> {
@@ -96,12 +99,15 @@ public class ListFragment extends Fragment {
                 mainExecutor.execute(()->{
                     Marker[] allMarkers = new Marker[placesSearchResults.length];
                     for (int i = 0; i <= (placesSearchResults.length) -1; i++){
-                        String placeLoc = placesSearchResults[i].name;
-                        bindingItemPlace.textViewName.setText(placeLoc);
-                        bindingItemPlace.textViewOpeningHours.setText(placesSearchResults[i].openingHours.openNow.toString());
+//                        String placeLoc = placesSearchResults[i].name;
+//                        bindingItemPlace.textViewName.setText(placeLoc);
+//                        bindingItemPlace.textViewOpeningHours.setText(placesSearchResults[i].openingHours.openNow.toString());
                     }
+
                 });
             });
         });
+
+
     }
 }
