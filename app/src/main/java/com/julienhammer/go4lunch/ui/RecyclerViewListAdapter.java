@@ -26,8 +26,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
     ArrayList<RestaurantDetails> restaurantArrayList;
     ItemPlaceBinding bindingItemPlace;
 
-    public void RecyclerViewAdapter() {
-        this.restaurantArrayList = new ArrayList<RestaurantDetails>();
+//    public RecyclerViewListAdapter(RestaurantDetails mRestaurants) {
+//    }
+
+    public void RecyclerViewAdapter(ArrayList<RestaurantDetails> restaurantArrayList) {
+        this.restaurantArrayList = new ArrayList<RestaurantDetails>(restaurantArrayList);
     }
 
     @NonNull
@@ -48,7 +51,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
 //        PhotoMetadata photo = restaurantDetails.getPhotoMetadataRes();
 
-        bindingItemPlace.imagePlaceViewPhoto.setImageBitmap(StringJoin.UrlValue(restaurantDetails.getPhotoMetadataRes()));
+//        bindingItemPlace.imagePlaceViewPhoto.;
         //        mAddressViewRes = bindingItemPlace.textViewAddress;
 //        mImageViewRes = bindingItemPlace.imagePlaceViewPhoto;
 //

@@ -25,6 +25,8 @@ public class RecyclerViewViewHolder extends RecyclerView.ViewHolder {
         super(binding.getRoot());
         bindingItemPlace = binding;
     }
+
+
 //    TextView mNameViewRes;
 //    TextView mAddressViewRes;
 //    ImageView mImageViewRes;

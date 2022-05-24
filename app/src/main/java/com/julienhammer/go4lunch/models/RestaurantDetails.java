@@ -20,7 +20,7 @@ public class RestaurantDetails implements Parcelable {
     private boolean detailedInfoRes;
 
 
-    protected RestaurantDetails(Parcel in) {
+    public RestaurantDetails(Parcel in) {
         idRes = in.readString();
         nameRes = in.readString();
         addressRes = in.readString();
@@ -43,6 +43,7 @@ public class RestaurantDetails implements Parcelable {
             return new RestaurantDetails[size];
         }
     };
+
 
     public String getIdRes() {
         return idRes;

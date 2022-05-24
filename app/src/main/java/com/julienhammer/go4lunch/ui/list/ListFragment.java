@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,9 +23,14 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.models.RestaurantDetails;
+import com.julienhammer.go4lunch.ui.RecyclerViewListAdapter;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,8 +44,10 @@ public class ListFragment extends Fragment {
 
     private ListViewModel listViewModel;
     FragmentListBinding binding;
-    ItemPlaceBinding bindingItemPlace;
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    RecyclerView mRecyclerView;
+    RestaurantDetails mRestaurants = null;
+
 
     private void configureListViewModel() {
         ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
@@ -77,12 +85,11 @@ public class ListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        // Inflate the layout for this fragment
-//        bindingItemPlace = ItemPlaceBinding.inflate(inflater, container, false);
-//
-//        return bindingItemPlace.getRoot();
+        // Inflate the layout for this fragment
+        binding = FragmentListBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -97,13 +104,22 @@ public class ListFragment extends Fragment {
                         location
                 ).results;
                 mainExecutor.execute(()->{
-                    Marker[] allMarkers = new Marker[placesSearchResults.length];
+
+//                    for (PlacesSearchResult placesSearchResult : placesSearchResults){
+//                        String placeName = placesSearchResults.;
+////                        mRestaurants.setAddressRes(placesSearchResults[i].vicinity);
+//                    }
+
+                    ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
                     for (int i = 0; i <= (placesSearchResults.length) -1; i++){
 //                        String placeLoc = placesSearchResults[i].name;
-//                        bindingItemPlace.textViewName.setText(placeLoc);
-//                        bindingItemPlace.textViewOpeningHours.setText(placesSearchResults[i].openingHours.openNow.toString());
+                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity);
+                        mRestaurants.setIdRes(placesSearchResults[i].placeId);
+                        mRestaurants.setNameRes(placesSearchResults[i].name);
+                        mRestaurants.setAddressRes(placesSearchResults[i].vicinity);
+                        allRestaurants.add()
                     }
-
+                    mRecyclerView.setAdapter(new RecyclerViewListAdapter(mRestaurants));
                 });
             });
         });
