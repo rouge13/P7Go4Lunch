@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MapsInstanceConfigure();
-        ListInstanceConfigure();
+//        ListInstanceConfigure();
         setContentView(R.layout.activity_main);
         mBottomNavigation = findViewById(R.id.buttom_navigation_view);
         mBottomNavigation.setOnItemSelectedListener(item -> {

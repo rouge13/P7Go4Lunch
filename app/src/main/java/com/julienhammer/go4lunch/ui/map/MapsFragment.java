@@ -156,6 +156,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     executor.execute(() -> {
                         PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
                         mainExecutor.execute(()->{
+                            // MOVE THE CAMERA TO THE USER LOCATION
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
+
+                            // DISPLAY BLUE DOT FOR USER LOCATION
+                            mMap.setMyLocationEnabled(true);
                             // TO DO
                             //searchModelsList is the list of all markers
                             Marker[] allMarkers = new Marker[placesSearchResults.length];
@@ -163,14 +168,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                 double latPlace = placesSearchResults[i].geometry.location.lat;
                                 double longPlace = placesSearchResults[i].geometry.location.lng;
                                 String placeName = placesSearchResults[i].name;
-                                String placeAddress = placesSearchResults[i].vicinity.toLowerCase();
-                                float placeRating = placesSearchResults[i].rating;
-                                Photo placePhoto = placesSearchResults[i].photos[0];
-                                Integer placeUserRatingsTotal = placesSearchResults[i].userRatingsTotal;
+//                                String placeAddress = placesSearchResults[i].vicinity.toLowerCase();
+//                                float placeRating = placesSearchResults[i].rating;
+//                                Photo placePhoto = placesSearchResults[i].photos[0];
+//                                Integer placeUserRatingsTotal = placesSearchResults[i].userRatingsTotal;
 
                                 if (googleMap != null) {
 //                                    googleMap.setOnMarkerClickListener(this);
                                     allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
+//                                    allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
 //                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17.0f));
 //                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17));
 //                                    mMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeLoc));
@@ -183,11 +189,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         });
                     });
 
-                // MOVE THE CAMERA TO THE USER LOCATION
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
 
-                // DISPLAY BLUE DOT FOR USER LOCATION
-                    mMap.setMyLocationEnabled(true);
 
 //                // ZOOM IN, ANIMATE CAMERA
 //                googleMap.animateCamera(CameraUpdateFactory.zoomIn());

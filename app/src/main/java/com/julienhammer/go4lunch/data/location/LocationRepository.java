@@ -49,10 +49,14 @@ public class LocationRepository {
     @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     public void startLocationRequest() {
         Task<Location> location= fusedLocationProviderClient.getLastLocation();
+
         location.addOnCompleteListener(new OnCompleteListener<Location>(){
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         if(task.isSuccessful()) {
+//                            Location userLocation = new Location("network");
+//                            userLocation.setLatitude(48.5735);
+//                            userLocation.setLongitude(7.7523);
                             Location userLocation = (Location) task.getResult();
                             locationMutableLiveData.setValue(userLocation);
                         }

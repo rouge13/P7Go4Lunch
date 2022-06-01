@@ -17,35 +17,9 @@ import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class RecyclerViewViewHolder extends RecyclerView.ViewHolder {
-
-
     ItemPlaceBinding bindingItemPlace;
-
     public RecyclerViewViewHolder(@NonNull ItemPlaceBinding binding) {
         super(binding.getRoot());
         bindingItemPlace = binding;
     }
-
-
-//    TextView mNameViewRes;
-//    TextView mAddressViewRes;
-//    ImageView mImageViewRes;
-//
-//
-//
-//
-//
-//    public RecyclerViewViewHolder(LayoutInflater inflater, ViewGroup container, @NonNull View itemListView) {
-//        super(itemListView);
-//        // Inflate the layout for this fragment
-//        bindingItemPlace = ItemPlaceBinding.inflate(inflater, container, false);
-//        return bindingItemPlace.getRoot();
-//        mNameViewRes = bindingItemPlace.textViewName;
-//        mAddressViewRes = bindingItemPlace.textViewAddress;
-//        mImageViewRes = bindingItemPlace.imagePlaceViewPhoto;
-//
-//
-//    }
-
-
 }

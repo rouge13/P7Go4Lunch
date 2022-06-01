@@ -6,9 +6,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -46,18 +48,21 @@ public class ListFragment extends Fragment {
     FragmentListBinding binding;
     ExecutorService executor = Executors.newSingleThreadExecutor();
     RecyclerView mRecyclerView;
-    RestaurantDetails mRestaurants = null;
+//    RestaurantDetails mRestaurants = null;
+    RecyclerViewListAdapter adapter;
+    RecyclerView.LayoutManager layoutManager;
 
 
     private void configureListViewModel() {
         ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
         ListViewModel listViewModel =
                 new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
-        listViewModel.refresh();
+
         this.listViewModel = new ViewModelProvider(
                 this,
                 ViewModelFactory.getInstance()
         ).get(ListViewModel.class);
+//        listViewModel.refresh();
     }
 
     public ListFragment() {
@@ -80,9 +85,13 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        binding = binding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
 
-
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+//        binding.listViewPlaces.setLayoutManager(layoutManager);
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -90,13 +99,24 @@ public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentListBinding.inflate(inflater, container, false);
         return binding.getRoot();
+              //        binding = FragmentListBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
+//
+//        layoutManager = new LinearLayoutManager(this);
+//        binding.listViewPlaces.setLayoutManager(layoutManager);
+
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         configureListViewModel();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+
+        adapter = new RecyclerViewListAdapter();
+
         listViewModel.getLocationForPlacesLiveData().observe(getViewLifecycleOwner(), location -> {
+
             Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
             executor.execute(() -> {
                 PlacesSearchResult[] placesSearchResults = new NearbySearch().run(
@@ -114,12 +134,19 @@ public class ListFragment extends Fragment {
                     for (int i = 0; i <= (placesSearchResults.length) -1; i++){
 //                        String placeLoc = placesSearchResults[i].name;
                         RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity);
-                        mRestaurants.setIdRes(placesSearchResults[i].placeId);
-                        mRestaurants.setNameRes(placesSearchResults[i].name);
-                        mRestaurants.setAddressRes(placesSearchResults[i].vicinity);
-                        allRestaurants.add()
+
+//                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity);
+//                        mRestaurants.setIdRes(placesSearchResults[i].placeId);
+//                        mRestaurants.setNameRes(placesSearchResults[i].name);
+//                        mRestaurants.setAddressRes(placesSearchResults[i].vicinity);
+                        allRestaurants.add(restaurantDetails);
+
                     }
-                    mRecyclerView.setAdapter(new RecyclerViewListAdapter(mRestaurants));
+//                    mRecyclerView.setAdapter(new RecyclerViewListAdapter(mRestaurants));
+                    adapter.setData(allRestaurants);
+                    binding.listViewPlaces.setAdapter(adapter);
+                    binding.listViewPlaces.setLayoutManager(layoutManager);
+
                 });
             });
         });

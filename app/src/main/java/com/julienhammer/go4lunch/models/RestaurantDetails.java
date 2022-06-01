@@ -12,24 +12,24 @@ public class RestaurantDetails implements Parcelable {
     private String idRes;
     private String nameRes;
     private String addressRes;
-    private double latRes;
-    private double lonRes;
-    private String photoRefRes;
-    private PhotoMetadata photoMetadataRes;
-    private double ratingRes;
-    private boolean detailedInfoRes;
+//    private double latRes;
+//    private double lonRes;
+//    private String photoRefRes;
+//    private PhotoMetadata photoMetadataRes;
+//    private double ratingRes;
+//    private boolean detailedInfoRes;
 
 
     public RestaurantDetails(Parcel in) {
         idRes = in.readString();
         nameRes = in.readString();
         addressRes = in.readString();
-        latRes = in.readDouble();
-        lonRes = in.readDouble();
-        photoRefRes = in.readString();
-        photoMetadataRes = in.readParcelable(PhotoMetadata.class.getClassLoader());
-        ratingRes = in.readDouble();
-        detailedInfoRes = in.readByte() != 0;
+//        latRes = in.readDouble();
+//        lonRes = in.readDouble();
+//        photoRefRes = in.readString();
+//        photoMetadataRes = in.readParcelable(PhotoMetadata.class.getClassLoader());
+//        ratingRes = in.readDouble();
+//        detailedInfoRes = in.readByte() != 0;
     }
 
     public static final Creator<RestaurantDetails> CREATOR = new Creator<RestaurantDetails>() {
@@ -43,6 +43,15 @@ public class RestaurantDetails implements Parcelable {
             return new RestaurantDetails[size];
         }
     };
+
+    public RestaurantDetails(String id, String name, String address) {
+        this.idRes = id;
+        this.nameRes = name;
+        this.addressRes = address;
+    }
+
+//    public RestaurantDetails(String placeId, String name, String vicinity) {
+//    }
 
 
     public String getIdRes() {
@@ -67,39 +76,39 @@ public class RestaurantDetails implements Parcelable {
         this.addressRes = addressRes;
     }
 
-    public double getLatRes() {
-        return latRes;
-    }
-
-    public void setLatRes(double latRes) {
-        this.latRes = latRes;
-    }
-
-    public double getLonRes() { return lonRes; }
-
-    public void setLonRes(double lonRes) { this.lonRes = lonRes; }
-
-    public String getPhotoRefRes() {
-        return photoRefRes;
-    }
-
-    public void setPhotoRefRes(String photoRefRes) {
-        this.photoRefRes = photoRefRes;
-    }
-
-    public PhotoMetadata getPhotoMetadataRes() {
-        return photoMetadataRes;
-    }
-
-    public void setPhotoMetadataRes(PhotoMetadata photoMetadataRes) { this.photoMetadataRes = photoMetadataRes; }
-
-    public double getRatingRes() { return ratingRes; }
-
-    public void setRatingRes(double ratingRes) { this.ratingRes = ratingRes; }
-
-    public boolean isDetailedInfoRes() { return detailedInfoRes; }
-
-    public void setDetailedInfoRes(boolean detailedInfoRes) { this.detailedInfoRes = detailedInfoRes; }
+//    public double getLatRes() {
+//        return latRes;
+//    }
+//
+//    public void setLatRes(double latRes) {
+//        this.latRes = latRes;
+//    }
+//
+//    public double getLonRes() { return lonRes; }
+//
+//    public void setLonRes(double lonRes) { this.lonRes = lonRes; }
+//
+//    public String getPhotoRefRes() {
+//        return photoRefRes;
+//    }
+//
+//    public void setPhotoRefRes(String photoRefRes) {
+//        this.photoRefRes = photoRefRes;
+//    }
+//
+//    public PhotoMetadata getPhotoMetadataRes() {
+//        return photoMetadataRes;
+//    }
+//
+//    public void setPhotoMetadataRes(PhotoMetadata photoMetadataRes) { this.photoMetadataRes = photoMetadataRes; }
+//
+//    public double getRatingRes() { return ratingRes; }
+//
+//    public void setRatingRes(double ratingRes) { this.ratingRes = ratingRes; }
+//
+//    public boolean isDetailedInfoRes() { return detailedInfoRes; }
+//
+//    public void setDetailedInfoRes(boolean detailedInfoRes) { this.detailedInfoRes = detailedInfoRes; }
     @Override
     public int describeContents() {
         return 0;
@@ -110,11 +119,11 @@ public class RestaurantDetails implements Parcelable {
         dest.writeString(idRes);
         dest.writeString(nameRes);
         dest.writeString(addressRes);
-        dest.writeDouble(latRes);
-        dest.writeDouble(lonRes);
-        dest.writeString(photoRefRes);
-        dest.writeParcelable(photoMetadataRes, flags);
-        dest.writeDouble(ratingRes);
-        dest.writeByte((byte) (detailedInfoRes ? 1 : 0));
+//        dest.writeDouble(latRes);
+//        dest.writeDouble(lonRes);
+//        dest.writeString(photoRefRes);
+//        dest.writeParcelable(photoMetadataRes, flags);
+//        dest.writeDouble(ratingRes);
+//        dest.writeByte((byte) (detailedInfoRes ? 1 : 0));
     }
 }

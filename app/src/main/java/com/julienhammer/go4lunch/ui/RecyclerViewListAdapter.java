@@ -1,5 +1,6 @@
 package com.julienhammer.go4lunch.ui;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,32 +23,30 @@ import java.util.ArrayList;
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
-    ArrayList<RestaurantDetails> restaurantArrayList;
+public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    ArrayList<RestaurantDetails> restaurantArrayList = new ArrayList<>();
     ItemPlaceBinding bindingItemPlace;
 
 //    public RecyclerViewListAdapter(RestaurantDetails mRestaurants) {
 //    }
 
-    public void RecyclerViewAdapter(ArrayList<RestaurantDetails> restaurantArrayList) {
-        this.restaurantArrayList = new ArrayList<RestaurantDetails>(restaurantArrayList);
-    }
+
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 //        View rootListView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_place,parent,false);
 //        return new RecyclerViewViewHolder(rootListView);
-        bindingItemPlace = ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new RecyclerViewViewHolder(bindingItemPlace);
-
+            bindingItemPlace = ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+            return new RecyclerViewViewHolder(bindingItemPlace);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
-        bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
-        bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
+            RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
+            bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
+            bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
+            System.out.println(position);
 
 //        PhotoMetadata photo = restaurantDetails.getPhotoMetadataRes();
 
@@ -57,10 +56,17 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
 //
 //        viewHolder.text_view_name.setText(user.getTitle());
 //        viewHolder.txtView_description.setText(user.getDescription());
+
     }
 
     @Override
     public int getItemCount() {
         return restaurantArrayList.size();
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void setData(ArrayList<RestaurantDetails> restaurantArrayList) {
+        this.restaurantArrayList = restaurantArrayList;
+        notifyDataSetChanged();
     }
 }
