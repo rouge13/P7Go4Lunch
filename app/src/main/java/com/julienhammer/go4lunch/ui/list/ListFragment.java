@@ -2,6 +2,7 @@ package com.julienhammer.go4lunch.ui.list;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,9 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.location.places.PlacePhotoResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.model.Photo;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
@@ -133,6 +136,8 @@ public class ListFragment extends Fragment {
                     ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
                     for (int i = 0; i <= (placesSearchResults.length) -1; i++){
 //                        String placeLoc = placesSearchResults[i].name;
+//                        String urlPhoto = placesSearchResults[i].photos. ();
+
                         RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity);
 
 //                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity);

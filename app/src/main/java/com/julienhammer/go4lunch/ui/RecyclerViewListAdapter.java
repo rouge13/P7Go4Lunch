@@ -46,7 +46,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
             RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
             bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
             bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
-            System.out.println(position);
+//            bindingItemPlace.imagePlaceViewPhoto.setImageBitmap(restaurantDetails.getphotoRes());
+//            System.out.println(position);
 
 //        PhotoMetadata photo = restaurantDetails.getPhotoMetadataRes();
 

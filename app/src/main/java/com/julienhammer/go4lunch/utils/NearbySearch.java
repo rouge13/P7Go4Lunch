@@ -28,7 +28,9 @@ public class NearbySearch {
 
         try {
             request = PlacesApi.nearbySearchQuery(context, location)
+
                     .radius(2000)
+
                     .rankby(RankBy.PROMINENCE)
                     .language("en")
                     .type(PlaceType.RESTAURANT)

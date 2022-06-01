@@ -1,9 +1,11 @@
 package com.julienhammer.go4lunch.models;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.maps.model.Photo;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -12,10 +14,11 @@ public class RestaurantDetails implements Parcelable {
     private String idRes;
     private String nameRes;
     private String addressRes;
+    private Photo photoRes;
 //    private double latRes;
 //    private double lonRes;
 //    private String photoRefRes;
-//    private PhotoMetadata photoMetadataRes;
+    private PhotoMetadata photoMetadataRes;
 //    private double ratingRes;
 //    private boolean detailedInfoRes;
 
@@ -24,6 +27,8 @@ public class RestaurantDetails implements Parcelable {
         idRes = in.readString();
         nameRes = in.readString();
         addressRes = in.readString();
+//        photoRes = in.readParcelable(Photo.class.getClassLoader());
+
 //        latRes = in.readDouble();
 //        lonRes = in.readDouble();
 //        photoRefRes = in.readString();
@@ -48,6 +53,9 @@ public class RestaurantDetails implements Parcelable {
         this.idRes = id;
         this.nameRes = name;
         this.addressRes = address;
+//        this.photoRes = photo;
+//        this.photoMetadataRes = photo;
+
     }
 
 //    public RestaurantDetails(String placeId, String name, String vicinity) {
@@ -76,6 +84,10 @@ public class RestaurantDetails implements Parcelable {
         this.addressRes = addressRes;
     }
 
+//    public Photo getphotoRes() { return photoRes; }
+//
+//    public void setphotoRes(Photo photoRes) { this.photoRes = photoRes; }
+
 //    public double getLatRes() {
 //        return latRes;
 //    }
@@ -95,7 +107,7 @@ public class RestaurantDetails implements Parcelable {
 //    public void setPhotoRefRes(String photoRefRes) {
 //        this.photoRefRes = photoRefRes;
 //    }
-//
+
 //    public PhotoMetadata getPhotoMetadataRes() {
 //        return photoMetadataRes;
 //    }
@@ -119,6 +131,7 @@ public class RestaurantDetails implements Parcelable {
         dest.writeString(idRes);
         dest.writeString(nameRes);
         dest.writeString(addressRes);
+//        dest.writeParcelable((Parcelable) photoRes, flags);
 //        dest.writeDouble(latRes);
 //        dest.writeDouble(lonRes);
 //        dest.writeString(photoRefRes);
