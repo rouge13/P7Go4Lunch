@@ -1,6 +1,7 @@
 package com.julienhammer.go4lunch.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
 import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.utils.ConvertToImage;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -43,9 +45,16 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
-            bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
-            bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
+        Context context = holder.itemView.getContext();
+
+        RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
+        bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
+        bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
+        if (restaurantDetails.getphotoRes() != null){
+            ConvertToImage.loadGooglePhoto(context, bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getphotoRes().photoReference);
+        } else {
+            ConvertToImage.loadIcon(context, bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getIconRes());
+        }
 //            bindingItemPlace.imagePlaceViewPhoto.setImageBitmap(restaurantDetails.getphotoRes());
 //            System.out.println(position);
 

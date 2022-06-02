@@ -18,19 +18,14 @@ import java.io.IOException;
 public class NearbySearch {
 
     public PlacesSearchResponse run(String apiKey, Location userLocation){
-//        LatLng location = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
         PlacesSearchResponse request = new PlacesSearchResponse();
-
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(apiKey)
                 .build();
         LatLng location = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
-
         try {
             request = PlacesApi.nearbySearchQuery(context, location)
-
                     .radius(2000)
-
                     .rankby(RankBy.PROMINENCE)
                     .language("en")
                     .type(PlaceType.RESTAURANT)

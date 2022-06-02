@@ -1,8 +1,12 @@
 package com.julienhammer.go4lunch.models;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.maps.model.Photo;
@@ -15,23 +19,23 @@ public class RestaurantDetails implements Parcelable {
     private String nameRes;
     private String addressRes;
     private Photo photoRes;
+    private String iconRes;
 //    private double latRes;
 //    private double lonRes;
-//    private String photoRefRes;
-    private PhotoMetadata photoMetadataRes;
+    private String photoRefRes;
+//    private PhotoMetadata photoMetadataRes;
 //    private double ratingRes;
 //    private boolean detailedInfoRes;
-
-
     public RestaurantDetails(Parcel in) {
         idRes = in.readString();
         nameRes = in.readString();
         addressRes = in.readString();
-//        photoRes = in.readParcelable(Photo.class.getClassLoader());
+        photoRes = in.readParcelable(Photo.class.getClassLoader());
+        iconRes = in.readString();
 
 //        latRes = in.readDouble();
 //        lonRes = in.readDouble();
-//        photoRefRes = in.readString();
+        photoRefRes = in.readString();
 //        photoMetadataRes = in.readParcelable(PhotoMetadata.class.getClassLoader());
 //        ratingRes = in.readDouble();
 //        detailedInfoRes = in.readByte() != 0;
@@ -49,11 +53,13 @@ public class RestaurantDetails implements Parcelable {
         }
     };
 
-    public RestaurantDetails(String id, String name, String address) {
+    public RestaurantDetails(String id, String name, String address, Photo photo, String photoRefRes, String iconRes) {
         this.idRes = id;
         this.nameRes = name;
         this.addressRes = address;
-//        this.photoRes = photo;
+        this.photoRes = photo;
+        this.photoRefRes = photoRefRes;
+        this.iconRes = iconRes;
 //        this.photoMetadataRes = photo;
 
     }
@@ -84,9 +90,13 @@ public class RestaurantDetails implements Parcelable {
         this.addressRes = addressRes;
     }
 
-//    public Photo getphotoRes() { return photoRes; }
-//
-//    public void setphotoRes(Photo photoRes) { this.photoRes = photoRes; }
+    public Photo getphotoRes() { return photoRes; }
+
+    public void setphotoRes(Photo photoRes) { this.photoRes = photoRes; }
+
+    public String getIconRes() { return iconRes; }
+
+    public void setIconRes(Photo photoRes) { this.photoRes = photoRes; }
 
 //    public double getLatRes() {
 //        return latRes;
@@ -100,13 +110,13 @@ public class RestaurantDetails implements Parcelable {
 //
 //    public void setLonRes(double lonRes) { this.lonRes = lonRes; }
 //
-//    public String getPhotoRefRes() {
-//        return photoRefRes;
-//    }
-//
-//    public void setPhotoRefRes(String photoRefRes) {
-//        this.photoRefRes = photoRefRes;
-//    }
+    public String getPhotoRefRes() {
+        return photoRefRes;
+    }
+
+    public void setPhotoRefRes(String photoRefRes) {
+        this.photoRefRes = photoRefRes;
+    }
 
 //    public PhotoMetadata getPhotoMetadataRes() {
 //        return photoMetadataRes;
@@ -117,10 +127,7 @@ public class RestaurantDetails implements Parcelable {
 //    public double getRatingRes() { return ratingRes; }
 //
 //    public void setRatingRes(double ratingRes) { this.ratingRes = ratingRes; }
-//
-//    public boolean isDetailedInfoRes() { return detailedInfoRes; }
-//
-//    public void setDetailedInfoRes(boolean detailedInfoRes) { this.detailedInfoRes = detailedInfoRes; }
+
     @Override
     public int describeContents() {
         return 0;
@@ -131,12 +138,11 @@ public class RestaurantDetails implements Parcelable {
         dest.writeString(idRes);
         dest.writeString(nameRes);
         dest.writeString(addressRes);
-//        dest.writeParcelable((Parcelable) photoRes, flags);
+        dest.writeParcelable((Parcelable) photoRes, flags);
 //        dest.writeDouble(latRes);
 //        dest.writeDouble(lonRes);
-//        dest.writeString(photoRefRes);
+        dest.writeString(photoRefRes);
 //        dest.writeParcelable(photoMetadataRes, flags);
 //        dest.writeDouble(ratingRes);
-//        dest.writeByte((byte) (detailedInfoRes ? 1 : 0));
     }
 }
