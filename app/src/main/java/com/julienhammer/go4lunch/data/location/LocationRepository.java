@@ -20,6 +20,8 @@ import com.google.android.gms.tasks.Task;
 
 import com.julienhammer.go4lunch.ui.map.MapsFragment;
 
+import java.util.List;
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
@@ -27,11 +29,12 @@ public class LocationRepository {
     private static final int LOCATION_REQUEST_INTERVAL_MS = 10_000;
     private static final float SMALLEST_DISPLACEMENT_THRESHOLD_METER = 25;
 
+
     @NonNull
     private final FusedLocationProviderClient fusedLocationProviderClient;
 
     @NonNull
-    private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>(null);
+    private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
 
     private LocationCallback callback;
 
@@ -48,127 +51,17 @@ public class LocationRepository {
         Task<Location> location= fusedLocationProviderClient.getLastLocation();
 
         location.addOnCompleteListener(new OnCompleteListener<Location>(){
-
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         if(task.isSuccessful()) {
+//                            Location userLocation = new Location("network");
+//                            userLocation.setLatitude(48.5735);
+//                            userLocation.setLongitude(7.7523);
                             Location userLocation = (Location) task.getResult();
                             locationMutableLiveData.setValue(userLocation);
                         }
                         }
                     });
-
-
-
-//        if (callback == null) {
-//            callback = new LocationCallback() {
-//                @Override
-//                public void onLocationResult(@NonNull LocationResult locationResult) {
-//                    Location location = locationResult.getLastLocation();
-//
-//                    locationMutableLiveData.setValue(location);
-//                }
-//            };
-//        }
-
-//        fusedLocationProviderClient.removeLocationUpdates(callback);
-//
-//        fusedLocationProviderClient.requestLocationUpdates(
-//                LocationRequest.create()
-//                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-//                        .setSmallestDisplacement(SMALLEST_DISPLACEMENT_THRESHOLD_METER)
-//                        .setInterval(LOCATION_REQUEST_INTERVAL_MS),
-//                callback,
-//                Looper.getMainLooper()
-//        );
-
-
-
-//        locationMutableLiveData.setValue(fusedLocationProviderClient.getLastLocation().getResult());
-//        if (callback == null) {
-//            callback = new LocationCallback() {
-//                @Override
-//                public void onLocationResult(@NonNull LocationResult locationResult) {
-//                    Location location = locationResult.getLastLocation();
-//                    if (locationResult != null && !locationResult.getLocations().isEmpty()) {
-//                        Location newLocation = locationResult.getLocations().get(0);
-//                        locationMutableLiveData.setValue(newLocation);
-////                                    callback(Status.RESULT_SUCCESS, newLocation);
-//                    } else {
-////                                    callback.onCallback(Status.ERROR_LOCATION, null);
-//                    }
-//                }
-//            };
-//
-//        }
-//
-//        fusedLocationProviderClient.removeLocationUpdates(callback);
-//
-//        fusedLocationProviderClient.requestLocationUpdates(
-//                LocationRequest.create()
-//                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-//                        .setSmallestDisplacement(SMALLEST_DISPLACEMENT_THRESHOLD_METER)
-//                        .setInterval(LOCATION_REQUEST_INTERVAL_MS),
-//                callback,
-//                Looper.getMainLooper()
-//        );
-
-//        // Location settings successful
-//        fusedLocationProviderClient.getLastLocation()
-//                .addOnSuccessListener(Location) {
-//            location ->
-//            if (location == null || location.accuracy > 100) {
-//                mLocationCallback = object : LocationCallback() {
-//                    override fun onLocationResult(locationResult: LocationResult?) {
-//                        stopLocationUpdates()
-//                        if (locationResult != null && locationResult.locations.isNotEmpty()) {
-//                            val newLocation = locationResult.locations[0]
-//                            callback.onCallback(Status.SUCCESS, newLocation)
-//                        } else {
-//                            callback.onCallback(Status.ERROR_LOCATION, null)
-//                        }
-//                    }
-//                }
-//
-//                mFusedLocationProviderClient!!.requestLocationUpdates(getLocationRequest(),
-//                        mLocationCallback, null)
-//            } else {
-//                callback.onCallback(Status.SUCCESS, location)
-//            }
-//        }
-//                        .addOnFailureListener {
-//            callback.onCallback(Status.ERROR_UNKNOWN, null)
-//        }
-//    }
-
-
-
-//        if (callback == null) {
-//            callback = new LocationCallback() {
-//                @Override
-//                public void onLocationResult(@NonNull LocationResult locationResult) {
-//                    for (Location location : locationResult.getLocations()) {
-//                        if (location != null) {
-//                            locationMutableLiveData.setValue(location);
-//                        }
-//                    }
-////                    Location location = locationResult.getLastLocation();
-//////                    locationMutableLiveData.setValue(fusedLocationProviderClient.getLastLocation().getResult());
-////                    locationMutableLiveData.setValue(location);
-//                }
-//            };
-//        }
-//
-//        fusedLocationProviderClient.removeLocationUpdates(callback);
-//
-//        fusedLocationProviderClient.requestLocationUpdates(
-//                LocationRequest.create()
-//                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-//                        .setSmallestDisplacement(SMALLEST_DISPLACEMENT_THRESHOLD_METER)
-//                        .setInterval(LOCATION_REQUEST_INTERVAL_MS),
-//                callback,
-//                Looper.getMainLooper()
-//        );
     }
 
     public void stopLocationRequest() {

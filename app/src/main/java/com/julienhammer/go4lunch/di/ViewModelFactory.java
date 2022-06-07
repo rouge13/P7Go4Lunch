@@ -11,6 +11,7 @@ import com.google.android.gms.location.LocationServices;
 import com.julienhammer.go4lunch.ui.MainApplication;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 /**
@@ -25,7 +26,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 //    private final Executor ioExecutor = Executors.newFixedThreadPool(4);
 
     private ViewModelFactory(@NonNull PermissionCheck permissionCheck,
-                             @NonNull LocationRepository locationDataSource) {
+                             @NonNull LocationRepository locationDataSource
+                             ) {
         ViewModelFactory.permissionCheck = permissionCheck;
         this.locationDataSource = locationDataSource;
     }
@@ -45,7 +47,6 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                                     )
                             )
                     );
-
                 }
             }
         }
@@ -60,9 +61,15 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                     permissionCheck,
                     locationDataSource
             );
+        } else if (modelClass.isAssignableFrom(ListViewModel.class)) {
+            return (T) new ListViewModel(
+                    permissionCheck,
+                    locationDataSource
+            );
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
+
 
 //    private ViewModelFactory(LocationRepository locationDataSource, Executor executor) {
 //        this.locationDataSource = locationDataSource;
