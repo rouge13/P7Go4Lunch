@@ -1,47 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    tools:context=".ui.MainActivity">-->
-
-<!--&lt;!&ndash;    <androidx.fragment.app.FragmentContainerView&ndash;&gt;-->
-<!--&lt;!&ndash;        android:id="@+id/fragmentContainerView"&ndash;&gt;-->
-<!--&lt;!&ndash;        android:name="androidx.navigation.fragment.NavHostFragment"&ndash;&gt;-->
-<!--&lt;!&ndash;        android:layout_width="0dp"&ndash;&gt;-->
-<!--&lt;!&ndash;        android:layout_height="0dp"&ndash;&gt;-->
-<!--&lt;!&ndash;        app:defaultNavHost="true"&ndash;&gt;-->
-<!--&lt;!&ndash;        app:layout_constraintBottom_toTopOf="parent"&ndash;&gt;-->
-<!--&lt;!&ndash;        app:layout_constraintEnd_toEndOf="parent"&ndash;&gt;-->
-<!--&lt;!&ndash;        app:layout_constraintStart_toStartOf="parent"&ndash;&gt;-->
-<!--&lt;!&ndash;        app:layout_constraintTop_toTopOf="parent"&ndash;&gt;-->
-<!--&lt;!&ndash;        app:navGraph="@navigation/nav" />&ndash;&gt;-->
-
-<!--    <FrameLayout-->
-<!--        android:id="@+id/container_frame_layout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"/>-->
-<!--    -->
-<!--    <androidx.viewpager.widget.ViewPager-->
-<!--        android:id="@+id/view_pager"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_constraintBottom_toTopOf="@+id/bottom_navigation_menu_view"-->
-<!--        />-->
-
-<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--        android:id="@+id/bottom_navigation_menu_view"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="?android:attr/windowBackground"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:menu="@menu/bottom_navigation_menu" />-->
-
-<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -49,11 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
-
-<!--    <FrameLayout-->
-<!--        android:id="@+id/container_frame_layout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"/>-->
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"

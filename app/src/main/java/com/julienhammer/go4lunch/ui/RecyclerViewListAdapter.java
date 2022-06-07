@@ -41,12 +41,14 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
 //        return new RecyclerViewViewHolder(rootListView);
             bindingItemPlace = ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
             return new RecyclerViewViewHolder(bindingItemPlace);
+
+
+
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
-
         RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
         bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
         bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
@@ -55,6 +57,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
         } else {
             ConvertToImage.loadIcon(context, bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getIconRes());
         }
+        bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
+
 //            bindingItemPlace.imagePlaceViewPhoto.setImageBitmap(restaurantDetails.getphotoRes());
 //            System.out.println(position);
 
@@ -79,4 +83,45 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.V
         this.restaurantArrayList = restaurantArrayList;
         notifyDataSetChanged();
     }
+
+//    public ArrayList<RestaurantDetails> getDataList() {
+//        if (restaurantArrayList == null)
+//            restaurantArrayList = new ArrayList<>();
+//        return restaurantArrayList;
+//    }
+//
+//
+//    public void remove(int position) {
+//        if (position > 0 && position < getDataList().size()) {
+//            getDataList().remove(position);
+//            notifyItemRemoved(position);
+//        }
+//    }
+//
+//    public void removeAll() {
+//        int oldSize = restaurantArrayList.size();
+//        restaurantArrayList.clear();
+//        notifyItemRangeRemoved(0, oldSize);
+//    }
+//
+//    public void add(ArrayList<RestaurantDetails> newList) {
+//        if (newList != null && !newList.isEmpty()) {
+//            int oldSize = restaurantArrayList.size();
+//            restaurantArrayList.addAll(newList);
+//            notifyItemRangeChanged(oldSize - 1, newList.size());
+//        }
+//    }
+//
+//    public void add(RestaurantDetails restaurantDetails, int position) {
+//        if (position > 0 && position <= restaurantArrayList.size()) {
+//            restaurantArrayList.add(restaurantDetails);
+//            notifyItemInserted(position);
+//        }
+//    }
+//
+//    public void notifyItemRangeChanged() {
+//        notifyItemRangeChanged(0, restaurantArrayList.size());
+//    }
+
+
 }

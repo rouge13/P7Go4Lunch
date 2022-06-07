@@ -44,7 +44,7 @@ public class ListFragment extends Fragment {
     RecyclerView mRecyclerView;
 //    RestaurantDetails mRestaurants = null;
     RecyclerViewListAdapter adapter;
-    RecyclerView.LayoutManager layoutManager;
+//    RecyclerView.LayoutManager layoutManager;
     private PlacesSearchResult placesSearchResult;
 //    ImageView imageView;
 //    GoogleApiClient mGoogleApiClient;
@@ -110,6 +110,7 @@ public class ListFragment extends Fragment {
         configureListViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
 
+
         adapter = new RecyclerViewListAdapter();
 
         listViewModel.getLocationForPlacesLiveData().observe(getViewLifecycleOwner(), location -> {
@@ -122,137 +123,37 @@ public class ListFragment extends Fragment {
                 ).results;
                 mainExecutor.execute(()->{
 
-//                    for (PlacesSearchResult placesSearchResult : placesSearchResults){
-//                        String placeName = placesSearchResults.;
-////                        mRestaurants.setAddressRes(placesSearchResults[i].vicinity);
-//                    }
-
                     ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
                     for (int i = 0; i <= (placesSearchResults.length) -1; i++){
-//                        String placeLoc = placesSearchResults[i].name;
-//                        String urlPhoto = placesSearchResults[i].photos. ();
+                        String openNowCase ="";
 
+                        if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null){
 
+                            Boolean openNow = placesSearchResults[i].openingHours.openNow;
 
+                            if (openNow = false){
+                                openNowCase = "Not open";
+                            } else {
+                                openNowCase = "Open now";
+                            }
 
+                        }else{
 
+                            openNowCase = "Doesn't show if it's open";
 
+                        }
 
-
-//                        // Define a Place ID.
-//                        final String placeId = placesSearchResults[i].placeId;
-//
-//                        // Specify fields. Requests for photos must always have the PHOTO_METADATAS field.
-//                        final List<Place.Field> fields = Collections.singletonList(Place.Field.PHOTO_METADATAS);
-//
-//                        // Get a Place object (this example uses fetchPlace(), but you can also use findCurrentPlace())
-//                        final FetchPlaceRequest placeRequest = FetchPlaceRequest.newInstance(placeId, fields);
-//
-//                        PlacesClient placesClient = null;
-//
-////                        assert false;
-//                        placesClient.fetchPlace(placeRequest).addOnSuccessListener((response) -> {
-//                            final Place place = response.getPlace();
-//
-//                            // Get the photo metadata.
-//                            final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-//                            if (metadata == null || metadata.isEmpty()) {
-//                                Log.w(TAG, "No photo metadata.");
-//                                return;
-//                            }
-//                            final PhotoMetadata photoMetadata = metadata.get(0);
-//
-//                            // Get the attribution text.
-//                            final String attributions = photoMetadata.getAttributions();
-//
-//                            // Create a FetchPhotoRequest.
-//                            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-//                                    .setMaxWidth(500) // Optional.
-//                                    .setMaxHeight(300) // Optional.
-//                                    .build();
-//                            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-//                                Bitmap bitmap = fetchPhotoResponse.getBitmap();
-////                                imageView.setImageBitmap(bitmap);
-//                            }).addOnFailureListener((exception) -> {
-//                                exception.printStackTrace();
-////                                responseView.setText(exception.getMessage());
-////                                if (exception instanceof ApiException) {
-////                                    final ApiException apiException = (ApiException) exception;
-////                                    Log.e(TAG, "Place not found: " + exception.getMessage());
-////                                    final int statusCode = apiException.getStatusCode();
-////                                    // TODO: Handle error with given status code.
-////                                }
-//                            });
-//                        });
-
-///**
-// * Load a bitmap from the photos API asynchronously
-// * by using buffers and result callbacks.
-// */
-//
-//                        Places.GeoDataApi.getPlacePhotos(mGoogleApiClient, placesSearchResults[i].placeId)
-//                                .setResultCallback(new ResultCallback<PlacePhotoMetadataResult>() {
-//
-//
-//                                    @Override
-//                                    public void onResult(PlacePhotoMetadataResult photos) {
-//                                        if (!photos.getStatus().isSuccess()) {
-//                                            Log.d(TAG, "Couldn\'t receive photos bundle successfully.");
-//                                            return;
-//                                        }
-//
-//                                        Log.d(TAG, "Photo bundle received successfully");
-//
-//                                        PlacePhotoMetadataBuffer photoMetadataBuffer = photos.getPhotoMetadata();
-//                                        if (photoMetadataBuffer.getCount() > 0) {
-//                                            // Display the first bitmap in an ImageView in the size of the view
-//                                            photoMetadataBuffer.get(0)
-//                                                    .getScaledPhoto(mGoogleApiClient, imageView.getWidth(),
-//                                                            imageView.getHeight())
-//                                                    .setResultCallback(new ResultCallback<PlacePhotoResult>() {
-//                                                        @Override
-//                                                        public void onResult(PlacePhotoResult placePhotoResult) {
-//                                                            if (!placePhotoResult.getStatus().isSuccess()) {
-//                                                                Log.d(TAG, "Couldn\'t retrieve the photo successfully.");
-//                                                                return;
-//                                                            }
-//
-//                                                            Log.d(TAG, "Successfully retrieved photo from photo bundle.");
-//
-//                                                            imageView.setImageBitmap(placePhotoResult.getBitmap());
-//                                                        }
-//                                                    });
-//                                        } else {
-//                                            Log.d(TAG, "0 images in the buffer.");
-//                                        }
-//                                        photoMetadataBuffer.release();
-//                                    }
-//                                });
-
-
-
-
-
-
-
-
-
-
-
-
-                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity, placesSearchResults[i].photos[0], placesSearchResults[i].photos[0].photoReference, placesSearchResults[i].icon.toString());
-
-//                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity);
-//                        mRestaurants.setIdRes(placesSearchResults[i].placeId);
-//                        mRestaurants.setNameRes(placesSearchResults[i].name);
-//                        mRestaurants.setAddressRes(placesSearchResults[i].vicinity);
+                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity, placesSearchResults[i].photos[0], placesSearchResults[i].photos[0].photoReference, placesSearchResults[i].icon.toString(), openNowCase);
                         allRestaurants.add(restaurantDetails);
 
                     }
-//                    mRecyclerView.setAdapter(new RecyclerViewListAdapter(mRestaurants));
+
                     adapter.setData(allRestaurants);
-                    binding.listViewPlaces.setAdapter(adapter);
                     binding.listViewPlaces.setLayoutManager(layoutManager);
+                    binding.listViewPlaces.setAdapter(adapter);
+
+//                    layoutManager.scrollToPosition(allRestaurants.size() -1);
+
 
                 });
             });

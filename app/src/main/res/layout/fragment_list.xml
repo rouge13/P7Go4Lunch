@@ -12,7 +12,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            tools:ignore="MissingConstraints">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/list_view_places"
@@ -21,7 +22,10 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginBottom="16dp"
-                tools:listitem="@layout/item_place" />
+                tools:listitem="@layout/item_place"
+                android:descendantFocusability="beforeDescendants"
+                android:nestedScrollingEnabled="false"
+                />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

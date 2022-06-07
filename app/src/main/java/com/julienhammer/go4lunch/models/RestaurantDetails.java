@@ -20,6 +20,7 @@ public class RestaurantDetails implements Parcelable {
     private String addressRes;
     private Photo photoRes;
     private String iconRes;
+    private String openNowRes;
 //    private double latRes;
 //    private double lonRes;
     private String photoRefRes;
@@ -32,6 +33,7 @@ public class RestaurantDetails implements Parcelable {
         addressRes = in.readString();
         photoRes = in.readParcelable(Photo.class.getClassLoader());
         iconRes = in.readString();
+        openNowRes = in.readString();
 
 //        latRes = in.readDouble();
 //        lonRes = in.readDouble();
@@ -53,13 +55,14 @@ public class RestaurantDetails implements Parcelable {
         }
     };
 
-    public RestaurantDetails(String id, String name, String address, Photo photo, String photoRefRes, String iconRes) {
+    public RestaurantDetails(String id, String name, String address, Photo photo, String photoRefRes, String iconRes, String openNow) {
         this.idRes = id;
         this.nameRes = name;
         this.addressRes = address;
         this.photoRes = photo;
         this.photoRefRes = photoRefRes;
         this.iconRes = iconRes;
+        this.openNowRes = openNow;
 //        this.photoMetadataRes = photo;
 
     }
@@ -98,6 +101,10 @@ public class RestaurantDetails implements Parcelable {
 
     public void setIconRes(Photo photoRes) { this.photoRes = photoRes; }
 
+
+    public String getOpenNowRes() { return openNowRes; }
+
+    public void setOpenNowRes(String photoRes) { this.openNowRes = openNowRes; }
 //    public double getLatRes() {
 //        return latRes;
 //    }
@@ -139,6 +146,7 @@ public class RestaurantDetails implements Parcelable {
         dest.writeString(nameRes);
         dest.writeString(addressRes);
         dest.writeParcelable((Parcelable) photoRes, flags);
+        dest.writeString(openNowRes);
 //        dest.writeDouble(latRes);
 //        dest.writeDouble(lonRes);
         dest.writeString(photoRefRes);
