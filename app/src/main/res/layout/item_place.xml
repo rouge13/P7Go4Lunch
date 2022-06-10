@@ -13,7 +13,7 @@
 
         <TextView
             android:id="@+id/text_view_name"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:layout_marginStart="5dp"
@@ -23,7 +23,7 @@
             android:text="@string/restaurant_name"
             android:textSize="14sp"
             android:textStyle="bold"
-            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@+id/image_place_view_photo"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,10 +36,10 @@
             android:maxLines="1"
             android:text="@string/restaurant_address"
             android:textSize="12sp"
-            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@+id/image_place_view_photo"
             app:layout_constraintBottom_toTopOf="@+id/text_view_opening_hours"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_name" />
+            app:layout_constraintTop_toBottomOf="@+id/text_view_name"/>
 
         <TextView
             android:id="@+id/text_view_opening_hours"
@@ -51,10 +51,10 @@
             android:text="@string/restaurant_hours_opening"
             android:textSize="12sp"
             android:textStyle="italic"
-            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@+id/image_place_view_photo"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_view_address" />
+            app:layout_constraintTop_toBottomOf="@+id/text_view_address"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/image_place_view_photo"

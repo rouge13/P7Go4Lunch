@@ -161,6 +161,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
                             // DISPLAY BLUE DOT FOR USER LOCATION
                             mMap.setMyLocationEnabled(true);
+
+                            // ZOOM IN, ANIMATE CAMERA
+                            mMap.animateCamera(CameraUpdateFactory.zoomIn());
                             // TO DO
                             //searchModelsList is the list of all markers
                             Marker[] allMarkers = new Marker[placesSearchResults.length];

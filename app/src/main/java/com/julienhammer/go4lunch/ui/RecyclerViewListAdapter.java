@@ -22,43 +22,42 @@ import com.julienhammer.go4lunch.utils.ConvertToImage;
 import java.net.URL;
 import java.util.ArrayList;
 
+import okhttp3.internal.http2.Http2Connection;
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewViewHolder> {
     ArrayList<RestaurantDetails> restaurantArrayList = new ArrayList<>();
-    ItemPlaceBinding bindingItemPlace;
-
-//    public RecyclerViewListAdapter(RestaurantDetails mRestaurants) {
-//    }
-
 
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerViewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 //        View rootListView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_place,parent,false);
 //        return new RecyclerViewViewHolder(rootListView);
-            bindingItemPlace = ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-            return new RecyclerViewViewHolder(bindingItemPlace);
+        return new RecyclerViewViewHolder(ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+
 
 
 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerViewViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
-        RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
-        bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
-        bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
-        if (restaurantDetails.getphotoRes() != null){
-            ConvertToImage.loadGooglePhoto(context, bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getphotoRes().photoReference);
-        } else {
-            ConvertToImage.loadIcon(context, bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getIconRes());
-        }
-        bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
 
+        RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
+        holder.bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
+        holder.bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
+        if (restaurantDetails.getphotoRes() != null){
+            ConvertToImage.loadGooglePhoto(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getphotoRes().photoReference);
+        } else {
+            ConvertToImage.loadIcon(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getIconRes());
+        }
+        holder.bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
+//        holder.isRecyclable();
+//        notifyItemChanged(position, restaurantArrayList.size());
 //            bindingItemPlace.imagePlaceViewPhoto.setImageBitmap(restaurantDetails.getphotoRes());
 //            System.out.println(position);
 
