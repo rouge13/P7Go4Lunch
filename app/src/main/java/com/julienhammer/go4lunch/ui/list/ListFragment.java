@@ -41,10 +41,7 @@ public class ListFragment extends Fragment {
     private ListViewModel listViewModel;
     FragmentListBinding binding;
     ExecutorService executor = Executors.newSingleThreadExecutor();
-    RecyclerView mRecyclerView;
-//    RestaurantDetails mRestaurants = null;
     RecyclerViewListAdapter adapter;
-//    RecyclerView.LayoutManager layoutManager;
     private PlacesSearchResult placesSearchResult;
 //    ImageView imageView;
 //    GoogleApiClient mGoogleApiClient;

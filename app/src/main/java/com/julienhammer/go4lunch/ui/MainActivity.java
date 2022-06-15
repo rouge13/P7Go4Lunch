@@ -17,6 +17,7 @@ import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int RC_SIGN_IN = 123;
     private BottomNavigationView mBottomNavigation;
     private ViewPager viewPager;
     private ViewPagerAdapter mViewPagerAdapter;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         MapsInstanceConfigure();
 //        ListInstanceConfigure();
         setContentView(R.layout.activity_main);
@@ -60,12 +62,12 @@ public class MainActivity extends AppCompatActivity {
                 new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
         mapsViewModel.refresh();
     }
-    private void ListInstanceConfigure() {
-        ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
-        ListViewModel listViewModel =
-                new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
-        listViewModel.refresh();
-    }
+//    private void ListInstanceConfigure() {
+//        ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
+//        ListViewModel listViewModel =
+//                new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
+//        listViewModel.refresh();
+//    }
 
 
 
