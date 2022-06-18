@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_ramen_dining_24.xml" value="0.2005" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_launcher_lunch_time_2_people_background.xml" value="0.2005" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout-v23/activity_login.xml" value="0.4390625" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1706827309236948" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.3038961038961039" />
@@ -11,6 +14,7 @@
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_workmates.xml" value="0.24094202898550723" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/item_place.xml" value="0.67" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.138" />
       </map>
     </option>
   </component>
