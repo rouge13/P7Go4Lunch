@@ -39,28 +39,27 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
 //        FirebaseAuth.getInstance().getCurrentUser();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            onLoginSuccess();
-        } else {
+//        if (user != null) {
+//            onLoginSuccess();
+//        } else {
             List<AuthUI.IdpConfig> providers = Arrays.asList(
                     new AuthUI.IdpConfig.GoogleBuilder().build(),
                     new AuthUI.IdpConfig.FacebookBuilder().build(),
                     new AuthUI.IdpConfig.TwitterBuilder().build()
             );
-//                new AuthUI.IdpConfig.EmailBuilder().build());
 
             // Launch the activity
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
                             .setTheme(R.style.LoginTheme)
-                            .setLogo(R.drawable.ic_baseline_ramen_dining_24)
+                            .setLogo(R.drawable.logo9)
 
                             .setAvailableProviders(providers)
                             .setIsSmartLockEnabled(false, true)
                             .build(),
                     RC_SIGN_IN);
-        }
+//        }
     }
 
 

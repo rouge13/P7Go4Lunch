@@ -33,5 +33,6 @@
     <string name="error_no_internet">Network unavailable</string>
     <string name="error_unknown_error">An unknown error occurred</string>
     <string name="connection_succeed">Login successful!</string>
+    <string name="test">TEST</string>
 
 </resources>
