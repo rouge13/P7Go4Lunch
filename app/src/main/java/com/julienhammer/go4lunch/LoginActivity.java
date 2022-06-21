@@ -37,18 +37,17 @@ public class LoginActivity extends Activity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        FirebaseAuth.getInstance().getCurrentUser();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-//        if (user != null) {
-//            onLoginSuccess();
-//        } else {
+        if (user != null) {
+            onLoginSuccess();
+        } else {
             List<AuthUI.IdpConfig> providers = Arrays.asList(
                     new AuthUI.IdpConfig.GoogleBuilder().build(),
                     new AuthUI.IdpConfig.FacebookBuilder().build(),
                     new AuthUI.IdpConfig.TwitterBuilder().build()
             );
 
-            // Launch the activity
+            // Launch the activity with theme and logo and the providers
             startActivityForResult(
                     AuthUI.getInstance()
                             .createSignInIntentBuilder()
@@ -59,7 +58,7 @@ public class LoginActivity extends Activity {
                             .setIsSmartLockEnabled(false, true)
                             .build(),
                     RC_SIGN_IN);
-//        }
+        }
     }
 
 
