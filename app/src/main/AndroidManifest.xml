@@ -26,23 +26,9 @@
         android:theme="@style/Theme.Go4Lunch">
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_application_id"/>
     <meta-data android:name="com.facebook.sdk.ClientToken" android:value="${FACEBOOK_CLIENT_TOKEN}"/>
+    <meta-data android:name="com.google.android.geo.API_KEY" android:value="${MAPS_API_KEY}"/>
 
-
-        <!--
-             TODO: Before you run your application, you need a Google Maps API key.
-
-             To get one, follow the directions here:
-
-                https://developers.google.com/maps/documentation/android-sdk/get-api-key
-
-             Once you have your API key (it starts with "AIza"), define a new property in your
-             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
-             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
-        -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_API_KEY}"/>
-
+    <!--        FACEBOOK ACTIVITY PAGE USED BY FACEBOOK -->
     <activity android:name="com.facebook.FacebookActivity"
         android:configChanges=
             "keyboard|keyboardHidden|screenLayout|screenSize|orientation" />
@@ -53,23 +39,22 @@
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="@string/facebook_login_protocol_scheme"
-                tools:ignore="ManifestResource" />
+            <data android:scheme="@string/facebook_login_protocol_scheme" tools:ignore="ManifestResource" />
         </intent-filter>
     </activity>
-
-        <activity android:name=".LoginActivity" android:label="@string/title_activity_login"
-            android:exported="true">
-<!--            android:name=".ui.MainActivity"-->
-<!--            android:exported="true">-->
+<!--        LOGIN PAGE IF ACCOUNT IS MISSING -->
+        <activity android:name=".LoginActivity" android:label="@string/title_activity_login" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+    <!--        MAIN ACTIVITY PAGE -->
     <activity android:name=".ui.MainActivity" />
+    <!-- USER ACTIVITY -->
+    <activity android:name=".ui.ProfileActivity"
+        android:label="@string/toolbar_title_login_activity"
+        android:parentActivityName=".ui.MainActivity"/>
     </application>
 
 </manifest>

@@ -34,5 +34,7 @@
     <string name="error_unknown_error">An unknown error occurred</string>
     <string name="connection_succeed">Login successful!</string>
     <string name="test">TEST</string>
+    <string name="text_view_user_name">John SMITH</string>
+    <string name="text_view_user_email">jsmith.1337@gmail.com</string>
 
 </resources>
