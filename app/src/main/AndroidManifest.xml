@@ -52,8 +52,8 @@
     <!--        MAIN ACTIVITY PAGE -->
     <activity android:name=".ui.MainActivity" />
     <!-- USER ACTIVITY -->
-    <activity android:name=".ui.ProfileActivity"
-        android:label="@string/toolbar_title_login_activity"
+    <activity android:name=".ui.UserActivity"
+        android:label="@string/user_profile_activity"
         android:parentActivityName=".ui.MainActivity"/>
     </application>
 

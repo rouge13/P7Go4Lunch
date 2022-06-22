@@ -36,5 +36,6 @@
     <string name="test">TEST</string>
     <string name="text_view_user_name">John SMITH</string>
     <string name="text_view_user_email">jsmith.1337@gmail.com</string>
+    <string name="user_profile_activity">User profile</string>
 
 </resources>
