@@ -3,12 +3,16 @@ package com.julienhammer.go4lunch.ui.workmates;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.databinding.FragmentWorkmatesBinding;
+import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,6 +20,21 @@ import com.julienhammer.go4lunch.R;
  * create an instance of this fragment.
  */
 public class WorkmatesFragment extends Fragment {
+    FragmentWorkmatesBinding binding;
+
+
+    private void configureListViewModel() {
+        ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
+        ListViewModel listViewModel =
+                new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
+
+        this.listViewModel = new ViewModelProvider(
+                this,
+                ViewModelFactory.getInstance()
+        ).get(ListViewModel.class);
+//        listViewModel.refresh();
+    }
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,7 +79,6 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_workmates, container, false);
+
     }
 }

@@ -21,10 +21,10 @@
         />
 
     <!-- FIREBASE IMAGE -->
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/photo_profile_image_view"
-        android:layout_width="55dp"
-        android:layout_height="55dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:background="@drawable/ic_hjicon"
 
         android:contentDescription="@string/photo_profile"

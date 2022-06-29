@@ -1,43 +1,34 @@
-package com.julienhammer.go4lunch.ui;
+package com.julienhammer.go4lunch.ui.list;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.places.PlacePhotoResponse;
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.maps.internal.StringJoin;
 import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
-import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
 
-import java.net.URL;
 import java.util.ArrayList;
-
-import okhttp3.internal.http2.Http2Connection;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewViewHolder> {
+public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListViewHolder> {
     ArrayList<RestaurantDetails> restaurantArrayList = new ArrayList<>();
 
     @NonNull
     @Override
-    public RecyclerViewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new RecyclerViewViewHolder(ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    public RecyclerViewListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new RecyclerViewListViewHolder(ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerViewListViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
 
         RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
