@@ -33,6 +33,9 @@ android {
     def fbLoginProtocolScheme = properties.getProperty("FACEBOOK_LOGIN_PROTOCOL_SCHEME")
     def facebookClientToken = properties.getProperty("FACEBOOK_CLIENT_TOKEN")
 
+    def twitterApiKey = properties.getProperty('TWITTER_APPLICATION_KEY')
+    def twitterApiSecretKey = properties.getProperty('TWITTER_APPLICATION_SECRET_KEY')
+
     buildTypes {
         release {
             minifyEnabled false
@@ -44,6 +47,8 @@ android {
             resValue "string", "facebook_application_id", facebookApplicationID
             resValue "string", "facebook_login_protocol_scheme", fbLoginProtocolScheme
             resValue "string", "facebook_client_token", facebookClientToken
+            resValue "string", "twitter_api_key", twitterApiKey
+            resValue "string", "twitter_api_secret_key", twitterApiSecretKey
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -74,16 +79,16 @@ dependencies {
 
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
     implementation 'androidx.navigation:navigation-fragment:2.4.2'
     implementation 'androidx.navigation:navigation-ui:2.4.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.databinding:databinding-common:7.2.0'
+    implementation 'androidx.databinding:databinding-common:7.2.1'
 
 //    implementation 'androidx.databinding:baseLibrary:3.2.0-alpha11'
     testImplementation 'junit:junit:4.13.2'
@@ -118,6 +123,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     // FIREBASE UI
     implementation 'com.firebaseui:firebase-ui-auth:8.0.1'
+
+    //FIRESTORE
+    implementation 'com.google.firebase:firebase-firestore:24.1.2'
 
     // FACEBOOK
 //    implementation 'com.facebook.android:facebook-login:latest.release'

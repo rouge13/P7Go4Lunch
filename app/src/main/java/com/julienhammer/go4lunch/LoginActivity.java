@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.databinding.ActivityLoginBinding;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.ui.MainActivity;
+import com.julienhammer.go4lunch.ui.workmates.WorkmatesFragment;
+import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,13 +34,16 @@ import java.util.Objects;
  */
 public class LoginActivity extends Activity {
     private static final int RC_SIGN_IN = 123;
-
+    UserViewModel userViewModel = UserViewModel.getInstance();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
+//        user.getIdToken(true).isSuccessful();
+
+        // Si erreur de Firebase concernant le token et l'identification redemander de se connecter.
+        if (user != null && user.getIdToken(true).isSuccessful()) {
             onLoginSuccess();
         } else {
             List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -83,6 +88,7 @@ public class LoginActivity extends Activity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(),getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
+                userViewModel.createUser();
                 onLoginSuccess();
 
             } else {
@@ -103,6 +109,8 @@ public class LoginActivity extends Activity {
     public void onLoginSuccess(){
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
+
+
     }
 
 }

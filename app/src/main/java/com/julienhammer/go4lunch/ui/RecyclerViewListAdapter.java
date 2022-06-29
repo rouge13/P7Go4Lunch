@@ -30,17 +30,10 @@ import okhttp3.internal.http2.Http2Connection;
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewViewHolder> {
     ArrayList<RestaurantDetails> restaurantArrayList = new ArrayList<>();
 
-
     @NonNull
     @Override
     public RecyclerViewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        View rootListView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_place,parent,false);
-//        return new RecyclerViewViewHolder(rootListView);
         return new RecyclerViewViewHolder(ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
-
-
-
     }
 
     @Override
@@ -56,20 +49,6 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewVi
             ConvertToImage.loadIcon(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getIconRes());
         }
         holder.bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
-//        holder.isRecyclable();
-//        notifyItemChanged(position, restaurantArrayList.size());
-//            bindingItemPlace.imagePlaceViewPhoto.setImageBitmap(restaurantDetails.getphotoRes());
-//            System.out.println(position);
-
-//        PhotoMetadata photo = restaurantDetails.getPhotoMetadataRes();
-
-//        bindingItemPlace.imagePlaceViewPhoto.;
-        //        mAddressViewRes = bindingItemPlace.textViewAddress;
-//        mImageViewRes = bindingItemPlace.imagePlaceViewPhoto;
-//
-//        viewHolder.text_view_name.setText(user.getTitle());
-//        viewHolder.txtView_description.setText(user.getDescription());
-
     }
 
     @Override
@@ -82,45 +61,4 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewVi
         this.restaurantArrayList = restaurantArrayList;
         notifyDataSetChanged();
     }
-
-//    public ArrayList<RestaurantDetails> getDataList() {
-//        if (restaurantArrayList == null)
-//            restaurantArrayList = new ArrayList<>();
-//        return restaurantArrayList;
-//    }
-//
-//
-//    public void remove(int position) {
-//        if (position > 0 && position < getDataList().size()) {
-//            getDataList().remove(position);
-//            notifyItemRemoved(position);
-//        }
-//    }
-//
-//    public void removeAll() {
-//        int oldSize = restaurantArrayList.size();
-//        restaurantArrayList.clear();
-//        notifyItemRangeRemoved(0, oldSize);
-//    }
-//
-//    public void add(ArrayList<RestaurantDetails> newList) {
-//        if (newList != null && !newList.isEmpty()) {
-//            int oldSize = restaurantArrayList.size();
-//            restaurantArrayList.addAll(newList);
-//            notifyItemRangeChanged(oldSize - 1, newList.size());
-//        }
-//    }
-//
-//    public void add(RestaurantDetails restaurantDetails, int position) {
-//        if (position > 0 && position <= restaurantArrayList.size()) {
-//            restaurantArrayList.add(restaurantDetails);
-//            notifyItemInserted(position);
-//        }
-//    }
-//
-//    public void notifyItemRangeChanged() {
-//        notifyItemRangeChanged(0, restaurantArrayList.size());
-//    }
-
-
 }

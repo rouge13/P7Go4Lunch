@@ -140,7 +140,7 @@ public class ListFragment extends Fragment {
 
                         }
 
-                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity, placesSearchResults[i].photos[0], placesSearchResults[i].photos[0].photoReference, placesSearchResults[i].icon.toString(), openNowCase);
+                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity, placesSearchResults[i].photos[0].photoReference, placesSearchResults[i].icon.toString(), openNowCase, placesSearchResults[i].photos[0]);
                         allRestaurants.add(restaurantDetails);
 
                     }

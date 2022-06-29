@@ -37,5 +37,13 @@
     <string name="text_view_user_name">John SMITH</string>
     <string name="text_view_user_email">jsmith.1337@gmail.com</string>
     <string name="user_profile_activity">User profile</string>
+    <string name="your_lunch">YOUR LUNCH</string>
+    <string name="settings">SETTINGS</string>
+    <string name="logout">LOGOUT</string>
+    <string name="info_no_username_found">No username found</string>
+    <string name="photo_profile">Photo du profile</string>
+    <string name="drawer_open">Open the navigation drawer</string>
+    <string name="drawer_close">Close the navigation drawer</string>
+    <string name="hungry">I\'m hungry!</string>
 
 </resources>

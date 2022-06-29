@@ -27,7 +27,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.model.Photo;
 import com.google.maps.model.PlacesSearchResult;
 
-import java.util.Arrays;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,29 +53,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // -------------------
 
     // 2 - Configuring ViewModel
-
-//    private void configureViewModel() {
-//        this.mapsViewModel = new ViewModelProvider(
-//                this,
-//                ViewModelFactory.getInstance(
-//                        new PermissionCheck(getActivity().getContext()),
-//                        new LocationRepository(
-//                                LocationServices.getFusedLocationProviderClient(getActivity())
-//                        )
-//                )
-//        ).get(MapsViewModel.class);
-//        //this.mapsViewModel.init();
-//    }
-
-
-//    @Override
-//    public void onCreate(@Nullable Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-//        MapsViewModel mapsViewModel =
-//                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
-//        mapsViewModel.refresh();
-//    }
 
     private void configureViewModel() {
         ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
@@ -130,7 +106,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     @SuppressLint("MissingPermission")
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 //        MapsViewModel mapsViewModel =
 //                new ViewModelProvider(this, MapsViewModelFactory).get(MapsViewModel.class);
@@ -233,85 +209,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        super.onCreate(savedInstanceState);
-//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-//        MapsViewModel mapsViewModel =
-//                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
-//        mapsViewModel.refresh();
-//        configureViewModel();
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 0
         );
 
         SupportMapFragment mapFragment =
                     (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-//        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-//                .findFragmentById(R.id.map);
             assert mapFragment != null;
             mapFragment.getMapAsync(this);
-
-
-//        ActivityCompat.requestPermissions(
-//                requireActivity(),
-//                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-//                0
-//        );
-
-//        if (mapsViewModel == null) {
-//            initMap();
-//        }
-//        getMapAsync(callback);
-//         getMapAsync(this);
-
-//        clientLocation = LocationServices.getFusedLocationProviderClient(getActivity());
-//        clientLocation.getLastLocation()
-//                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                        // Got last known location. In some rare situations this can be null.
-//                        if (location != null) {
-//                            // Logic to handle location object
-//                        }
-//                    }
-//                });
-
-//        SupportMapFragment mapFragment =
-//                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-//        if (mapFragment != null) {
-//            mapFragment.getMapAsync(callback);
-//        }
     }
-//
-//    private void initMap() {
-//        //Init map
-//        SupportMapFragment mapFragment =
-//                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-//        if (mapFragment != null) {
-//            getMapAsync(callback);
-//        }
-//    }
 
-//    @BindingAdapter("initMap")
-//    public static void initMap(final MapView mapView, final LatLng latLng) {
-//
-//        if (mapView != null) {
-//            mapView.onCreate(new Bundle());
-//            mapView.getMapAsync(new OnMapReadyCallback() {
-//                @Override
-//                public void onMapReady(GoogleMap googleMap) {
-//                    // Add a marker
-//                    googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker in India"));
-//                }
-//            });
-//        }
-//    }
-////
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//
-//        mapsViewModel.refresh();
-//    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

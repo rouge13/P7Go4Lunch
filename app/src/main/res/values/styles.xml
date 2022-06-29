@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- STYLE SIGN-IN ACTIVITY -->
-    <style name="LoginTheme" parent="Theme.Go4Lunch">
+    <style name="LoginTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/ic_launcher_lunch_time_2_people_playstore_shadow</item>
 <!--        <item name="android:alpha">0.8</item>-->
         <item name="colorPrimary">@color/colorPrimary</item>

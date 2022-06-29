@@ -23,7 +23,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Go4Lunch">
+        android:theme="@style/AppTheme"
+
+    >
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_application_id"/>
     <meta-data android:name="com.facebook.sdk.ClientToken" android:value="${FACEBOOK_CLIENT_TOKEN}"/>
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="${MAPS_API_KEY}"/>
@@ -51,10 +53,10 @@
         </activity>
     <!--        MAIN ACTIVITY PAGE -->
     <activity android:name=".ui.MainActivity" />
-    <!-- USER ACTIVITY -->
-    <activity android:name=".ui.UserActivity"
-        android:label="@string/user_profile_activity"
-        android:parentActivityName=".ui.MainActivity"/>
+<!--    &lt;!&ndash; USER ACTIVITY &ndash;&gt;-->
+<!--    <activity android:name=".ui.UserActivity"-->
+<!--        android:label="@string/user_profile_activity"-->
+<!--        android:parentActivityName=".ui.MainActivity"/>-->
     </application>
 
 </manifest>
