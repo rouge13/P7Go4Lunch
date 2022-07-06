@@ -12,7 +12,9 @@ import com.julienhammer.go4lunch.ui.MainApplication;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
+import com.julienhammer.go4lunch.viewmodel.MainViewModel;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -66,6 +68,10 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                     permissionCheck,
                     locationDataSource
             );
+        } else if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
+            return (T) new WorkmateViewModel();
+        } else if (modelClass.isAssignableFrom(MainViewModel.class)) {
+            return (T) new MainViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

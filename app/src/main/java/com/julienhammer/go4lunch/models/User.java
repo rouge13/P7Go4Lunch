@@ -3,6 +3,12 @@ package com.julienhammer.go4lunch.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.SuccessContinuation;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
@@ -61,6 +67,10 @@ public class User implements Parcelable {
         this.userPhotoUrl = userPhotoUrl;
     }
 
+    public User(){
+
+    }
+
     protected User(Parcel in) {
         userId = in.readString();
         userName = in.readString();
@@ -95,4 +105,6 @@ public class User implements Parcelable {
         dest.writeString(userPhotoUrl);
 
     }
+
+
 }

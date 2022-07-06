@@ -6,9 +6,8 @@
             android:id="@+id/meeting_filter"
             app:showAsAction="ifRoom"
             tools:ignore="MenuTitle"
-            android:background="#F16316"
+            android:background="@color/white"
             >
-
                 <menu>
                         <item
                             android:id="@+id/nav_your_lunch"

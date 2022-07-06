@@ -7,14 +7,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.julienhammer.go4lunch.models.User;
 
-import java.util.Objects;
-
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class UserRepository {
+public class MainRepository {
 
-    private static volatile UserRepository instance;
+    private static volatile MainRepository instance;
     private static final String COLLECTION_NAME = "users";
     private static final String USER_ID_FIELD = "userID";
     private static final String USER_NAME_FIELD = "userName";
@@ -24,7 +22,7 @@ public class UserRepository {
     private String uid;
 
     // Get the Collection Reference
-    private CollectionReference getUsersCollection(){
+    private CollectionReference getUsersCollection(String collectionName){
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
@@ -36,19 +34,21 @@ public class UserRepository {
             String userName = user.getDisplayName();
             String userEmail = user.getEmail();
             String userPlaceId = "Not set";
-            String userPhotoUrl = Objects.requireNonNull(user.getPhotoUrl()).toString();
-
-
-
+            String userPhotoUrl;
+            if (user.getPhotoUrl() != null){
+                userPhotoUrl = user.getPhotoUrl().toString();
+            } else {
+                userPhotoUrl = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
+            }
             User userToCreate = new User(uid, userName, userEmail, userPlaceId, userPhotoUrl);
 
             Task<DocumentSnapshot> userData = getUserData();
-            // If the user already exist in Firestore, we get his data (isMentor)
+            // If the user already exist in Firestore, we get his data (USER_PLACE_ID)
             userData.addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.contains(USER_PLACE_ID)){
                     userToCreate.setUserPlaceId((String) documentSnapshot.get(USER_PLACE_ID));
                 }
-                this.getUsersCollection().document(uid).set(userToCreate);
+                this.getUsersCollection(COLLECTION_NAME).document(uid).set(userToCreate);
             });
         }
     }
@@ -57,50 +57,50 @@ public class UserRepository {
     public Task<DocumentSnapshot> getUserData(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
-            return this.getUsersCollection().document(user.getUid()).get();
+            return this.getUsersCollection(COLLECTION_NAME).document(user.getUid()).get();
         }else{
             return null;
         }
     }
 
-    // Update User Username
-    public Task<Void> updateUserName(String wkmName) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            return this.getUsersCollection().document(user.getUid()).update(USER_NAME_FIELD, wkmName);
-        }else{
-            return null;
-        }
-    }
+//    // Update User Username
+//    public Task<Void> updateUserName(String wkmName) {
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if(user != null){
+//            return this.getUsersCollection().document(user.getUid()).update(USER_NAME_FIELD, wkmName);
+//        }else{
+//            return null;
+//        }
+//    }
 
-    // Update User isMentor
+    // Update User place id
     public void updatePlaceId(String wkmPlaceId) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user != null){
-            this.getUsersCollection().document(user.getUid()).update(USER_PLACE_ID, wkmPlaceId);
+            this.getUsersCollection(COLLECTION_NAME).document(user.getUid()).update(USER_PLACE_ID, wkmPlaceId);
         }
     }
 
-    // Delete the User from Firestore
-    public void deleteWorkmateFromFirestore() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            this.getUsersCollection().document(user.getUid()).delete();
-        }
-    }
+//    // Delete the User from Firestore
+//    public void deleteWorkmateFromFirestore() {
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if(user != null){
+//            this.getUsersCollection().document(user.getUid()).delete();
+//        }
+//    }
 
 
 
-    private UserRepository(){}
+    private MainRepository(){}
 
-    public static UserRepository getInstance() {
-        UserRepository result = instance;
+    public static MainRepository getInstance() {
+        MainRepository result = instance;
         if (result != null){
             return result;
         }
-        synchronized (UserRepository.class){
+        synchronized (MainRepository.class){
             if (instance == null){
-                instance = new UserRepository();
+                instance = new MainRepository();
             }
             return instance;
         }

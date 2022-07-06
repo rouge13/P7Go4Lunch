@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,17 +33,23 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.julienhammer.go4lunch.LoginActivity;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
+import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
+import com.julienhammer.go4lunch.databinding.ActivityUserBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.models.User;
+import com.julienhammer.go4lunch.viewmodel.MainViewModel;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private MainViewModel mainviewModel = MainViewModel.getInstance();
 
     private FirebaseAuth firebaseAuth;
     private Toolbar toolbar;
     private DrawerLayout drawerLayout;
     ActivityMainBinding binding;
+    ActivityMainNavHeaderBinding navBinding;
     private static final int RC_SIGN_IN = 123;
     private BottomNavigationView mBottomNavigation;
     private ViewPager viewPager;
@@ -63,11 +70,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, binding.activityMainDrawerLayout, binding.activityMainToolbar, R.string.drawer_open, R.string.drawer_close);
         binding.activityMainDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.activityMainDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
 
 //        ListInstanceConfigure();
 //        setContentView(R.layout.activity_main);
 
-
+        getUserData();
         setContentView(view);
 //        MapsInstanceConfigure();
 //        binding.buttomNavigationView.setOnItemSelectedListener(item -> {
@@ -100,6 +113,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main_info_menu, menu);
         return true;
+    }
+
+
+
+    ActivityMainBinding getViewBinding(){
+        return ActivityMainBinding.inflate(getLayoutInflater());
+    }
+
+    private void getUserData(){
+//        mainviewModel.getUserData().addOnSuccessListener(user -> {
+            // Set the data with the user information
+//            String username = TextUtils.isEmpty(user.getUserName()) ? getString(R.string.info_no_username_found) : user.getUserName();
+        User userInfo = mainviewModel.getUserData().getResult();
+        navBinding.username.setText(userInfo.getUserName());
+        navBinding.userEmail.setText(userInfo.getUserEmail());
+//            getViewBinding().activityMainNavView. username.setText(username);
+//            getViewBinding().userEmail.setText(user.getUserEmail());
+
+//        });
     }
 
 //    @SuppressLint("NonConstantResourceId")
@@ -160,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 

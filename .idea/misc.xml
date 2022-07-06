@@ -18,7 +18,7 @@
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1706827309236948" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.3038961038961039" />
-        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main_nav_header.xml" value="0.19979508196721313" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main_nav_header.xml" value="0.33" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_user.xml" value="0.25" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_list.xml" value="0.33" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_maps.xml" value="0.17831813576494426" />
@@ -34,7 +34,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_16" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

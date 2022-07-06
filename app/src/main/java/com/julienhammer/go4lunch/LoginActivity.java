@@ -3,39 +3,29 @@ package com.julienhammer.go4lunch;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.julienhammer.go4lunch.databinding.ActivityLoginBinding;
-import com.julienhammer.go4lunch.databinding.FragmentListBinding;
+import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.MainActivity;
-import com.julienhammer.go4lunch.ui.workmates.WorkmatesFragment;
-import com.julienhammer.go4lunch.viewmodel.UserViewModel;
+import com.julienhammer.go4lunch.viewmodel.MainViewModel;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class LoginActivity extends Activity {
     private static final int RC_SIGN_IN = 123;
-    UserViewModel userViewModel = UserViewModel.getInstance();
-
+    MainViewModel mainViewModel = MainViewModel.getInstance();
+    FirebaseUser user;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +33,7 @@ public class LoginActivity extends Activity {
 //        user.getIdToken(true).isSuccessful();
 
         // Si erreur de Firebase concernant le token et l'identification redemander de se connecter.
-        if (user != null && user.getIdToken(true).isSuccessful()) {
+        if (user != null) {
             onLoginSuccess();
         } else {
             List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -59,7 +49,6 @@ public class LoginActivity extends Activity {
                             .createSignInIntentBuilder()
                             .setTheme(R.style.LoginTheme)
                             .setLogo(R.drawable.logo9)
-
                             .setAvailableProviders(providers)
                             .setIsSmartLockEnabled(false, true)
                             .build(),
@@ -88,7 +77,7 @@ public class LoginActivity extends Activity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(),getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
-                userViewModel.createUser();
+                mainViewModel.createUser();
                 onLoginSuccess();
 
             } else {
@@ -107,8 +96,10 @@ public class LoginActivity extends Activity {
     }
 
     public void onLoginSuccess(){
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+//        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//        startActivity(intent);
 
 
     }
