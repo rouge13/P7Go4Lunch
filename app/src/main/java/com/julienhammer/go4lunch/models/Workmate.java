@@ -84,6 +84,9 @@ public class Workmate implements Parcelable {
         this.wkmPlaceId = wkmPlaceId;
         this.wkmPhotoUrl = wkmPhotoUrl;
     }
+    public Workmate(){
+
+    }
 
     @Override
     public int describeContents() {

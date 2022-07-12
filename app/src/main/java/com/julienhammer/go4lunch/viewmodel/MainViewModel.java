@@ -1,15 +1,18 @@
 package com.julienhammer.go4lunch.viewmodel;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.julienhammer.go4lunch.data.user.MainRepository;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.julienhammer.go4lunch.data.main.MainRepository;
 import com.julienhammer.go4lunch.models.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
@@ -19,9 +22,17 @@ import java.util.concurrent.Executors;
 public class MainViewModel extends ViewModel {
     private static volatile MainViewModel instance;
     private static MainRepository mainRepository;
+    MutableLiveData<User> mMutableLiveData;
+    FirebaseFirestore mFirestore;
 
-    public MainViewModel(){
+    public MutableLiveData<User> getmMutableLiveData() {
+        return mMutableLiveData;
+    }
+
+    public MainViewModel() {
         mainRepository = MainRepository.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
+        mMutableLiveData = mainRepository.getUserMutableLiveData();
     }
 
     public static MainViewModel getInstance(){
@@ -43,22 +54,37 @@ public class MainViewModel extends ViewModel {
 
     public Task<User> getUserData(){
 
-        // Get the user from Firestore and cast it to a User model Object
-
-        return mainRepository.getUserData().continueWithTask(Executors.newSingleThreadExecutor(), task -> {
+//         Get the user from Firestore and cast it to a User model Object
+        //                mMutableLiveData.setValue(user);
+        return mainRepository.getUserData().continueWithTask(task -> {
+//        return mainRepository.getUserData().continueWithTask(task -> {
 //                return task.getResult().toObject(User.class);
-                    synchronized (this) {
-                        if (task.isSuccessful()) {
-                            return Tasks.forResult(task.getResult().toObject(User.class));
-                        } else {
-                            return Tasks.forException(Objects.requireNonNull(task.getException()));
-                        }
-                    }
+            synchronized (this) {
+                if (!task.isSuccessful()) {
+                    return Tasks.forException(Objects.requireNonNull(task.getException()));
+                } else if (task.isComplete()) {
+                    return Tasks.forResult(task.getResult().toObject(User.class));
+                }
+
+            }
+//        }).addOnCompleteListener(Task::getResult);
+
+            return null;
         });
-
-
+//                .addOnCompleteListener(new OnCompleteListener<User>() {
+//            @Override
+//            public void onComplete(@NonNull Task<User> task) {
+//                if (task.isSuccessful()){
+//                    User user = task.getResult();
+//                    mMutableLiveData.setValue(user);
+//                }
+//            }
+//        });
 
     }
+
+
+
 
 //
 //    public void updatePlaceId(String wkmPlaceId){

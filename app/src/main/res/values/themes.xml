@@ -50,7 +50,8 @@
     <style name="ToolBarStyle" parent="AppTheme">
 <!--        <item name="android:foreground">@drawable/ic_baseline_menu_24</item>-->
 <!--        <item name="android:icon">@drawable/ic_baseline_menu_24</item>-->
-        <item name="android:text">@string/hungry</item>
+<!--        <item name="android:text">@string/hungry</item>-->
+
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="backgroundColor">@color/orange_red</item>
     </style>

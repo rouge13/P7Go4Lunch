@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -14,9 +15,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.models.Workmate;
 import com.julienhammer.go4lunch.ui.MainApplication;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,10 +38,19 @@ public class WorkmateRepository {
     private static final String WKM_PLACE_ID = "wkmPlaceId";
     private static final String WKM_PHOTO_URL = "wkmPhotoUrl";
     private String uid;
+    FirebaseFirestore mFirestore;
+    MutableLiveData<List<Workmate>> mMutableLiveData;
 
     // Get the Collection Reference
     private CollectionReference getWkmCollection(){
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    }
+
+    public WorkmateRepository() {
+        // Define Workmates
+        mMutableLiveData = new MutableLiveData<>();
+        // Define firestore
+        mFirestore = FirebaseFirestore.getInstance();
     }
 
     // Create Workmate in Firestore
@@ -79,31 +92,44 @@ public class WorkmateRepository {
         }
     }
 
-    public Task<QuerySnapshot> getAllWorkmates(String workmate){
-        return this.getWkmCollection()
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//    public Task<QuerySnapshot> getAllWorkmates(String workmate){
+//        return this.getWkmCollection()
+//                .get()
+//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+//
+//                    @Override
+//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+//                        if (task.isSuccessful()){
+//                            for (QueryDocumentSnapshot document : task.getResult()) {
+//                                if (task.getResult() != null){
+//                                    Workmate workmate = document.toObject(Workmate.class);
+//                                }
+//
+//                            }
+//                        } else {
+//                            Toast.makeText(context, "Error getting documents: "+ task.getException(),Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                    }
+//                });
+//
+//    }
 
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()){
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                if (task.getResult() != null){
-                                    Workmate workmate = document.toObject(Workmate.class);
-                                }
-
-                            }
-                        } else {
-                            Toast.makeText(context, "Error getting documents: "+ task.getException(),Toast.LENGTH_SHORT).show();
+        public MutableLiveData<List<Workmate>> getWorkmateMutableLiveData() {
+        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
+            List<Workmate> workmates = new ArrayList<>();
+            if (value != null){
+                for (QueryDocumentSnapshot doc : value){
+                    if (doc != null){
+                        workmates.add(doc.toObject(Workmate.class));
                         }
-
                     }
-                });
+                }
+                mMutableLiveData.postValue(workmates);
+            });
+            return mMutableLiveData;
 
-    }
-
-
-    private WorkmateRepository(){}
+        }
 
     public static WorkmateRepository getInstance() {
         WorkmateRepository result = instance;

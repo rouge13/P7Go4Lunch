@@ -9,12 +9,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -43,64 +45,95 @@ import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private MainViewModel mainviewModel = MainViewModel.getInstance();
-
+    private MainViewModel mainviewModel;
     private FirebaseAuth firebaseAuth;
-    private Toolbar toolbar;
-    private DrawerLayout drawerLayout;
     ActivityMainBinding binding;
     ActivityMainNavHeaderBinding navBinding;
     private static final int RC_SIGN_IN = 123;
     private BottomNavigationView mBottomNavigation;
-    private ViewPager viewPager;
-    private ViewPagerAdapter mViewPagerAdapter;
     private final int REQUEST_LOCATION_PERMISSION = 1;
+    public ActionBarDrawerToggle toggle;
+    public DrawerLayout drawer;
+//    ActivityMainNavHeaderBinding navHeaderMainBinding;
+    NavigationView navigationView;
+    Toolbar toolbar;
+    @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        toggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        toggle.onConfigurationChanged(newConfig);
+    }
 
     @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        ActivityMainBinding activityMainBinding = null;
+//        activityMainBinding = activityMainBinding.setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        navBinding = ActivityMainNavHeaderBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        View navView = navBinding.getRoot();
+        setContentView(navView);
+        setContentView(view);
+
+        mainviewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+//        navBinding = ActivityMainNavHeaderBinding.inflate(getLayoutInflater());
+        configureToolBar();
+        configureDrawerLayout();
+        configureNavigationView();
+
+//        Toolbar toolbar = binding.activityMainToolbar;
+//        binding.setHandlers(handlers);
+//        activityMainBinding.setViewmodel(mainViewmodel);
+//        Toolbar toolbar = findViewById(R.id.activity_main_toolbar);
+//        binding.activityMainToolbar.setTitle(R.string.hungry);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        drawer = binding.activityMainDrawerLayout;
+////        navBinding = ActivityMainNavHeaderBinding.inflate(getLayoutInflater());
+//        toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.drawer_open, R.string.drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+//        navigationView = binding.activityMainNavView;
+//        navigationView.setNavigationItemSelectedListener(this);
+
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+
+
+//        User user = mainviewModel.getUserData().getResult();
+//        user = mainviewModel.getmMutableLiveData().getValue();
+//        navHeaderMainBinding.username.setText(Objects.requireNonNull(mainviewModel.getmMutableLiveData().getValue()).getUserName());
+//        navHeaderMainBinding.userEmail.setText(mainviewModel.getmMutableLiveData().getValue().getUserEmail());
+
         // 6 - Configure all views
 //        this.toolbar = ( Toolbar) binding.activityMainToolbar;
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        configureToolBar();
+//        binding = ActivityMainBinding.inflate(getLayoutInflater());
+//        View view = binding.getRoot();
+//        configureToolBar();
 //        configureDrawerLayout();
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, binding.activityMainDrawerLayout, binding.activityMainToolbar, R.string.drawer_open, R.string.drawer_close);
-        binding.activityMainDrawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.activityMainDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, binding.activityMainDrawerLayout, binding.activityMainToolbar, R.string.drawer_open, R.string.drawer_close);
+//        binding.activityMainDrawerLayout.addDrawerListener(toggle);
+//        toggle.syncState();
+//        toggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                binding.activityMainDrawerLayout.openDrawer(GravityCompat.START);
+//            }
+//        });
 
-//        ListInstanceConfigure();
-//        setContentView(R.layout.activity_main);
-
-        getUserData();
-        setContentView(view);
-//        MapsInstanceConfigure();
-//        binding.buttomNavigationView.setOnItemSelectedListener(item -> {
-//                    switch (item.getItemId()) {
-//                        case R.id.mapsFragment:
-//                            viewPager.setCurrentItem(0);
-//                            return true;
-//                        case R.id.listFragment:
-//                            viewPager.setCurrentItem(1);
-//                            return true;
-//                        case R.id.workmatesFragment:
-//                            viewPager.setCurrentItem(2);
-//                            return true;
-//                    }
-//                    return false;
-//                }
-//        );
-
-        viewPager = findViewById(R.id.view_pager);
-        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = binding.viewPager;
+        ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mViewPagerAdapter);
 
 //        if (savedInstanceState == null) {
@@ -109,32 +142,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                    .commitNow();
 //        }
     }
+    // 1 - Configure the toolbar
+    private void configureToolBar() {
+        toolbar = binding.activityMainToolbar;
+        toolbar.setTitle(R.string.hungry);
+        setSupportActionBar(toolbar);
+
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+
+
+    // 2 - Configure the Drawer
+    private void configureDrawerLayout() {
+        drawer = binding.activityMainDrawerLayout;
+        toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.drawer_open, R.string.drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+    // 3 - Configure the navigationView
+    private void configureNavigationView() {
+        navigationView = binding.activityMainNavView;
+        navigationView.setNavigationItemSelectedListener(this);
+    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main_info_menu, menu);
         return true;
     }
 
+//    private void getUserData(){
+////        mainviewModel.getUserData().addOnSuccessListener(user -> {
+//        // Set the data with the user information
+////            String username = TextUtils.isEmpty(user.getUserName()) ? getString(R.string.info_no_username_found) : user.getUserName();
+//
+//
+//        navBinding.username.setText(mainviewModel.getUserData().getResult().getUserName());
+//        navBinding.userEmail.setText(mainviewModel.getUserData().getResult().getUserEmail());
+////            getViewBinding().activityMainNavView. username.setText(username);
+////            getViewBinding().userEmail.setText(user.getUserEmail());
+//
+////        });
+//    }
 
-
-    ActivityMainBinding getViewBinding(){
-        return ActivityMainBinding.inflate(getLayoutInflater());
-    }
-
-    private void getUserData(){
-//        mainviewModel.getUserData().addOnSuccessListener(user -> {
-            // Set the data with the user information
-//            String username = TextUtils.isEmpty(user.getUserName()) ? getString(R.string.info_no_username_found) : user.getUserName();
-        User userInfo = mainviewModel.getUserData().getResult();
-        navBinding.username.setText(userInfo.getUserName());
-        navBinding.userEmail.setText(userInfo.getUserEmail());
-//            getViewBinding().activityMainNavView. username.setText(username);
-//            getViewBinding().userEmail.setText(user.getUserEmail());
-
-//        });
-    }
-
-//    @SuppressLint("NonConstantResourceId")
+    //    @SuppressLint("NonConstantResourceId")
 //    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
@@ -158,17 +210,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        }
 //        return false;
 //    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onBackPressed() {
         // 5 - Handle back click to close menu
-        if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            this.drawerLayout.closeDrawer(GravityCompat.START);
+        drawer = binding.activityMainDrawerLayout;
+        if (this.drawer.isDrawerOpen(GravityCompat.START)) {
+            this.drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mainviewModel.getmMutableLiveData().observe(this, user -> {
+            if (user.getUserName() != null){
+                navBinding.username.setText(user.getUserName());
+                navBinding.userEmail.setText(user.getUserEmail());
+
+            }
+        });
+    }
 //    private void MapsInstanceConfigure() {
 //        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
 //        MapsViewModel mapsViewModel =
@@ -179,18 +250,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // ---------------------
     // CONFIGURATION
     // ---------------------
-
-    // 1 - Configure Toolbar
-    private void configureToolBar(){
-        setSupportActionBar(binding.activityMainToolbar);
-    }
-
-    // 2 - Configure Drawer Layout
-    private void configureDrawerLayout(){
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, binding.activityMainDrawerLayout, binding.activityMainToolbar, R.string.drawer_open, R.string.drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-    }
 
     @SuppressLint("NonConstantResourceId")
     @Override
@@ -215,9 +274,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return super.onOptionsItemSelected(item);
 
         }
-        this.drawerLayout.closeDrawer(GravityCompat.START);
+        drawer = binding.activityMainDrawerLayout;
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 
 
 //    private void ListInstanceConfigure() {

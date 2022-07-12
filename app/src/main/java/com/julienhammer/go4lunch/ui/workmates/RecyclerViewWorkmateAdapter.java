@@ -32,13 +32,13 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
         return new RecyclerViewWorkmateViewHolder(ItemWorkmatesBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewWorkmateViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
         Workmate workmate = workmatesArrayList.get(position);
-
-        holder.BindingItemWorkmate.imageWorkmateViewPhoto.setImageResource(R.drawable.ic_photo_scarlett);
-        holder.BindingItemWorkmate.textViewInformation.setText(R.string.workmate_detail);
+        ConvertToImage.loadIcon(context, holder.BindingItemWorkmate.imageWorkmateViewPhoto, workmate.getWkmPhotoUrl());
+        holder.BindingItemWorkmate.textViewInformation.setText(workmate.getWkmName() + " is eating something somewhere.");
 
     }
 

@@ -1,10 +1,17 @@
 package com.julienhammer.go4lunch.viewmodel;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
+import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.models.Workmate;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -13,9 +20,17 @@ public class WorkmateViewModel extends ViewModel {
 
     private static volatile WorkmateViewModel instance;
     private static WorkmateRepository workmateRepository;
+    MutableLiveData<List<Workmate>> mMutableLiveData;
+    FirebaseFirestore mFirestore;
+
+    public MutableLiveData<List<Workmate>> getMutableLiveData() {
+        return mMutableLiveData;
+    }
 
     public WorkmateViewModel(){
         workmateRepository = WorkmateRepository.getInstance();
+        mFirestore = FirebaseFirestore.getInstance();
+        mMutableLiveData = workmateRepository.getWorkmateMutableLiveData();
     }
 
     public static WorkmateViewModel getInstance(){
@@ -37,7 +52,18 @@ public class WorkmateViewModel extends ViewModel {
 
     public Task<Workmate> getWorkmateData(){
         // Get the workmate from Firestore and cast it to a Workmate model Object
-        return workmateRepository.getWorkmateData().continueWith(task -> task.getResult().toObject(Workmate.class)) ;
+        return workmateRepository.getWorkmateData().continueWithTask(task -> {
+            synchronized (this) {
+                if (!task.isSuccessful()) {
+                    return Tasks.forException(Objects.requireNonNull(task.getException()));
+                } else if (task.isComplete()) {
+                    return Tasks.forResult(task.getResult().toObject(Workmate.class));
+                }
+
+            }
+            return null;
+        });
+
     }
 
 

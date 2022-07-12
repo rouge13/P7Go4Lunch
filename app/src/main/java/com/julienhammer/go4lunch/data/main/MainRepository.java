@@ -1,11 +1,21 @@
-package com.julienhammer.go4lunch.data.user;
+package com.julienhammer.go4lunch.data.main;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
+
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.julienhammer.go4lunch.models.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -20,6 +30,83 @@ public class MainRepository {
     private static final String USER_PLACE_ID = "userPlaceId";
     private static final String USER_PHOTO_URL = "userPhotoUrl";
     private String uid;
+    MutableLiveData<User> mMutableLiveData;
+    FirebaseFirestore mFirestore;
+
+    public MainRepository() {
+        // Define User
+        mMutableLiveData = new MutableLiveData<>();
+        // Define firestore
+        mFirestore = FirebaseFirestore.getInstance();
+    }
+
+//    public MutableLiveData<List<User>> getUserMutableLiveData() {
+//        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
+//            List<User> users = new ArrayList<>();
+//            if (value != null){
+//                for (QueryDocumentSnapshot doc : value){
+//                    if (doc != null){
+////                    assert currentUser != null;
+////                        if (doc.get(USER_ID_FIELD) == currentUser.getUid()){
+////                            users.add(doc.toObject(User.class));
+////                        }
+//                        if (currentUser.getUid().equals(doc.toObject(User.class).getUserId())){
+//                            users.add(doc.toObject(User.class));
+//                        }
+//                    }
+//                }
+//            }
+//
+//            mMutableLiveData.postValue(users);
+//        });
+//        return mMutableLiveData;
+//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public MutableLiveData<User> getUserMutableLiveData() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
+//            List<User> users = new ArrayList<>();
+            if (value != null){
+                for (QueryDocumentSnapshot doc : value){
+                    if (doc != null){
+//                    assert currentUser != null;
+//                        if (doc.get(USER_ID_FIELD) == currentUser.getUid()){
+//                            users.add(doc.toObject(User.class));
+//                        }
+                        assert currentUser != null;
+                        if (doc.toObject(User.class).getUserEmail().equals(currentUser.getEmail())){
+                            mMutableLiveData.postValue(doc.toObject(User.class));
+                        }
+                    }
+                }
+            }
+
+//            mMutableLiveData.postValue(users);
+        });
+        return mMutableLiveData;
+    }
+
+
+
+
+
+
 
     // Get the Collection Reference
     private CollectionReference getUsersCollection(String collectionName){
@@ -90,8 +177,6 @@ public class MainRepository {
 //    }
 
 
-
-    private MainRepository(){}
 
     public static MainRepository getInstance() {
         MainRepository result = instance;

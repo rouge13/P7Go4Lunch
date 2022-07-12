@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="192dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_header_components"
     android:background="@drawable/ic_launcher_lunch_time_2_people_playstore_shadow"
     android:padding="16dp">
 
