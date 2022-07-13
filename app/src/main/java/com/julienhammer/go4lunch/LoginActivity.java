@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.MainViewModel;
+import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,34 +26,19 @@ import java.util.List;
 public class LoginActivity extends Activity {
     private static final int RC_SIGN_IN = 123;
     MainViewModel mainViewModel = MainViewModel.getInstance();
+    WorkmateViewModel workmateViewModel = WorkmateViewModel.getInstance();
     FirebaseUser user;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 //        user.getIdToken(true).isSuccessful();
 
         // Si erreur de Firebase concernant le token et l'identification redemander de se connecter.
         if (user != null) {
             onLoginSuccess();
         } else {
-            List<AuthUI.IdpConfig> providers = Arrays.asList(
-                    new AuthUI.IdpConfig.EmailBuilder().build(),
-                    new AuthUI.IdpConfig.GoogleBuilder().build(),
-                    new AuthUI.IdpConfig.FacebookBuilder().build(),
-                    new AuthUI.IdpConfig.TwitterBuilder().build()
-            );
-
-            // Launch the activity with theme and logo and the providers
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setTheme(R.style.LoginTheme)
-                            .setLogo(R.drawable.logo9)
-                            .setAvailableProviders(providers)
-                            .setIsSmartLockEnabled(false, true)
-                            .build(),
-                    RC_SIGN_IN);
+            configureLoginActivityInterface();
         }
     }
 
@@ -77,8 +63,13 @@ public class LoginActivity extends Activity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(),getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
-                mainViewModel.createUser();
-                onLoginSuccess();
+                if (user != null) {
+                    mainViewModel.createUser();
+                    workmateViewModel.createWorkmate();
+                    onLoginSuccess();
+                } else {
+                    configureLoginActivityInterface();
+                }
 
             } else {
                 // ERRORS
@@ -96,12 +87,38 @@ public class LoginActivity extends Activity {
     }
 
     public void onLoginSuccess(){
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
+        else {
+            configureLoginActivityInterface();
+        }
+
 //        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 //        startActivity(intent);
 
 
+    }
+
+    private void configureLoginActivityInterface(){
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.FacebookBuilder().build(),
+                new AuthUI.IdpConfig.TwitterBuilder().build()
+        );
+
+        // Launch the activity with theme and logo and the providers
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setTheme(R.style.LoginTheme)
+                        .setLogo(R.drawable.logo9)
+                        .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false, true)
+                        .build(),
+                RC_SIGN_IN);
     }
 
 }

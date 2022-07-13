@@ -3,6 +3,7 @@ package com.julienhammer.go4lunch.ui;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -19,6 +20,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -32,6 +34,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.LoginActivity;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
@@ -48,7 +51,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MainViewModel mainviewModel;
     private FirebaseAuth firebaseAuth;
     ActivityMainBinding binding;
-    ActivityMainNavHeaderBinding navBinding;
+
+    ActivityMainNavHeaderBinding navHeaderBinding;
     private static final int RC_SIGN_IN = 123;
     private BottomNavigationView mBottomNavigation;
     private final int REQUEST_LOCATION_PERMISSION = 1;
@@ -76,18 +80,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 //        ActivityMainBinding activityMainBinding = null;
 //        activityMainBinding = activityMainBinding.setContentView(R.layout.activity_main);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        navBinding = ActivityMainNavHeaderBinding.inflate(getLayoutInflater());
-        View view = binding.getRoot();
-        View navView = navBinding.getRoot();
-        setContentView(navView);
-        setContentView(view);
 
-        mainviewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+            binding = ActivityMainBinding.inflate(getLayoutInflater());
+            View view = binding.getRoot();
+            setContentView(view);
+            navHeaderBinding = ActivityMainNavHeaderBinding.bind(binding.activityMainNavView.getHeaderView(0));
+            mainviewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 //        navBinding = ActivityMainNavHeaderBinding.inflate(getLayoutInflater());
-        configureToolBar();
-        configureDrawerLayout();
-        configureNavigationView();
+            ViewPager viewPager = binding.viewPager;
+            ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(mViewPagerAdapter);
+            configureToolBar();
+            configureDrawerLayout();
+            configureNavigationView();
+
+
 
 //        Toolbar toolbar = binding.activityMainToolbar;
 //        binding.setHandlers(handlers);
@@ -132,9 +139,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            }
 //        });
 
-        ViewPager viewPager = binding.viewPager;
-        ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(mViewPagerAdapter);
+//        ViewPager viewPager = binding.viewPager;
+//        ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+//        viewPager.setAdapter(mViewPagerAdapter);
 
 //        if (savedInstanceState == null) {
 //            getSupportFragmentManager().beginTransaction()
@@ -145,9 +152,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // 1 - Configure the toolbar
     private void configureToolBar() {
         toolbar = binding.activityMainToolbar;
+//        toolbar = findViewById(R.id.activity_main_toolbar);
         toolbar.setTitle(R.string.hungry);
         setSupportActionBar(toolbar);
-
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                drawer.openDrawer(GravityCompat.START);
+//            }
+//        });
+        // Display icon in the toolbar
+//        getSupportActionBar().setLogo(R.drawable.ic_baseline_menu_24);
+//        getSupportActionBar().setDisplayUseLogoEnabled(true);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -158,6 +178,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer = binding.activityMainDrawerLayout;
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.drawer_open, R.string.drawer_close);
+//        {
+//            public void onDrawerClosed(View view) {
+//                super.onDrawerClosed(view);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+//            }
+//        };
+
         drawer.addDrawerListener(toggle);
         toggle.syncState();
     }
@@ -165,6 +196,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void configureNavigationView() {
         navigationView = binding.activityMainNavView;
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        toggle.syncState();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -212,10 +249,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)){
-            return true;
+
+//        if (toggle.onOptionsItemSelected(item)){
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            toggle();
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void toggle() {
+        if (drawer.isDrawerVisible(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            drawer.openDrawer(GravityCompat.START);
+        }
     }
 
     @Override
@@ -232,13 +283,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        mainviewModel.getmMutableLiveData().observe(this, user -> {
-            if (user.getUserName() != null){
-                navBinding.username.setText(user.getUserName());
-                navBinding.userEmail.setText(user.getUserEmail());
+//        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if (mFirebaseUser != null) {
+            mainviewModel.getmMutableLiveData().observe(this, user -> {
+                if (user.getUserName() != null){
+                    navHeaderBinding.username.setText(user.getUserName());
+                    navHeaderBinding.userEmail.setText(user.getUserEmail());
 
-            }
-        });
+                }
+            });
+//        }
+//        else {
+////            Intent i = new Intent(this, LoginActivity.class);
+//            startActivity(new Intent(this, LoginActivity.class));
+//            finish();
+//        }
+
     }
 //    private void MapsInstanceConfigure() {
 //        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
@@ -265,9 +325,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_settings:
                 break;
             case R.id.nav_logout:
-                firebaseAuth.signOut();
-                Intent i = new Intent(this, LoginActivity.class);
-                startActivity(i);
+                firebaseAuth.getInstance().signOut();
+                finish();
                 break;
 
             default:

@@ -47,7 +47,7 @@
     </style>
 
     <!-- Toolbar theme. -->
-    <style name="ToolBarStyle" parent="AppTheme">
+    <style name="ToolBarStyle" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 <!--        <item name="android:foreground">@drawable/ic_baseline_menu_24</item>-->
 <!--        <item name="android:icon">@drawable/ic_baseline_menu_24</item>-->
 <!--        <item name="android:text">@string/hungry</item>-->

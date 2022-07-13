@@ -24,6 +24,7 @@ public class MainRepository {
 
     private static volatile MainRepository instance;
     private static final String COLLECTION_NAME = "users";
+    private static final String COLLECTION_WKM_NAME = "workmates";
     private static final String USER_ID_FIELD = "userID";
     private static final String USER_NAME_FIELD = "userName";
     private static final String USER_EMAIL_FIELD = "userEmail";
@@ -32,6 +33,7 @@ public class MainRepository {
     private String uid;
     MutableLiveData<User> mMutableLiveData;
     FirebaseFirestore mFirestore;
+    FirebaseUser currentUser;
 
     public MainRepository() {
         // Define User
@@ -63,23 +65,8 @@ public class MainRepository {
 //        return mMutableLiveData;
 //    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public MutableLiveData<User> getUserMutableLiveData() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
 //            List<User> users = new ArrayList<>();
             if (value != null){
@@ -91,8 +78,9 @@ public class MainRepository {
 //                        }
                         assert currentUser != null;
                         if (doc.toObject(User.class).getUserEmail().equals(currentUser.getEmail())){
-                            mMutableLiveData.postValue(doc.toObject(User.class));
-                        }
+                                mMutableLiveData.postValue(doc.toObject(User.class));
+                            }
+
                     }
                 }
             }
@@ -102,28 +90,27 @@ public class MainRepository {
         return mMutableLiveData;
     }
 
-
-
-
-
-
+    // Get the Collection Reference
+    private CollectionReference getUsersCollection(){
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    }
 
     // Get the Collection Reference
-    private CollectionReference getUsersCollection(String collectionName){
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    private CollectionReference getWkmCollection(){
+        return FirebaseFirestore.getInstance().collection(COLLECTION_WKM_NAME);
     }
 
     // Create User in Firestore
     public void createUser() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            uid = user.getUid();
-            String userName = user.getDisplayName();
-            String userEmail = user.getEmail();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            uid = currentUser.getUid();
+            String userName = currentUser.getDisplayName();
+            String userEmail = currentUser.getEmail();
             String userPlaceId = "Not set";
             String userPhotoUrl;
-            if (user.getPhotoUrl() != null){
-                userPhotoUrl = user.getPhotoUrl().toString();
+            if (currentUser.getPhotoUrl() != null){
+                userPhotoUrl = currentUser.getPhotoUrl().toString();
             } else {
                 userPhotoUrl = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
             }
@@ -135,16 +122,16 @@ public class MainRepository {
                 if (documentSnapshot.contains(USER_PLACE_ID)){
                     userToCreate.setUserPlaceId((String) documentSnapshot.get(USER_PLACE_ID));
                 }
-                this.getUsersCollection(COLLECTION_NAME).document(uid).set(userToCreate);
+                this.getUsersCollection().document(uid).set(userToCreate);
             });
         }
     }
 
     // Get User Data from Firestore
     public Task<DocumentSnapshot> getUserData(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            return this.getUsersCollection(COLLECTION_NAME).document(user.getUid()).get();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            return this.getUsersCollection().document(currentUser.getUid()).get();
         }else{
             return null;
         }
@@ -161,10 +148,11 @@ public class MainRepository {
 //    }
 
     // Update User place id
-    public void updatePlaceId(String wkmPlaceId) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            this.getUsersCollection(COLLECTION_NAME).document(user.getUid()).update(USER_PLACE_ID, wkmPlaceId);
+    public void updatePlaceIdForUserAndWorkmate(String userPlaceId) {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser != null){
+            this.getUsersCollection().document(currentUser.getUid()).update(USER_PLACE_ID, userPlaceId);
+            this.getWkmCollection().document(currentUser.getUid()).update(USER_PLACE_ID, userPlaceId);
         }
     }
 
