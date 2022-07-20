@@ -12,7 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.databinding.ItemWorkmatesBinding;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.models.Workmate;
+import com.julienhammer.go4lunch.models.User;
+//import com.julienhammer.go4lunch.models.Workmate;
 import com.julienhammer.go4lunch.ui.list.RecyclerViewListViewHolder;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
 import com.julienhammer.go4lunch.R;
@@ -23,7 +24,7 @@ import java.util.ArrayList;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerViewWorkmateViewHolder> {
-    ArrayList<Workmate> workmatesArrayList = new ArrayList<>();
+    ArrayList<User> workmatesArrayList = new ArrayList<>();
 
 
     @NonNull
@@ -36,9 +37,9 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewWorkmateViewHolder holder, int position) {
         Context context = holder.itemView.getContext();
-        Workmate workmate = workmatesArrayList.get(position);
-        ConvertToImage.loadIcon(context, holder.BindingItemWorkmate.imageWorkmateViewPhoto, workmate.getWkmPhotoUrl());
-        holder.BindingItemWorkmate.textViewInformation.setText(workmate.getWkmName() + " is eating something somewhere.");
+        User workmate = workmatesArrayList.get(position);
+        ConvertToImage.loadIcon(context, holder.BindingItemWorkmate.imageWorkmateViewPhoto, workmate.getUserPhotoUrl());
+        holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + " is eating something somewhere.");
 
     }
 
@@ -49,7 +50,7 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(ArrayList<Workmate> workmatesArrayList) {
+    public void setData(ArrayList<User> workmatesArrayList) {
         this.workmatesArrayList = workmatesArrayList;
         notifyDataSetChanged();
     }

@@ -20,7 +20,8 @@ import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.models.Workmate;
+import com.julienhammer.go4lunch.models.User;
+//import com.julienhammer.go4lunch.models.Workmate;
 import com.julienhammer.go4lunch.ui.list.ListFragment;
 import com.julienhammer.go4lunch.ui.list.RecyclerViewListAdapter;
 import com.julienhammer.go4lunch.utils.NearbySearch;
@@ -40,6 +41,10 @@ public class WorkmatesFragment extends Fragment {
     private WorkmateViewModel workmateViewModel;
     RecyclerViewWorkmateAdapter adapter;
 
+//    public WorkmatesFragment(){
+//        // Required empty public constructor
+//    }
+
 
     private void configureWormatesViewModel() {
         ViewModelFactory workmateViewModelFactory = ViewModelFactory.getInstance();
@@ -50,7 +55,6 @@ public class WorkmatesFragment extends Fragment {
                 this,
                 ViewModelFactory.getInstance()
         ).get(WorkmateViewModel.class);
-//        listViewModel.refresh();
     }
 
     @Override
@@ -86,8 +90,9 @@ public class WorkmatesFragment extends Fragment {
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         adapter = new RecyclerViewWorkmateAdapter();
-        workmateViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
-            ArrayList<Workmate> allWorkmates = new ArrayList<Workmate>();
+
+        workmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
+            ArrayList<User> allWorkmates = new ArrayList<User>();
             for (int i = 0; i <= (workmate.size()) -1; i++){
                 allWorkmates.add(workmate.get(i));
             }

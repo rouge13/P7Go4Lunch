@@ -47,5 +47,8 @@
     <string name="hungry">I\'m hungry!</string>
     <string name="firestore_workmate_image">photo workmate</string>
     <string name="workmate_detail">Scarlett is eating french (Le Zinc)</string>
+    <string name="restaurant_call">CALL</string>
+    <string name="restaurant_like">LIKE</string>
+    <string name="restaurant_website">WEBSITE</string>
 
 </resources>

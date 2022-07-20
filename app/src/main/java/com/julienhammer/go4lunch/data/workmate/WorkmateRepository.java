@@ -16,12 +16,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.julienhammer.go4lunch.models.User;
-import com.julienhammer.go4lunch.models.Workmate;
+//import com.julienhammer.go4lunch.models.Workmate;
 import com.julienhammer.go4lunch.ui.MainApplication;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -31,15 +30,15 @@ public class WorkmateRepository {
     Context context = MainApplication.getApplication();
 
     private static volatile WorkmateRepository instance;
-    private static final String COLLECTION_NAME = "workmates";
-    private static final String WKM_ID_FIELD = "wkmID";
-    private static final String WKM_NAME_FIELD = "wkmName";
-    private static final String WKM_EMAIL_FIELD = "wkmEmail";
-    private static final String WKM_PLACE_ID = "wkmPlaceId";
-    private static final String WKM_PHOTO_URL = "wkmPhotoUrl";
+    private static final String COLLECTION_NAME = "users";
+    //    private static final String WKM_ID_FIELD = "wkmID";
+//    private static final String WKM_NAME_FIELD = "wkmName";
+//    private static final String WKM_EMAIL_FIELD = "wkmEmail";
+    private static final String WKM_PLACE_ID = "userPlaceId";
+    //    private static final String WKM_PHOTO_URL = "wkmPhotoUrl";
     private String uid;
     FirebaseFirestore mFirestore;
-    MutableLiveData<List<Workmate>> mMutableLiveData;
+    MutableLiveData<List<User>> mMutableLiveData;
 
     // Get the Collection Reference
     private CollectionReference getWkmCollection(){
@@ -53,34 +52,34 @@ public class WorkmateRepository {
         mFirestore = FirebaseFirestore.getInstance();
     }
 
-    // Create Workmate in Firestore
-    public void createWorkmate() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            uid = user.getUid();
-            String workmateName = user.getDisplayName();
-            String workmateEmail = user.getEmail();
-            String workmatePlaceId = "Not set";
-            String workmatePhotoUrl = Objects.requireNonNull(user.getPhotoUrl()).toString();
-
-            Workmate workmateToCreate = new Workmate(
-                    uid,
-                    workmateName,
-                    workmateEmail,
-                    workmatePlaceId,
-                    workmatePhotoUrl
-            );
-
-            Task<DocumentSnapshot> workmateData = getWorkmateData();
-            // If the user already exist in Firestore, we get his data (isMentor)
-            workmateData.addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.contains(WKM_PLACE_ID)){
-                    workmateToCreate.setWkmPlaceId((String) documentSnapshot.get(WKM_PLACE_ID));
-                }
-                this.getWkmCollection().document(uid).set(workmateToCreate);
-            });
-        }
-    }
+//    // Create Workmate in Firestore
+//    public void createWorkmate() {
+//        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+//        if(user != null){
+//            uid = user.getUid();
+//            String workmateName = user.getDisplayName();
+//            String workmateEmail = user.getEmail();
+//            String workmatePlaceId = "";
+//            String workmatePhotoUrl = Objects.requireNonNull(user.getPhotoUrl()).toString();
+//
+//            Workmate workmateToCreate = new User(
+//                    uid,
+//                    workmateName,
+//                    workmateEmail,
+//                    workmatePlaceId,
+//                    workmatePhotoUrl
+//            );
+//
+//            Task<DocumentSnapshot> workmateData = getWorkmateData();
+//            // If the user already exist in Firestore, we get his data (isMentor)
+//            workmateData.addOnSuccessListener(documentSnapshot -> {
+//                if (documentSnapshot.contains(WKM_PLACE_ID)){
+//                    workmateToCreate.setWkmPlaceId((String) documentSnapshot.get(WKM_PLACE_ID));
+//                }
+//                this.getWkmCollection().document(uid).set(workmateToCreate);
+//            });
+//        }
+//    }
 
     // Get Workmate Data from Firestore
     public Task<DocumentSnapshot> getWorkmateData(){
@@ -93,44 +92,46 @@ public class WorkmateRepository {
     }
 
 
-//    public Task<QuerySnapshot> getAllWorkmates(String workmate){
+//    public Task<QuerySnapshot> getAllWorkmates(){
 //        return this.getWkmCollection()
 //                .get()
-//                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//
-//                    @Override
-//                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                        if (task.isSuccessful()){
-//                            for (QueryDocumentSnapshot document : task.getResult()) {
-//                                if (task.getResult() != null){
-//                                    Workmate workmate = document.toObject(Workmate.class);
-//                                }
-//
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()){
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            List<User> workmates = new ArrayList<>();
+//                            if (task.getResult() != null){
+//                                workmates.add(document.toObject(User.class));
 //                            }
-//                        } else {
-//                            Toast.makeText(context, "Error getting documents: "+ task.getException(),Toast.LENGTH_SHORT).show();
+//                            mMutableLiveData.setValue(workmates);
 //                        }
-//
+//                    } else {
+//                        Toast.makeText(context, "Error getting documents: "+ task.getException(),Toast.LENGTH_SHORT).show();
 //                    }
+//
 //                });
 //
 //    }
 
-        public MutableLiveData<List<Workmate>> getWorkmateMutableLiveData() {
+
+
+    public MutableLiveData<List<User>> getWorkmateMutableLiveData() {
         mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
-            List<Workmate> workmates = new ArrayList<>();
+            List<User> workmates = new ArrayList<>();
             if (value != null){
                 for (QueryDocumentSnapshot doc : value){
                     if (doc != null){
-                        workmates.add(doc.toObject(Workmate.class));
-                        }
+                        workmates.add(doc.toObject(User.class));
                     }
                 }
-                mMutableLiveData.postValue(workmates);
-            });
-            return mMutableLiveData;
+            }
+            mMutableLiveData.setValue(workmates);
+        });
+        return mMutableLiveData;
 
-        }
+    }
+
+
+
 
     public static WorkmateRepository getInstance() {
         WorkmateRepository result = instance;

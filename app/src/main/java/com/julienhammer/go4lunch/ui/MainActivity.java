@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
@@ -44,11 +45,12 @@ import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.viewmodel.MainViewModel;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+//import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private MainViewModel mainviewModel;
+    private MainViewModel mainViewModel;
     private FirebaseAuth firebaseAuth;
     ActivityMainBinding binding;
 
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final int REQUEST_LOCATION_PERMISSION = 1;
     public ActionBarDrawerToggle toggle;
     public DrawerLayout drawer;
-//    ActivityMainNavHeaderBinding navHeaderMainBinding;
+    //    ActivityMainNavHeaderBinding navHeaderMainBinding;
     NavigationView navigationView;
     Toolbar toolbar;
     @Override
@@ -81,19 +83,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        ActivityMainBinding activityMainBinding = null;
 //        activityMainBinding = activityMainBinding.setContentView(R.layout.activity_main);
 
-            binding = ActivityMainBinding.inflate(getLayoutInflater());
-            View view = binding.getRoot();
-            setContentView(view);
-            navHeaderBinding = ActivityMainNavHeaderBinding.bind(binding.activityMainNavView.getHeaderView(0));
-            mainviewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        setContentView(view);
+        configureViewModel();
+        navHeaderBinding = ActivityMainNavHeaderBinding.bind(binding.activityMainNavView.getHeaderView(0));
+//            mainviewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 //        navBinding = ActivityMainNavHeaderBinding.inflate(getLayoutInflater());
-            ViewPager viewPager = binding.viewPager;
-            ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-            viewPager.setAdapter(mViewPagerAdapter);
-            configureToolBar();
-            configureDrawerLayout();
-            configureNavigationView();
+        configureToolBar();
+        configureDrawerLayout();
+        configureNavigationView();
 
+        ViewPager viewPager = binding.viewPager;
+        ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(mViewPagerAdapter);
 
 
 //        Toolbar toolbar = binding.activityMainToolbar;
@@ -149,6 +152,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                    .commitNow();
 //        }
     }
+
+    private void configureViewModel() {
+        ViewModelFactory mainViewModelFactory = ViewModelFactory.getInstance();
+        mainViewModel =
+                new ViewModelProvider(this, mainViewModelFactory).get(MainViewModel.class);
+        this.mainViewModel = new ViewModelProvider(
+                this,
+                ViewModelFactory.getInstance()
+        ).get(MainViewModel.class);
+    }
+
     // 1 - Configure the toolbar
     private void configureToolBar() {
         toolbar = binding.activityMainToolbar;
@@ -247,19 +261,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        }
 //        return false;
 //    }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
-//        if (toggle.onOptionsItemSelected(item)){
-//            return true;
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//
+////        if (toggle.onOptionsItemSelected(item)){
+////            return true;
+////        }
+////        return super.onOptionsItemSelected(item);
+//        if (item.getItemId() == android.R.id.home) {
+//            toggle();
+//
 //        }
 //        return super.onOptionsItemSelected(item);
-        if (item.getItemId() == android.R.id.home) {
-            toggle();
-
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    }
 
     private void toggle() {
         if (drawer.isDrawerVisible(GravityCompat.START)) {
@@ -285,13 +299,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStart();
 //        FirebaseUser mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 //        if (mFirebaseUser != null) {
-            mainviewModel.getmMutableLiveData().observe(this, user -> {
-                if (user.getUserName() != null){
-                    navHeaderBinding.username.setText(user.getUserName());
-                    navHeaderBinding.userEmail.setText(user.getUserEmail());
+        mainViewModel.getmMutableLiveData().observe(this, user -> {
+            if (user.getUserName() != null){
+                navHeaderBinding.username.setText(user.getUserName());
+                navHeaderBinding.userEmail.setText(user.getUserEmail());
 
-                }
-            });
+            }
+        });
 //        }
 //        else {
 ////            Intent i = new Intent(this, LoginActivity.class);
@@ -318,6 +332,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         // Handle item selection
         switch (id) {
+            case android.R.id.home:
+                toggle();
+                return true;
+            case R.id.mapsFragment:
+                // Initialize fragment
+                Fragment mapsFragment = new Fragment();
+
+                // Open fragment
+                getSupportFragmentManager()
+                        .beginTransaction().replace(R.id.mapsFragment,mapsFragment)
+                        .commit();
+                return true;
+            case R.id.listFragment:
+                // Initialize fragment
+                Fragment listFragment = new Fragment();
+
+                // Open fragment
+                getSupportFragmentManager()
+                        .beginTransaction().replace(R.id.listFragment,listFragment)
+                        .commit();
+                return true;
+            case R.id.workmatesFragment:
+                // Initialize fragment
+                Fragment workmatesFragment = new Fragment();
+
+                // Open fragment
+                getSupportFragmentManager()
+                        .beginTransaction().replace(R.id.workmatesFragment,workmatesFragment)
+                        .commit();
+                return true;
             case R.id.nav_your_lunch:
 //                Intent i = new Intent(this, UserActivity.class);
 //                startActivity(i);
@@ -401,6 +445,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        // Handle item selection
 //        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                toggle();
+//                return true;
 //            case R.id.mapsFragment:
 //                // Initialize fragment
 //                Fragment mapsFragment = new Fragment();

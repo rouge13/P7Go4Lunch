@@ -76,7 +76,9 @@ android {
 
 
 dependencies {
-
+//    implementation 'com.google.android.gms:play-services-ads:21.1.0'
+//    implementation 'com.google.android.ads:mediation-test-suite:3.0.0'
+//    implementation 'com.google.android.flexbox:flexbox:1.1.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
     implementation 'androidx.appcompat:appcompat:1.4.2'
@@ -89,6 +91,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.4.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.databinding:databinding-common:7.2.1'
+//    implementation 'com.google.android.ads:mediation-test-suite:2.0.0'
 
 //    implementation 'androidx.databinding:baseLibrary:3.2.0-alpha11'
     testImplementation 'junit:junit:4.13.2'

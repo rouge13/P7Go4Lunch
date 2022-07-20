@@ -48,9 +48,9 @@ public class MainViewModel extends ViewModel {
         }
     }
 
-    public void createUser(){
-        mainRepository.createUser();
-    }
+//    public void createUser(){
+//        mainRepository.createUser();
+//    }
 
     public Task<User> getUserData(){
 

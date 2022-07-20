@@ -24,12 +24,12 @@ public class MainRepository {
 
     private static volatile MainRepository instance;
     private static final String COLLECTION_NAME = "users";
-    private static final String COLLECTION_WKM_NAME = "workmates";
-    private static final String USER_ID_FIELD = "userID";
-    private static final String USER_NAME_FIELD = "userName";
-    private static final String USER_EMAIL_FIELD = "userEmail";
+//    private static final String COLLECTION_WKM_NAME = "workmates";
+//    private static final String USER_ID_FIELD = "userID";
+//    private static final String USER_NAME_FIELD = "userName";
+//    private static final String USER_EMAIL_FIELD = "userEmail";
     private static final String USER_PLACE_ID = "userPlaceId";
-    private static final String USER_PHOTO_URL = "userPhotoUrl";
+//    private static final String USER_PHOTO_URL = "userPhotoUrl";
     private String uid;
     MutableLiveData<User> mMutableLiveData;
     FirebaseFirestore mFirestore;
@@ -95,38 +95,38 @@ public class MainRepository {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    // Get the Collection Reference
-    private CollectionReference getWkmCollection(){
-        return FirebaseFirestore.getInstance().collection(COLLECTION_WKM_NAME);
-    }
+//    // Get the Collection Reference
+//    private CollectionReference getWkmCollection(){
+//        return FirebaseFirestore.getInstance().collection(COLLECTION_WKM_NAME);
+//    }
 
-    // Create User in Firestore
-    public void createUser() {
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if(currentUser != null){
-            uid = currentUser.getUid();
-            String userName = currentUser.getDisplayName();
-            String userEmail = currentUser.getEmail();
-            String userPlaceId = "Not set";
-            String userPhotoUrl;
-            if (currentUser.getPhotoUrl() != null){
-                userPhotoUrl = currentUser.getPhotoUrl().toString();
-            } else {
-                userPhotoUrl = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
-            }
-            User userToCreate = new User(uid, userName, userEmail, userPlaceId, userPhotoUrl);
-
-            Task<DocumentSnapshot> userData = getUserData();
-            // If the user already exist in Firestore, we get his data (USER_PLACE_ID)
-            userData.addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.contains(USER_PLACE_ID)){
-                    userToCreate.setUserPlaceId((String) documentSnapshot.get(USER_PLACE_ID));
-                }
-                this.getUsersCollection().document(uid).set(userToCreate);
-            });
-        }
-    }
-
+//    // Create User in Firestore
+//    public void createUser() {
+//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if(currentUser != null){
+//            uid = currentUser.getUid();
+//            String userName = currentUser.getDisplayName();
+//            String userEmail = currentUser.getEmail();
+//            String userPlaceId = "Not set";
+//            String userPhotoUrl;
+//            if (currentUser.getPhotoUrl() != null){
+//                userPhotoUrl = currentUser.getPhotoUrl().toString();
+//            } else {
+//                userPhotoUrl = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
+//            }
+//            User userToCreate = new User(uid, userName, userEmail, userPlaceId, userPhotoUrl);
+//
+//            Task<DocumentSnapshot> userData = getUserData();
+//            // If the user already exist in Firestore, we get his data (USER_PLACE_ID)
+//            userData.addOnSuccessListener(documentSnapshot -> {
+//                if (documentSnapshot.contains(USER_PLACE_ID)){
+//                    userToCreate.setUserPlaceId((String) documentSnapshot.get(USER_PLACE_ID));
+//                }
+//                this.getUsersCollection().document(uid).set(userToCreate);
+//            });
+//        }
+//    }
+//
     // Get User Data from Firestore
     public Task<DocumentSnapshot> getUserData(){
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -152,7 +152,7 @@ public class MainRepository {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if(currentUser != null){
             this.getUsersCollection().document(currentUser.getUid()).update(USER_PLACE_ID, userPlaceId);
-            this.getWkmCollection().document(currentUser.getUid()).update(USER_PLACE_ID, userPlaceId);
+//            this.getWkmCollection().document(currentUser.getUid()).update(USER_PLACE_ID, userPlaceId);
         }
     }
 

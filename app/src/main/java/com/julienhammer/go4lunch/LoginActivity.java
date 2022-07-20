@@ -1,21 +1,25 @@
 package com.julienhammer.go4lunch;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.appcompat.app.AppCompatActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.MainActivity;
-import com.julienhammer.go4lunch.viewmodel.MainViewModel;
-import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
+import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,14 +27,33 @@ import java.util.List;
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
-    MainViewModel mainViewModel = MainViewModel.getInstance();
-    WorkmateViewModel workmateViewModel = WorkmateViewModel.getInstance();
+    private LoginViewModel loginViewModel;
+//    WorkmateViewModel workmateViewModel = WorkmateViewModel.getInstance();
     FirebaseUser user;
+
+    // 2 - Configuring ViewModel
+
+    private void configureViewModel() {
+        ViewModelFactory loginViewModelFactory = ViewModelFactory.getInstance();
+        loginViewModel =
+                new ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel.class);
+
+        this.loginViewModel = new ViewModelProvider(
+                this,
+                ViewModelFactory.getInstance()
+        ).get(LoginViewModel.class);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+//        loginViewModel = new ViewModelProviders(this, ViewModelFactory.getInstance()).get(MainViewModel.class);
+        // With ViewModelFactory
+//        ViewModelFactory loginViewModelFactory = ViewModelFactory.getInstance();
+//        loginViewModel = new ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel.class);
+        configureViewModel();
         user = FirebaseAuth.getInstance().getCurrentUser();
 //        user.getIdToken(true).isSuccessful();
 
@@ -59,13 +82,15 @@ public class LoginActivity extends Activity {
 
         IdpResponse response = IdpResponse.fromResultIntent(data);
 
+        Boolean userAddedInFirestore;
         if (requestCode == RC_SIGN_IN) {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(),getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
                 if (user != null) {
-                    mainViewModel.createUser();
-                    workmateViewModel.createWorkmate();
+                    if (!loginViewModel.getUserCaseAdded(user)){
+                        loginViewModel.createUser(user);
+                    }
                     onLoginSuccess();
                 } else {
                     configureLoginActivityInterface();

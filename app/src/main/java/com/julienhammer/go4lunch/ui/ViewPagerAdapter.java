@@ -29,11 +29,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 //            case 2:
 //                return new WorkmatesFragment();
 
-            case 2:
-                return new MapsFragment();
             case 1:
-                return new ListFragment();
+                return new MapsFragment();
             case 0:
+                return new ListFragment();
+            case 2:
                 return new WorkmatesFragment();
         }
         return null;
