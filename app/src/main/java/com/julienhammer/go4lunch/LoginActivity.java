@@ -14,6 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
@@ -23,6 +26,7 @@ import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -31,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
     private LoginViewModel loginViewModel;
 //    WorkmateViewModel workmateViewModel = WorkmateViewModel.getInstance();
-    FirebaseUser user;
 
     // 2 - Configuring ViewModel
 
@@ -54,11 +57,11 @@ public class LoginActivity extends AppCompatActivity {
 //        ViewModelFactory loginViewModelFactory = ViewModelFactory.getInstance();
 //        loginViewModel = new ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel.class);
         configureViewModel();
-        user = FirebaseAuth.getInstance().getCurrentUser();
+
 //        user.getIdToken(true).isSuccessful();
 
         // Si erreur de Firebase concernant le token et l'identification redemander de se connecter.
-        if (user != null) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             onLoginSuccess();
         } else {
             configureLoginActivityInterface();
@@ -87,9 +90,10 @@ public class LoginActivity extends AppCompatActivity {
             // SUCCESS
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(),getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
-                if (user != null) {
-                    if (!loginViewModel.getUserCaseAdded(user)){
-                        loginViewModel.createUser(user);
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser())){
+                        loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
+
                     }
                     onLoginSuccess();
                 } else {
@@ -112,19 +116,55 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginSuccess(){
-        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser())) {
+                loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
+            }
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
+
         }
-        else {
-            configureLoginActivityInterface();
-        }
+//        else {
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//        }
+//        user = FirebaseAuth.getInstance().getCurrentUser();
+//
+//        if (user != null){
+//            user.reload().addOnSuccessListener(new OnSuccessListener<Void>() {
+//                @Override
+//                public void onSuccess(Void unused) {
+//
+//                }
+//            });
+////        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+//
+//        }
+//        else {
+//            configureLoginActivityInterface();
+//        }
 
 //        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 //        startActivity(intent);
 
 
     }
+
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//        if (!user.getUid().isEmpty()) {
+////            val intent = Intent(this@CurrentActivity, HomeActivity::class.java)
+////            startActivity(intent)
+////            finish() // Do not forget to finish the current activity; This will help in not letting the user to come back this the CurrentActivity(condition checking activity)
+//            onLoginSuccess();
+//        } else {
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
+//    }
 
     private void configureLoginActivityInterface(){
         List<AuthUI.IdpConfig> providers = Arrays.asList(

@@ -1,14 +1,22 @@
 package com.julienhammer.go4lunch.data.login;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.julienhammer.go4lunch.models.User;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,6 +33,7 @@ public class LoginRepository {
     private static final String USER_EMAIL_FIELD = "userEmail";
     private static final String USER_PLACE_ID = "userPlaceId";
     private static final String USER_PHOTO_URL = "userPhotoUrl";
+    private static final String TAG = "Value is egal to ";
     private String uid;
     Boolean userCaseAdded;
     FirebaseFirestore mFirestore;
@@ -43,7 +52,7 @@ public class LoginRepository {
             uid = user.getUid();
             String userName = user.getDisplayName();
             String userEmail = user.getEmail();
-            String userPlaceId = "Not set";
+            String userPlaceId = "";
             String userPhotoUrl;
             if (user.getPhotoUrl() != null){
                 userPhotoUrl = user.getPhotoUrl().toString();
@@ -76,23 +85,40 @@ public class LoginRepository {
     public Boolean getUserCase(FirebaseUser userAdded) {
 //        currentUser = user;
         userCaseAdded = false;
-        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
-//            List<User> users = new ArrayList<>();
-            if (value != null) {
-                for (QueryDocumentSnapshot doc : value) {
-                    if (doc != null) {
-//                    assert currentUser != null;
-//                        if (doc.get(USER_ID_FIELD) == currentUser.getUid()){
-//                            users.add(doc.toObject(User.class));
+//        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
+////            List<User> users = new ArrayList<>();
+//            if (value != null) {
+//                for (QueryDocumentSnapshot doc : value) {
+//                    if (doc != null) {
+////                    assert currentUser != null;
+////                        if (doc.get(USER_ID_FIELD) == currentUser.getUid()){
+////                            users.add(doc.toObject(User.class));
+////                        }
+////                        assert currentUser != null;
+//                        if (doc.toObject(User.class).getUserEmail().equals(userAdded.getEmail())) {
+//                           userCaseAdded = true;
+//
 //                        }
-//                        assert currentUser != null;
-                        if (doc.toObject(User.class).getUserEmail().equals(userAdded.getEmail())) {
-                           userCaseAdded = true;
+//
+//                    }
+//                }
+//            }
+//        });
 
-                        }
 
-                    }
+        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+        DocumentReference docIdRef = rootRef.collection(COLLECTION_NAME).document(userAdded.getUid());
+
+        docIdRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) { DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+//                    Log.d(TAG, "Document exists!");
+                    userCaseAdded = true;
+                } else {
+                    userCaseAdded = false;
+//                    Log.d(TAG, "Document does not exist!");
                 }
+            } else { Log.d(TAG, "Failed with: ", task.getException());
             }
         });
         return userCaseAdded;

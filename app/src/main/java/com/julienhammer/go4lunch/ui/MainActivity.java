@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -98,6 +99,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(mViewPagerAdapter);
 
+
+        binding.buttomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                //        // Handle item selection
+                switch (item.getItemId()) {
+                    case android.R.id.home:
+                        toggle();
+                        return true;
+                    case R.id.mapsFragment:
+//                        // Initialize fragment
+//                        Fragment mapsFragment = new Fragment();
+//
+//                        // Open fragment
+//                        getSupportFragmentManager()
+//                                .beginTransaction().replace(R.id.mapsFragment, mapsFragment)
+//                                .commit();
+                        viewPager.setCurrentItem(0);
+                        return true;
+                    case R.id.listFragment:
+//                        // Initialize fragment
+//                        Fragment listFragment = new Fragment();
+//
+//                        // Open fragment
+//                        getSupportFragmentManager()
+//                                .beginTransaction().replace(R.id.listFragment, listFragment)
+//                                .commit();
+                        viewPager.setCurrentItem(1);
+                        return true;
+                    case R.id.workmatesFragment:
+//                        // Initialize fragment
+//                        Fragment workmatesFragment = new Fragment();
+//
+//                        // Open fragment
+//                        getSupportFragmentManager()
+//                                .beginTransaction().replace(R.id.workmatesFragment, workmatesFragment)
+//                                .commit();
+                        viewPager.setCurrentItem(2);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
 
 //        Toolbar toolbar = binding.activityMainToolbar;
 //        binding.setHandlers(handlers);
@@ -219,6 +264,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.bottom_navigation_menu, menu);
         getMenuInflater().inflate(R.menu.activity_main_info_menu, menu);
         return true;
     }
@@ -332,36 +379,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         // Handle item selection
         switch (id) {
-            case android.R.id.home:
-                toggle();
-                return true;
-            case R.id.mapsFragment:
-                // Initialize fragment
-                Fragment mapsFragment = new Fragment();
-
-                // Open fragment
-                getSupportFragmentManager()
-                        .beginTransaction().replace(R.id.mapsFragment,mapsFragment)
-                        .commit();
-                return true;
-            case R.id.listFragment:
-                // Initialize fragment
-                Fragment listFragment = new Fragment();
-
-                // Open fragment
-                getSupportFragmentManager()
-                        .beginTransaction().replace(R.id.listFragment,listFragment)
-                        .commit();
-                return true;
-            case R.id.workmatesFragment:
-                // Initialize fragment
-                Fragment workmatesFragment = new Fragment();
-
-                // Open fragment
-                getSupportFragmentManager()
-                        .beginTransaction().replace(R.id.workmatesFragment,workmatesFragment)
-                        .commit();
-                return true;
+//            case android.R.id.home:
+//                toggle();
+//                return true;
+//            case R.id.mapsFragment:
+//                // Initialize fragment
+//                Fragment mapsFragment = new Fragment();
+//
+//                // Open fragment
+//                getSupportFragmentManager()
+//                        .beginTransaction().replace(R.id.mapsFragment,mapsFragment)
+//                        .commit();
+//                return true;
+//            case R.id.listFragment:
+//                // Initialize fragment
+//                Fragment listFragment = new Fragment();
+//
+//                // Open fragment
+//                getSupportFragmentManager()
+//                        .beginTransaction().replace(R.id.listFragment,listFragment)
+//                        .commit();
+//                return true;
+//            case R.id.workmatesFragment:
+//                // Initialize fragment
+//                Fragment workmatesFragment = new Fragment();
+//
+//                // Open fragment
+//                getSupportFragmentManager()
+//                        .beginTransaction().replace(R.id.workmatesFragment,workmatesFragment)
+//                        .commit();
+//                return true;
             case R.id.nav_your_lunch:
 //                Intent i = new Intent(this, UserActivity.class);
 //                startActivity(i);
@@ -369,7 +416,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_settings:
                 break;
             case R.id.nav_logout:
-                firebaseAuth.getInstance().signOut();
+                FirebaseAuth.getInstance().signOut();
+//                FirebaseAuth.instance.signOut();
+//                finish();
+                Intent i = new Intent(this, LoginActivity.class);
+                startActivity(i);
                 finish();
                 break;
 
@@ -440,7 +491,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        return true;
 //    }
 //
-//    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        // Handle item selection
