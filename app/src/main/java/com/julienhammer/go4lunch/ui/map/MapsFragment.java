@@ -27,23 +27,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.model.Photo;
 import com.google.maps.model.PlacesSearchResult;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private MapsViewModel mapsViewModel;
+    private RestaurantsViewModel mRestaurantsViewModel;
     private GoogleMap mMap;
-//    ExecutorService executor = Executors.newFixedThreadPool(2);
-
+    private PlacesSearchResult mRestaurants;
     ExecutorService executor = Executors.newSingleThreadExecutor();
-//    Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
     public static MapsFragment newInstance() {
         return new MapsFragment();
     }
@@ -56,43 +58,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private void configureViewModel() {
         ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-        MapsViewModel mapsViewModel =
+        mapsViewModel =
                 new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
-        mapsViewModel.refresh();
-        this.mapsViewModel = new ViewModelProvider(
-                this,
-                ViewModelFactory.getInstance()
-        ).get(MapsViewModel.class);
-        //this.mapsViewModel.init();
     }
 
-//    private void configureViewModel() {
-//        this.mapsViewModel = new ViewModelProvider(
-//                this,
-//                ViewModelFactory.getInstance(
-//                        new LocationRepository(
-//                                LocationServices.getFusedLocationProviderClient(getActivity())
-//                        ),
-//
-//                        new Executor() {
-//                            @Override
-//                            public void execute(Runnable command) {
-//
-//                            }
-//                        }
-//
-//                )
-//        ).get(MapsViewModel.class);
-//        //this.mapsViewModel.init();
-//    }
-
-
-//    // -- Get all the Last Location
-//    private void getTheLastLocation() {
-//        this.mapsViewModel.getLocationLiveData().observe(this,this::updateProjects);
-//    }
-//    private MapsViewModel mMapsViewModel;
-//    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private void initRestaurantsViewModel() {
+        ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
+        mRestaurantsViewModel =
+                new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
+    }
 
     /**
      * Manipulates the map once available.
@@ -108,95 +82,51 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-//        MapsViewModel mapsViewModel =
-//                new ViewModelProvider(this, MapsViewModelFactory).get(MapsViewModel.class);
-
         if (ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             configureViewModel();
+            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                mMap.clear();
+                mMap.getUiSettings().setMapToolbarEnabled(false);
+                Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
+                executor.execute(() -> {
 
-//            mapsViewModel.refresh();
-//            ViewModelFactory MapsViewModelFactory = ViewModelFactory.getInstance();
-//            MapsViewModel mapsViewModel =
-//                    new ViewModelProvider(this, MapsViewModelFactory).get(MapsViewModel.class);
-//            mapsViewModel.refresh();
-//            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                    mMap.clear();
-                    mMap.getUiSettings().setMapToolbarEnabled(false);
-//                LatLng userLocation = new LatLng(location.getLatitude(),location.getLongitude());
-//                LatLng userLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                    Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
-                    executor.execute(() -> {
-                        PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
-                        mainExecutor.execute(()->{
-                            // MOVE THE CAMERA TO THE USER LOCATION
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
 
-                            // DISPLAY BLUE DOT FOR USER LOCATION
-                            mMap.setMyLocationEnabled(true);
+//                    PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
 
-                            // ZOOM IN, ANIMATE CAMERA
-                            mMap.animateCamera(CameraUpdateFactory.zoomIn());
-                            // TO DO
-                            //searchModelsList is the list of all markers
-                            Marker[] allMarkers = new Marker[placesSearchResults.length];
-                            for (int i = 0; i <= (placesSearchResults.length) -1; i++){
-                                double latPlace = placesSearchResults[i].geometry.location.lat;
-                                double longPlace = placesSearchResults[i].geometry.location.lng;
-                                String placeName = placesSearchResults[i].name;
-//                                String placeAddress = placesSearchResults[i].vicinity.toLowerCase();
-//                                float placeRating = placesSearchResults[i].rating;
-//                                Photo placePhoto = placesSearchResults[i].photos[0];
-//                                Integer placeUserRatingsTotal = placesSearchResults[i].userRatingsTotal;
 
-                                if (googleMap != null) {
-//                                    googleMap.setOnMarkerClickListener(this);
-                                    allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
-//                                    allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
-//                                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17.0f));
-//                                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latPlace, longPlace), 17));
-//                                    mMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeLoc));
-                                }
+
+
+
+                    mainExecutor.execute(()->{
+                        // MOVE THE CAMERA TO THE USER LOCATION
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
+
+                        // DISPLAY BLUE DOT FOR USER LOCATION
+                        mMap.setMyLocationEnabled(true);
+
+                        // ZOOM IN, ANIMATE CAMERA
+                        mMap.animateCamera(CameraUpdateFactory.zoomIn());
+                        // TO DO
+                        //searchModelsList is the list of all markers
+                        mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+                        Marker[] allMarkers = new Marker[placesSearchResults.length];
+                        for (int i = 0; i <= (placesSearchResults.length) -1; i++){
+                            double latPlace = placesSearchResults[i].geometry.location.lat;
+                            double longPlace = placesSearchResults[i].geometry.location.lng;
+                            String placeName = placesSearchResults[i].name;
+                            if (googleMap != null) {
+                                allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
                             }
-//                            double lat2 = placesSearchResults[1].geometry.location.lat;
-//                    double lng2 = placesSearchResults[1].geometry.location.lng;
-//                    googleMap.addMarker(new MarkerOptions().position(new LatLng(lat1, lng1)));
-
-                        });
+                        }
                     });
-
-
-
-//                // ZOOM IN, ANIMATE CAMERA
-//                googleMap.animateCamera(CameraUpdateFactory.zoomIn());
-
-
-
-
-//            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(),location -> );
-//            LatLng userLocation = new LatLng( (Location)
-//                    Objects.requireNonNull(
-//                            mapsViewModel.getLocationLiveData()
-//            );
-//            LatLng userLocation = new LatLng(
-//                    Objects.requireNonNull(
-//                        mapsViewModel.getLocationLiveData().getValue()).getLatitude(),
-//                    Objects.requireNonNull(
-//                            mapsViewModel.getLocationLiveData().getValue()).getLongitude()
-//            );
-//            googleMap.addMarker(new MarkerOptions().position(userLocation).title("Marker User Location Last Saved"));
-//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(userLocation));
-//            LatLng sydney = new LatLng(-34, 151);
-//            googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-
+                    });
+                });
             });
         }
     }
-//    };
 
     @Nullable
     @Override
@@ -212,18 +142,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 0
         );
-
         SupportMapFragment mapFragment =
-                    (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-            assert mapFragment != null;
-            mapFragment.getMapAsync(this);
+                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        assert mapFragment != null;
+        mapFragment.getMapAsync(this);
+        initRestaurantsViewModel();
     }
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        mapsViewModel.refresh();
     }
 
 

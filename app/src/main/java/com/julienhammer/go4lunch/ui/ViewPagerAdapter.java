@@ -22,13 +22,6 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-//            case 0:
-//                return new MapsFragment();
-//            case 1:
-//                return new ListFragment();
-//            case 2:
-//                return new WorkmatesFragment();
-
             case 0:
                 return MapsFragment.newInstance();
             case 1:

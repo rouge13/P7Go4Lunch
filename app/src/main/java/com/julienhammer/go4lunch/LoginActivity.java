@@ -34,7 +34,6 @@ import java.util.Objects;
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
     private LoginViewModel loginViewModel;
-//    WorkmateViewModel workmateViewModel = WorkmateViewModel.getInstance();
 
     // 2 - Configuring ViewModel
 
@@ -42,23 +41,12 @@ public class LoginActivity extends AppCompatActivity {
         ViewModelFactory loginViewModelFactory = ViewModelFactory.getInstance();
         loginViewModel =
                 new ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel.class);
-
-        this.loginViewModel = new ViewModelProvider(
-                this,
-                ViewModelFactory.getInstance()
-        ).get(LoginViewModel.class);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        loginViewModel = new ViewModelProviders(this, ViewModelFactory.getInstance()).get(MainViewModel.class);
-        // With ViewModelFactory
-//        ViewModelFactory loginViewModelFactory = ViewModelFactory.getInstance();
-//        loginViewModel = new ViewModelProvider(this, loginViewModelFactory).get(LoginViewModel.class);
         configureViewModel();
-
-//        user.getIdToken(true).isSuccessful();
 
         // Si erreur de Firebase concernant le token et l'identification redemander de se connecter.
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
@@ -74,11 +62,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
-//
-//    // Show Snack Bar with a message
-//    private void showSnackBar( String message){
-//        Snackbar.make(binding.loginLayout, message, Snackbar.LENGTH_SHORT).show();
-//    }
 
     // Method that handles response after SignIn Activity close
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data){
@@ -123,49 +106,9 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
-
         }
-//        else {
-//            Intent intent = new Intent(this, LoginActivity.class);
-//            startActivity(intent);
-//        }
-//        user = FirebaseAuth.getInstance().getCurrentUser();
-//
-//        if (user != null){
-//            user.reload().addOnSuccessListener(new OnSuccessListener<Void>() {
-//                @Override
-//                public void onSuccess(Void unused) {
-//
-//                }
-//            });
-////        if (FirebaseAuth.getInstance().getCurrentUser() != null){
-//
-//        }
-//        else {
-//            configureLoginActivityInterface();
-//        }
-
-//        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//        startActivity(intent);
-
-
     }
-
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//        if (!user.getUid().isEmpty()) {
-////            val intent = Intent(this@CurrentActivity, HomeActivity::class.java)
-////            startActivity(intent)
-////            finish() // Do not forget to finish the current activity; This will help in not letting the user to come back this the CurrentActivity(condition checking activity)
-//            onLoginSuccess();
-//        } else {
-//            Intent intent = new Intent(this, LoginActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
-//    }
-
+    
     private void configureLoginActivityInterface(){
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),

@@ -18,27 +18,11 @@ public class LoginViewModel extends ViewModel {
     FirebaseFirestore mFirestore;
 
     public boolean getUserCaseAdded(FirebaseUser user) {
-//        return mMutableLiveDataCase = loginRepository.getUserCase(user);
         return loginRepository.getUserCase(user);
     }
 
     public LoginViewModel() {
-        loginRepository = LoginRepository.getInstance();
         mFirestore = FirebaseFirestore.getInstance();
-
-    }
-
-    public static LoginViewModel getInstance(){
-        LoginViewModel result = instance;
-        if (result != null) {
-            return result;
-        }
-        synchronized(MainRepository.class) {
-            if (instance == null) {
-                instance = new LoginViewModel();
-            }
-            return instance;
-        }
     }
 
     public void createUser(FirebaseUser user){

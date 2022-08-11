@@ -83,29 +83,7 @@ public class LoginRepository {
     }
 
     public Boolean getUserCase(FirebaseUser userAdded) {
-//        currentUser = user;
         userCaseAdded = false;
-//        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
-////            List<User> users = new ArrayList<>();
-//            if (value != null) {
-//                for (QueryDocumentSnapshot doc : value) {
-//                    if (doc != null) {
-////                    assert currentUser != null;
-////                        if (doc.get(USER_ID_FIELD) == currentUser.getUid()){
-////                            users.add(doc.toObject(User.class));
-////                        }
-////                        assert currentUser != null;
-//                        if (doc.toObject(User.class).getUserEmail().equals(userAdded.getEmail())) {
-//                           userCaseAdded = true;
-//
-//                        }
-//
-//                    }
-//                }
-//            }
-//        });
-
-
         FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
         DocumentReference docIdRef = rootRef.collection(COLLECTION_NAME).document(userAdded.getUid());
 
@@ -123,21 +101,5 @@ public class LoginRepository {
         });
         return userCaseAdded;
     }
-
-
-
-    public static LoginRepository getInstance() {
-        LoginRepository result = instance;
-        if (result != null){
-            return result;
-        }
-        synchronized (LoginRepository.class){
-            if (instance == null){
-                instance = new LoginRepository();
-            }
-            return instance;
-        }
-    }
-
 
 }

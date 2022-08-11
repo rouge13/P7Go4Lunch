@@ -39,15 +39,6 @@
         app:layout_constraintTop_toTopOf="@+id/image_workmate_view_photo"
         app:layout_constraintBottom_toBottomOf="@+id/image_workmate_view_photo"/>
 
-<!--    &lt;!&ndash; This adds a border between the TextViews &ndash;&gt;-->
-<!--    <View-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="3dp"-->
-<!--        android:background="@android:color/darker_gray"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/text_view_information"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"      -->
-<!--        />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

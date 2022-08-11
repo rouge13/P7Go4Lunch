@@ -38,23 +38,14 @@ import java.util.concurrent.Executor;
  */
 public class WorkmatesFragment extends Fragment {
     FragmentWorkmatesBinding binding;
-    private WorkmateViewModel workmateViewModel;
+    private WorkmateViewModel mWorkmateViewModel;
     RecyclerViewWorkmateAdapter adapter;
-
-//    public WorkmatesFragment(){
-//        // Required empty public constructor
-//    }
-
 
     private void configureWormatesViewModel() {
         ViewModelFactory workmateViewModelFactory = ViewModelFactory.getInstance();
-        WorkmateViewModel workmateViewModel =
+        mWorkmateViewModel =
                 new ViewModelProvider(this, workmateViewModelFactory).get(WorkmateViewModel.class);
 
-        this.workmateViewModel = new ViewModelProvider(
-                this,
-                ViewModelFactory.getInstance()
-        ).get(WorkmateViewModel.class);
     }
 
     @Override
@@ -81,7 +72,6 @@ public class WorkmatesFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     @Override
@@ -90,8 +80,7 @@ public class WorkmatesFragment extends Fragment {
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         adapter = new RecyclerViewWorkmateAdapter();
-
-        workmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
+        mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
             ArrayList<User> allWorkmates = new ArrayList<User>();
             for (int i = 0; i <= (workmate.size()) -1; i++){
                 allWorkmates.add(workmate.get(i));
@@ -100,8 +89,6 @@ public class WorkmatesFragment extends Fragment {
             binding.workmatesView.setLayoutManager(layoutManager);
             binding.workmatesView.setAdapter(adapter);
         });
-
     }
-
 
 }

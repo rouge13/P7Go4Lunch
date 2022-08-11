@@ -30,15 +30,6 @@ public class MapsViewModel extends ViewModel {
     @NonNull
     private final LocationRepository locationRepository;
 
-//    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
-//    public void onActivityCreated(@Nullable final Bundle SavedInstanceState){
-//
-//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-//        MapsViewModel mapsViewModel =
-//                new ViewModelProvider((ViewModelStoreOwner) this, mapsViewModelFactory).get(MapsViewModel.class);
-//        mapsViewModel.refresh();
-//    }
-
     public MapsViewModel(
             @NonNull PermissionCheck permissionChecker,
             @NonNull LocationRepository locationRepository
@@ -50,14 +41,11 @@ public class MapsViewModel extends ViewModel {
 
     public LiveData<Location> getLocationLiveData() {
         return locationRepository.getLocationLiveData();
-
     }
 
     @SuppressLint("MissingPermission")
     public void refresh() {
         boolean hasGpsPermission = permissionCheck.hasLocationPermission();
-//        hasGpsPermissionLiveData.setValue(hasGpsPermission);
-
         if (hasGpsPermission) {
             locationRepository.startLocationRequest();
         } else {

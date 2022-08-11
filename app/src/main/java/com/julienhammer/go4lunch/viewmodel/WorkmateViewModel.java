@@ -33,40 +33,4 @@ public class WorkmateViewModel extends ViewModel {
         mFirestore = FirebaseFirestore.getInstance();
         mMutableLiveData = workmateRepository.getWorkmateMutableLiveData();
     }
-
-    public static WorkmateViewModel getInstance(){
-        WorkmateViewModel result = instance;
-        if (result != null) {
-            return result;
-        }
-        synchronized(WorkmateRepository.class) {
-            if (instance == null) {
-                instance = new WorkmateViewModel();
-            }
-            return instance;
-        }
-    }
-
-//    public void createWorkmate(){
-//        workmateRepository.createWorkmate();
-//    }
-
-//    public Task<User> getWorkmateData(){
-//        // Get the workmate from Firestore and cast it to a Workmate model Object
-//        return workmateRepository.getWorkmateData().continueWithTask(task -> {
-//            synchronized (this) {
-//                if (!task.isSuccessful()) {
-//                    return Tasks.forException(Objects.requireNonNull(task.getException()));
-//                } else if (task.isComplete()) {
-//                    return Tasks.forResult(task.getResult().toObject(User.class));
-//                }
-//
-//            }
-//            return null;
-//        });
-//
-//    }
-
-
-
 }

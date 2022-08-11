@@ -40,20 +40,11 @@ public class ListFragment extends Fragment {
     ExecutorService executor = Executors.newSingleThreadExecutor();
     RecyclerViewListAdapter adapter;
     private PlacesSearchResult placesSearchResult;
-//    ImageView imageView;
-//    GoogleApiClient mGoogleApiClient;
-//    public static final String PHOTO_URL = "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&key=%s&maxheight=100";
 
     private void configureListViewModel() {
         ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
-        ListViewModel listViewModel =
+        listViewModel =
                 new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
-
-        this.listViewModel = new ViewModelProvider(
-                this,
-                ViewModelFactory.getInstance()
-        ).get(ListViewModel.class);
-//        listViewModel.refresh();
     }
 
     public ListFragment() {
@@ -76,25 +67,14 @@ public class ListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        binding = binding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-
-//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-//        binding.listViewPlaces.setLayoutManager(layoutManager);
     }
 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentListBinding.inflate(inflater, container, false);
         return binding.getRoot();
-              //        binding = FragmentListBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        layoutManager = new LinearLayoutManager(this);
-//        binding.listViewPlaces.setLayoutManager(layoutManager);
 
     }
 
@@ -103,10 +83,7 @@ public class ListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         configureListViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-
-
         adapter = new RecyclerViewListAdapter();
-
         listViewModel.getLocationForPlacesLiveData().observe(getViewLifecycleOwner(), location -> {
 
             Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
@@ -116,49 +93,28 @@ public class ListFragment extends Fragment {
                         location
                 ).results;
                 mainExecutor.execute(()->{
-
                     ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
                     for (int i = 0; i <= (placesSearchResults.length) -1; i++){
                         String openNowCase ="";
-
                         if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null){
-
                             Boolean openNow = placesSearchResults[i].openingHours.openNow;
-
                             if (openNow = false){
                                 openNowCase = "Not open";
                             } else {
                                 openNowCase = "Open now";
                             }
-
                         }else{
-
                             openNowCase = "Doesn't show if it's open";
-
                         }
-
                         RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity, placesSearchResults[i].photos[0].photoReference, placesSearchResults[i].icon.toString(), openNowCase, placesSearchResults[i].photos[0]);
                         allRestaurants.add(restaurantDetails);
-
                     }
-
                     adapter.setData(allRestaurants);
                     binding.listViewPlaces.setLayoutManager(layoutManager);
                     binding.listViewPlaces.setAdapter(adapter);
-
-//                    layoutManager.scrollToPosition(allRestaurants.size() -1);
-
-
                 });
             });
         });
-
-
     }
-
-
-
-
-
 
 }

@@ -13,8 +13,9 @@ import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
-import com.julienhammer.go4lunch.viewmodel.MainViewModel;
+import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 /**
@@ -23,11 +24,8 @@ import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private final LocationRepository locationDataSource;
-//    private final Executor executor;
     private static ViewModelFactory factory;
     private static PermissionCheck permissionCheck;
-//    private final Executor ioExecutor = Executors.newFixedThreadPool(4);
-
     private ViewModelFactory(@NonNull PermissionCheck permissionCheck,
                              @NonNull LocationRepository locationDataSource
                              ) {
@@ -71,47 +69,16 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             );
         } else if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
             return (T) new WorkmateViewModel();
-        } else if (modelClass.isAssignableFrom(MainViewModel.class)) {
-            return (T) new MainViewModel();
-        }else if (modelClass.isAssignableFrom(LoginViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(UserViewModel.class)) {
+            return (T) new UserViewModel();
+        } else if (modelClass.isAssignableFrom(LoginViewModel.class)) {
             return (T) new LoginViewModel();
+        } else if (modelClass.isAssignableFrom(RestaurantsViewModel.class)) {
+            return (T) new RestaurantsViewModel(
+                    locationDataSource
+            );
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
 
-
-//    private ViewModelFactory(LocationRepository locationDataSource, Executor executor) {
-//        this.locationDataSource = locationDataSource;
-//        this.executor = executor;
-//    }
-//
-//    public static ViewModelFactory getInstance(LocationRepository locationDataSource, Executor executor) {
-//        if (factory == null) {
-//            synchronized (ViewModelFactory.class) {
-//                if (factory == null) {
-//                    factory = new ViewModelFactory(locationDataSource, executor);
-//                }
-//            }
-//        }
-//        return factory;
-//    }
-
-//    @NonNull
-//    @Override
-//    public <T extends ViewModel> T create(Class<T> modelClass) {
-//        if (modelClass.isAssignableFrom(MapsViewModel.class)) {
-//            return (T) new MapsViewModel(permissionChecker,locationDataSource);
-//        }
-//        throw new IllegalArgumentException("Unknown ViewModel class");
-//    }
-
-//    @NotNull
-//    @Override
-//    public <T extends ViewModel>  T create(Class<T> modelClass) {
-//
-//        if (modelClass.isAssignableFrom(TaskViewModel.class)) {
-//            return (T) new TaskViewModel(projectDataSource, taskDataSource, executor);
-//        }
-//        throw new IllegalArgumentException("Unknown ViewModel class");
-//    }
 }

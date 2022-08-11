@@ -28,9 +28,5 @@
                             android:textColor="@color/white"
                             />
                 </menu>
-
-
         </item>
-
-
 </menu>
