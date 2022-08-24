@@ -10,6 +10,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,8 +32,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LoginRepository {
     private static volatile LoginRepository instance;
     private static final String COLLECTION_NAME = "users";
-//    private static final String COLLECTION_WKM_NAME = "workmates";
-    private static final String USER_ID_FIELD = "userID";
+    //    private static final String COLLECTION_WKM_NAME = "workmates";
+    private static final String USER_ID_FIELD = "userId";
     private static final String USER_NAME_FIELD = "userName";
     private static final String USER_EMAIL_FIELD = "userEmail";
     private static final String USER_PLACE_ID = "userPlaceId";
@@ -82,24 +87,35 @@ public class LoginRepository {
         }
     }
 
-    public Boolean getUserCase(FirebaseUser userAdded) {
+    public Boolean getUserCase(String userUIDAdded) {
         userCaseAdded = false;
         FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-        DocumentReference docIdRef = rootRef.collection(COLLECTION_NAME).document(userAdded.getUid());
-
-        docIdRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) { DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-//                    Log.d(TAG, "Document exists!");
-                    userCaseAdded = true;
-                } else {
-                    userCaseAdded = false;
-//                    Log.d(TAG, "Document does not exist!");
+        CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
+        Query query = userRef.whereEqualTo(USER_ID_FIELD, userUIDAdded);
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+//                        Log.d(TAG, document.getId() + " => " + document.getData());
+                    userCaseAdded = document.exists();
                 }
-            } else { Log.d(TAG, "Failed with: ", task.getException());
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
-        return userCaseAdded;
-    }
 
+        return userCaseAdded;
+
+    }
+    public static LoginRepository getInstance() {
+        LoginRepository result = instance;
+        if (result != null){
+            return result;
+        }
+        synchronized (LoginRepository.class){
+            if (instance == null){
+                instance = new LoginRepository();
+            }
+            return instance;
+        }
+    }
 }

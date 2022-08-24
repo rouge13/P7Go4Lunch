@@ -18,8 +18,6 @@ public class RestaurantDetails implements Parcelable {
     private String idRes;
     private String nameRes;
     private String addressRes;
-    private Photo photoRes;
-    private String iconRes;
     private String openNowRes;
     private String photoRefRes;
 
@@ -27,7 +25,6 @@ public class RestaurantDetails implements Parcelable {
         idRes = in.readString();
         nameRes = in.readString();
         addressRes = in.readString();
-        iconRes = in.readString();
         openNowRes = in.readString();
         photoRefRes = in.readString();
     }
@@ -44,13 +41,11 @@ public class RestaurantDetails implements Parcelable {
         }
     };
 
-    public RestaurantDetails(String id, String name, String address, String photoRefRes, String iconRes, String openNow, Photo photoRes) {
+    public RestaurantDetails(String id, String name, String address, String photoRefRes, String openNow) {
         this.idRes = id;
         this.nameRes = name;
         this.addressRes = address;
-        this.photoRes = photoRes;
         this.photoRefRes = photoRefRes;
-        this.iconRes = iconRes;
         this.openNowRes = openNow;
 
     }
@@ -77,14 +72,6 @@ public class RestaurantDetails implements Parcelable {
         this.addressRes = addressRes;
     }
 
-    public Photo getphotoRes() { return photoRes; }
-
-    public void setphotoRes(Photo photoRes) { this.photoRes = photoRes; }
-//
-    public String getIconRes() { return iconRes; }
-
-    public void setIconRes(String iconRes) { this.iconRes = iconRes; }
-
     public String getOpenNowRes() { return openNowRes; }
 
     public void setOpenNowRes(String photoRes) { this.openNowRes = openNowRes; }
@@ -107,8 +94,6 @@ public class RestaurantDetails implements Parcelable {
         dest.writeString(idRes);
         dest.writeString(nameRes);
         dest.writeString(addressRes);
-        dest.writeString(iconRes);
-        dest.writeParcelable((Parcelable) photoRes, flags);
         dest.writeString(openNowRes);
         dest.writeString(photoRefRes);
     }

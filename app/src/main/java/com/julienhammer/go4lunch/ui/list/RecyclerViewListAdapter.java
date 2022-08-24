@@ -21,6 +21,7 @@ import java.util.ArrayList;
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListViewHolder> {
     ArrayList<RestaurantDetails> restaurantArrayList = new ArrayList<>();
 
+
     @NonNull
     @Override
     public RecyclerViewListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -34,11 +35,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         RestaurantDetails restaurantDetails = restaurantArrayList.get(position);
         holder.bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
         holder.bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
-        if (restaurantDetails.getphotoRes() != null){
-            ConvertToImage.loadGooglePhoto(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getphotoRes().photoReference);
-        } else {
-            ConvertToImage.loadIcon(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getIconRes());
-        }
+        ConvertToImage.loadGooglePhoto(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getPhotoRefRes());
         holder.bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
     }
 

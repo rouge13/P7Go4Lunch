@@ -74,10 +74,10 @@ public class LoginActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(),getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser())){
-                        loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
-
-                    }
+//                    if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+//                        loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
+//
+//                    }
                     onLoginSuccess();
                 } else {
                     configureLoginActivityInterface();
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(){
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser())) {
+            if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
             }
             Intent intent = new Intent(this, MainActivity.class);
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
     }
-    
+
     private void configureLoginActivityInterface(){
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),

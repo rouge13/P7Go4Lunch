@@ -18,6 +18,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import com.julienhammer.go4lunch.data.login.LoginRepository;
+import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
 import com.julienhammer.go4lunch.ui.map.MapsFragment;
 
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.List;
 public class LocationRepository {
     private static final int LOCATION_REQUEST_INTERVAL_MS = 10_000;
     private static final float SMALLEST_DISPLACEMENT_THRESHOLD_METER = 25;
-
+    private static volatile LocationRepository instance;
 
     @NonNull
     private final FusedLocationProviderClient fusedLocationProviderClient;
@@ -41,6 +43,8 @@ public class LocationRepository {
     public LocationRepository(@NonNull FusedLocationProviderClient fusedLocationProviderClient) {
         this.fusedLocationProviderClient = fusedLocationProviderClient;
     }
+
+
 
     public LiveData<Location> getLocationLiveData() {
         return locationMutableLiveData;
@@ -57,7 +61,7 @@ public class LocationRepository {
                     userLocation.setLatitude(48.5735);
                     userLocation.setLongitude(7.7523);
                 }
-                locationMutableLiveData.setValue(userLocation);
+                locationMutableLiveData.postValue(userLocation);
             }
         });
     }
@@ -67,6 +71,8 @@ public class LocationRepository {
             fusedLocationProviderClient.removeLocationUpdates(callback);
         }
     }
+
+
 
 
 

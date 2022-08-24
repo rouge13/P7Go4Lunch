@@ -14,7 +14,7 @@ import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
-import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
@@ -57,8 +57,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(MapsViewModel.class)) {
-            return (T) new MapsViewModel(
+        if (modelClass.isAssignableFrom(LocationViewModel.class)) {
+            return (T) new LocationViewModel(
                     permissionCheck,
                     locationDataSource
             );
@@ -70,12 +70,14 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
             return (T) new WorkmateViewModel();
         } else if (modelClass.isAssignableFrom(UserViewModel.class)) {
-            return (T) new UserViewModel();
+            return (T) new UserViewModel(
+                    permissionCheck,
+                    locationDataSource
+            );
         } else if (modelClass.isAssignableFrom(LoginViewModel.class)) {
             return (T) new LoginViewModel();
         } else if (modelClass.isAssignableFrom(RestaurantsViewModel.class)) {
             return (T) new RestaurantsViewModel(
-                    locationDataSource
             );
         }
         throw new IllegalArgumentException("Unknown ViewModel class");

@@ -17,12 +17,13 @@ import java.util.concurrent.Executor;
 
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class MapsViewModel extends ViewModel {
+public class LocationViewModel extends ViewModel {
 
     @NonNull
     private final PermissionCheck permissionCheck;
@@ -30,7 +31,7 @@ public class MapsViewModel extends ViewModel {
     @NonNull
     private final LocationRepository locationRepository;
 
-    public MapsViewModel(
+    public LocationViewModel(
             @NonNull PermissionCheck permissionChecker,
             @NonNull LocationRepository locationRepository
     ) {
@@ -52,4 +53,5 @@ public class MapsViewModel extends ViewModel {
             locationRepository.stopLocationRequest();
         }
     }
+
 }

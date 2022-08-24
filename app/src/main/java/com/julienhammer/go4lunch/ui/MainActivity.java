@@ -2,20 +2,28 @@ package com.julienhammer.go4lunch.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,7 +31,6 @@ import android.view.View;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.julienhammer.go4lunch.LoginActivity;
@@ -31,6 +38,7 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
@@ -38,6 +46,7 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private UserViewModel mUserViewModel;
+    private LocationViewModel mLocationViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
     private FirebaseAuth firebaseAuth;
     ActivityMainBinding binding;
@@ -49,6 +58,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar;
+
+    LocationManager lm;
+    boolean gps_enabled = false;
+    boolean network_enabled = false;
+
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -62,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @SuppressLint("NonConstantResourceId")
+    @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,14 +89,68 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureDrawerLayout();
         configureNavigationView();
 
-        ViewPager viewPager = binding.viewPager;
-        ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(mViewPagerAdapter);
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        },
+        PackageManager.PERMISSION_GRANTED
+        );
 
 
-        binding.buttomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+
+
+
+            LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+            boolean gps_enabled = false;
+            boolean network_enabled = false;
+
+            try {
+                gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            } catch(Exception ex) {}
+
+            try {
+                network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            } catch(Exception ex) {}
+
+            if(!gps_enabled && !network_enabled) {
+                // notify user
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+                alertDialog.setMessage(R.string.gps_network_not_enabled);
+                alertDialog.setPositiveButton(R.string.open_location_settings, (paramDialogInterface, paramInt) -> {
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                });
+                alertDialog.setNegativeButton(R.string.Cancel,null);
+                alertDialog.show();
+            }
+
+            mLocationViewModel.refresh();
+            mLocationViewModel.getLocationLiveData().observe(this, location -> {
+                if (location != null){
+
+                    mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
+
+                }
+            });
+
+
+
+
+            ViewPager viewPager = binding.viewPager;
+            ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+            viewPager.setAdapter(mViewPagerAdapter);
+
+
+            binding.buttomNavigationView.setOnItemSelectedListener(item -> {
                 //        // Handle item selection
                 switch (item.getItemId()) {
                     case android.R.id.home:
@@ -99,13 +168,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     default:
                         return false;
                 }
-            }
-        });
+            });
+
+
+
+
+        }
+
     }
+
+
 
     private void configureViewModel() {
         ViewModelFactory mainViewModelFactory = ViewModelFactory.getInstance();
         mUserViewModel = new ViewModelProvider(this, mainViewModelFactory).get(UserViewModel.class);
+        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
+        mLocationViewModel = new ViewModelProvider(this, mapsViewModelFactory).get(LocationViewModel.class);
+        ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
+        mRestaurantsViewModel = new ViewModelProvider(this, restaurantsViewModelFactory).get(RestaurantsViewModel.class);
+
+
     }
 
     // 1 - Configure the toolbar
@@ -208,4 +290,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
 }

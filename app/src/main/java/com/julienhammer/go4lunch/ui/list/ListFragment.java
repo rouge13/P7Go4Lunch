@@ -16,11 +16,14 @@ import android.view.ViewGroup;
 
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
+import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
+import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
@@ -34,6 +37,8 @@ import java.util.concurrent.Executors;
  */
 public class ListFragment extends Fragment {
 
+    private LocationViewModel mLocationViewModel;
+    private RestaurantsViewModel mRestaurantsViewModel;
     private static final String TAG = null;
     private ListViewModel listViewModel;
     FragmentListBinding binding;
@@ -41,11 +46,20 @@ public class ListFragment extends Fragment {
     RecyclerViewListAdapter adapter;
     private PlacesSearchResult placesSearchResult;
 
-    private void configureListViewModel() {
-        ViewModelFactory listViewModelFactory = ViewModelFactory.getInstance();
-        listViewModel =
-                new ViewModelProvider(this, listViewModelFactory).get(ListViewModel.class);
+
+    private void configureViewModel() {
+        ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
+        mLocationViewModel =
+                new ViewModelProvider(requireActivity(), locationViewModelFactory).get(LocationViewModel.class);
     }
+
+    private void initRestaurantsList(){
+        ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
+        mRestaurantsViewModel =
+                new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
+
+    }
+
 
     public ListFragment() {
         // Required empty public constructor
@@ -81,37 +95,56 @@ public class ListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        configureListViewModel();
+        configureViewModel();
+        initRestaurantsList();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         adapter = new RecyclerViewListAdapter();
-        listViewModel.getLocationForPlacesLiveData().observe(getViewLifecycleOwner(), location -> {
+
 
             Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
             executor.execute(() -> {
-                PlacesSearchResult[] placesSearchResults = new NearbySearch().run(
-                        getString(R.string.google_map_key),
-                        location
-                ).results;
-                mainExecutor.execute(()->{
-                    ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
-                    for (int i = 0; i <= (placesSearchResults.length) -1; i++){
-                        String openNowCase ="";
-                        if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null){
-                            Boolean openNow = placesSearchResults[i].openingHours.openNow;
-                            if (openNow = false){
-                                openNowCase = "Not open";
+
+                mainExecutor.execute(() -> {
+
+                    mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                    mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults ->
+                    {
+                        String photoRef;
+                        String mMissingPhoto = "%20image%20missing%20reference";
+                        ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
+                        for (int i = 0; i <= (placesSearchResults.length) - 1; i++) {
+                            String openNowCase = "";
+                            if (placesSearchResults[i].permanentlyClosed){
+                                i++;
                             } else {
-                                openNowCase = "Open now";
+                                if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null ) {
+                                    if (placesSearchResults[i].openingHours.openNow) {
+                                        openNowCase = "Open now";
+                                    } else {
+                                        openNowCase = "Closed now";
+                                    }
+                                } else {
+                                    openNowCase = "Doesn't show if it's open";
+                                }
+                                if (placesSearchResults[i].photos != null){
+                                    photoRef = placesSearchResults[i].photos[0].photoReference;
+                                } else {
+                                    photoRef = mMissingPhoto;
+                                }
+                                RestaurantDetails restaurantDetails = new RestaurantDetails(
+                                        placesSearchResults[i].placeId,
+                                        placesSearchResults[i].name,
+                                        placesSearchResults[i].vicinity,
+                                        photoRef,
+                                        openNowCase);
+                                allRestaurants.add(restaurantDetails);
                             }
-                        }else{
-                            openNowCase = "Doesn't show if it's open";
+
                         }
-                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId,placesSearchResults[i].name,placesSearchResults[i].vicinity, placesSearchResults[i].photos[0].photoReference, placesSearchResults[i].icon.toString(), openNowCase, placesSearchResults[i].photos[0]);
-                        allRestaurants.add(restaurantDetails);
-                    }
-                    adapter.setData(allRestaurants);
-                    binding.listViewPlaces.setLayoutManager(layoutManager);
-                    binding.listViewPlaces.setAdapter(adapter);
+                        adapter.setData(allRestaurants);
+                        binding.listViewPlaces.setLayoutManager(layoutManager);
+                        binding.listViewPlaces.setAdapter(adapter);
+                    });
                 });
             });
         });

@@ -5,13 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,24 +24,20 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.model.Photo;
 import com.google.maps.model.PlacesSearchResult;
 
-import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.utils.NearbySearch;
-import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
-    private MapsViewModel mapsViewModel;
+    private LocationViewModel mLocationViewModel;
     private RestaurantsViewModel mRestaurantsViewModel;
     private GoogleMap mMap;
     private PlacesSearchResult mRestaurants;
@@ -57,9 +53,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 2 - Configuring ViewModel
 
     private void configureViewModel() {
-        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-        mapsViewModel =
-                new ViewModelProvider(this, mapsViewModelFactory).get(MapsViewModel.class);
+        ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
+        mLocationViewModel =
+                new ViewModelProvider(requireActivity(), locationViewModelFactory).get(LocationViewModel.class);
     }
 
     private void initRestaurantsViewModel() {
@@ -82,25 +78,25 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(requireContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            configureViewModel();
-            mapsViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                mMap.clear();
-                mMap.getUiSettings().setMapToolbarEnabled(false);
-                Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
-                executor.execute(() -> {
+//        if (ActivityCompat.checkSelfPermission(requireContext(),
+//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+//                ActivityCompat.checkSelfPermission(requireContext(),
+//                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        configureViewModel();
+        initRestaurantsViewModel();
+
+            mMap.clear();
+            mMap.getUiSettings().setMapToolbarEnabled(false);
+            Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
+            executor.execute(() -> {
 
 
-//                    PlacesSearchResult[] placesSearchResults = new NearbySearch().run(getString(R.string.google_map_key),location).results;
+                mainExecutor.execute(()->{
+                    mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                    mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults ->
+                    {
 
 
-
-
-
-                    mainExecutor.execute(()->{
                         // MOVE THE CAMERA TO THE USER LOCATION
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
 
@@ -111,21 +107,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         mMap.animateCamera(CameraUpdateFactory.zoomIn());
                         // TO DO
                         //searchModelsList is the list of all markers
-                        mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
                         Marker[] allMarkers = new Marker[placesSearchResults.length];
                         for (int i = 0; i <= (placesSearchResults.length) -1; i++){
                             double latPlace = placesSearchResults[i].geometry.location.lat;
                             double longPlace = placesSearchResults[i].geometry.location.lng;
                             String placeName = placesSearchResults[i].name;
-                            if (googleMap != null) {
-                                allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
-                            }
+                            allMarkers[i] = googleMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
                         }
+//                    });
                     });
-                    });
+
                 });
+
+
+
+
+
+
+
             });
-        }
+        });
+//        }
     }
 
     @Nullable
@@ -146,7 +148,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
-        initRestaurantsViewModel();
+
     }
 
 
