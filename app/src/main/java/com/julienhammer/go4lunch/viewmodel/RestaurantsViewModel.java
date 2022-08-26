@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.maps.model.PlacesSearchResult;
-import com.julienhammer.go4lunch.data.RestaurantsRepository;
+import com.julienhammer.go4lunch.data.restaurants.RestaurantsRepository;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

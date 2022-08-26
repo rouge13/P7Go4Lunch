@@ -38,6 +38,7 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private UserViewModel mUserViewModel;
     private LocationViewModel mLocationViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
+    InfoRestaurantViewModel mInfoRestaurantViewModel;
     private FirebaseAuth firebaseAuth;
     ActivityMainBinding binding;
     ActivityMainNavHeaderBinding navHeaderBinding;
@@ -186,7 +188,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mLocationViewModel = new ViewModelProvider(this, mapsViewModelFactory).get(LocationViewModel.class);
         ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
         mRestaurantsViewModel = new ViewModelProvider(this, restaurantsViewModelFactory).get(RestaurantsViewModel.class);
-
+        ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
+        mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
 
     }
 

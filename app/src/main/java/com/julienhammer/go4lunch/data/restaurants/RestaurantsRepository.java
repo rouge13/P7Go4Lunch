@@ -1,4 +1,4 @@
-package com.julienhammer.go4lunch.data;
+package com.julienhammer.go4lunch.data.restaurants;
 
 import android.location.Location;
 
@@ -8,8 +8,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.maps.model.PlacesSearchResult;
-import com.julienhammer.go4lunch.data.location.LocationRepository;
-import com.julienhammer.go4lunch.data.login.LoginRepository;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 
 /**

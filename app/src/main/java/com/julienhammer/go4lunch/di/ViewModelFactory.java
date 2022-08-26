@@ -11,6 +11,7 @@ import com.google.android.gms.location.LocationServices;
 import com.julienhammer.go4lunch.ui.MainApplication;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
@@ -70,15 +71,13 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         } else if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
             return (T) new WorkmateViewModel();
         } else if (modelClass.isAssignableFrom(UserViewModel.class)) {
-            return (T) new UserViewModel(
-                    permissionCheck,
-                    locationDataSource
-            );
+            return (T) new UserViewModel();
         } else if (modelClass.isAssignableFrom(LoginViewModel.class)) {
             return (T) new LoginViewModel();
         } else if (modelClass.isAssignableFrom(RestaurantsViewModel.class)) {
-            return (T) new RestaurantsViewModel(
-            );
+            return (T) new RestaurantsViewModel();
+        } else if (modelClass.isAssignableFrom(InfoRestaurantViewModel.class)) {
+            return (T) new InfoRestaurantViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

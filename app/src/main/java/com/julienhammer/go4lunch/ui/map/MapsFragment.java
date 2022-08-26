@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -42,6 +44,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private PlacesSearchResult mRestaurants;
     ExecutorService executor = Executors.newSingleThreadExecutor();
+    private Location userLocation = null;
     public static MapsFragment newInstance() {
         return new MapsFragment();
     }
@@ -85,7 +88,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         configureViewModel();
         initRestaurantsViewModel();
 
-            mMap.clear();
+//            mMap.clear();
             mMap.getUiSettings().setMapToolbarEnabled(false);
             Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
             executor.execute(() -> {
@@ -95,7 +98,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
                     mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults ->
                     {
-
+                        userLocation = location;
 
                         // MOVE THE CAMERA TO THE USER LOCATION
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 15));
@@ -157,5 +160,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }

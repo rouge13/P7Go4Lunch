@@ -18,11 +18,6 @@ import com.julienhammer.go4lunch.models.User;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class UserViewModel extends ViewModel {
-    @NonNull
-    private final PermissionCheck permissionCheck;
-
-    @NonNull
-    private final LocationRepository locationRepository;
 
     MutableLiveData<User> mUserData;
 
@@ -33,23 +28,4 @@ public class UserViewModel extends ViewModel {
         return mUserData;
     }
 
-    public LiveData<Location> getLocationLiveData() {
-        return locationRepository.getLocationLiveData();
-    }
-
-    public UserViewModel(@NonNull PermissionCheck permissionChecker,
-                         @NonNull LocationRepository locationRepository) {
-        this.permissionCheck = permissionChecker;
-        this.locationRepository = locationRepository;
-    }
-
-    @SuppressLint("MissingPermission")
-    public void refresh() {
-        boolean hasGpsPermission = permissionCheck.hasLocationPermission();
-        if (hasGpsPermission) {
-            locationRepository.startLocationRequest();
-        } else {
-            locationRepository.stopLocationRequest();
-        }
-    }
 }

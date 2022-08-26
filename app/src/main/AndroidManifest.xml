@@ -53,10 +53,6 @@
         </activity>
     <!--        MAIN ACTIVITY PAGE -->
     <activity android:name=".ui.MainActivity" />
-<!--    &lt;!&ndash; USER ACTIVITY &ndash;&gt;-->
-<!--    <activity android:name=".ui.UserActivity"-->
-<!--        android:label="@string/user_profile_activity"-->
-<!--        android:parentActivityName=".ui.MainActivity"/>-->
     </application>
 
 </manifest>
