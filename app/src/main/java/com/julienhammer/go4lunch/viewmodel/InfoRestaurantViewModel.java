@@ -1,14 +1,10 @@
 package com.julienhammer.go4lunch.viewmodel;
 
-import android.location.Location;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.restaurants.InfoRestaurantRepository;
-import com.julienhammer.go4lunch.data.restaurants.RestaurantsRepository;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
 /**
@@ -25,8 +21,8 @@ public class InfoRestaurantViewModel extends ViewModel {
         return mInfoRestaurantRepository.getInfoRestaurantLiveData();
     }
 
-    public void getInfoRestaurant(RestaurantDetails infoRestaurant){
-        mInfoRestaurantRepository.getInfoRestaurant(infoRestaurant);
+    public void setInfoRestaurant(RestaurantDetails infoRestaurant){
+        mInfoRestaurantRepository.setInfoRestaurant(infoRestaurant);
 
     }
 }

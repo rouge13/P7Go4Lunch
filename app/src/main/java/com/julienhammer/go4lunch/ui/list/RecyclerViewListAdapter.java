@@ -1,36 +1,25 @@
 package com.julienhammer.go4lunch.ui.list;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
-import com.julienhammer.go4lunch.ui.MainActivity;
-import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
-import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
-import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
-import com.julienhammer.go4lunch.viewmodel.UserViewModel;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -47,6 +36,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     @Override
     public RecyclerViewListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RecyclerViewListViewHolder(ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+
     }
 
     @Override
@@ -58,13 +48,29 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
         ConvertToImage.loadGooglePhoto(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getPhotoRefRes());
         holder.bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
+//        holder.itemView.setOnClickListener(this);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mInfoRestaurantViewModel.getInfoRestaurant(mRestaurantArrayList.get(position));
-                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
 
-                activity.getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
+//                ShowInfoRestaurantDetailEvent event = new ShowInfoRestaurantDetailEvent();
+//                event.setRestaurant(restaurantDetails);
+//                EventBus.getDefault().register(this);
+
+                EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
+
+//                finish();
+
+
+//                EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
+//                EventBus.getDefault().post(new InfoRestaurantFragment().requireActivity().getSupportFragmentManager().beginTransaction().commit());
+
+
+//                AppCompatActivity activity = (AppCompatActivity) v.getContext();
+//
+//                activity.getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
+
 
                //               Intent intent = new Intent(v.getContext(), InfoRestaurantFragment.class);
 //                android.app.Fragment fragment = null;
@@ -95,4 +101,12 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         this.mRestaurantArrayList = restaurantArrayList;
         notifyDataSetChanged();
     }
+
+
+//    @Override
+//    public void onClick(View v) {
+//        EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
+////        mInfoRestaurantViewModel.getInfoRestaurant(restaurantDetails);
+//
+//    }
 }

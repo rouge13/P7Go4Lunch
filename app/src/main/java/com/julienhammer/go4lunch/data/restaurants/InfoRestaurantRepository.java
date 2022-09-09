@@ -26,9 +26,9 @@ public class InfoRestaurantRepository {
         return mInfoRestaurantMutableLiveData;
     }
 
-    public void getInfoRestaurant(RestaurantDetails infoRestaurant) {
-        if (infoRestaurant != null){
-            mInfoRestaurantMutableLiveData.postValue(infoRestaurant);
+    public void setInfoRestaurant(RestaurantDetails restaurantDetails) {
+        if (restaurantDetails != null){
+            mInfoRestaurantMutableLiveData.postValue(restaurantDetails);
         }
     }
 

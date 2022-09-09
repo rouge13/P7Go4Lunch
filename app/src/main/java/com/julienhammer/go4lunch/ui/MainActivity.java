@@ -38,10 +38,15 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
+import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 
@@ -60,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar;
+
 
     LocationManager lm;
     boolean gps_enabled = false;
@@ -172,10 +178,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
 
-
-
-
         }
+        EventBus.getDefault().register(this);
 
     }
 
@@ -190,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRestaurantsViewModel = new ViewModelProvider(this, restaurantsViewModelFactory).get(RestaurantsViewModel.class);
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
+
+
 
     }
 
@@ -297,4 +303,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+
+    /**
+     * Fired if the user clicks on a restaurant
+     * @param event
+     */
+    @Subscribe
+    public void showInfoRestaurantDetailEvent (ShowInfoRestaurantDetailEvent event) {
+//        mInfoRestaurantViewModel.getInfoRestaurantLiveData().
+//        mApiService.deleteNeighbour(event.mRestaurants);
+//        mRestaurantInfo = event.getRestaurant();
+//        AppCompatActivity activity = (AppCompatActivity) v.getContext();
+        getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
+
+
+    }
+
+
 }

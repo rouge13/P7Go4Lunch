@@ -36,4 +36,5 @@ public class NearbySearch {
             return request;
         }
     }
+
 }
