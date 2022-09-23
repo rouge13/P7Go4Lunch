@@ -2,29 +2,17 @@ package com.julienhammer.go4lunch.data.login;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.julienhammer.go4lunch.models.User;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -41,7 +29,6 @@ public class LoginRepository {
     private static final String TAG = "Value is egal to ";
     private String uid;
     Boolean userCaseAdded;
-    FirebaseFirestore mFirestore;
     FirebaseUser currentUser;
 
 
@@ -106,6 +93,7 @@ public class LoginRepository {
         return userCaseAdded;
 
     }
+
     public static LoginRepository getInstance() {
         LoginRepository result = instance;
         if (result != null){

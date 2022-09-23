@@ -18,6 +18,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.LocationManager;
@@ -47,6 +48,8 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+
+import java.util.Objects;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 
@@ -65,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawer;
     NavigationView navigationView;
     Toolbar toolbar;
-
-
     LocationManager lm;
     boolean gps_enabled = false;
     boolean network_enabled = false;
@@ -107,8 +108,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-
-
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,
@@ -146,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (location != null){
 
                     mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
-
+     
                 }
             });
 
@@ -194,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRestaurantsViewModel = new ViewModelProvider(this, restaurantsViewModelFactory).get(RestaurantsViewModel.class);
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
-
 
 
     }
@@ -304,14 +302,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
-
 
     /**
      * Fired if the user clicks on a restaurant
@@ -319,14 +314,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      */
     @Subscribe
     public void showInfoRestaurantDetailEvent (ShowInfoRestaurantDetailEvent event) {
-//        mInfoRestaurantViewModel.getInfoRestaurantLiveData().
-//        mApiService.deleteNeighbour(event.mRestaurants);
-//        mRestaurantInfo = event.getRestaurant();
-//        AppCompatActivity activity = (AppCompatActivity) v.getContext();
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
+    }
 
+    // Store the data in the SharedPreference
+    // in the onPause() method
+    // When the user closes the application
+    // onPause() will be called
+    // and data will be stored
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(this,restaurantDetails ->
+//        {
+            mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+
+            mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
+                // Storing data into SharedPreferences
+                SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
+
+                // Creating an Editor object to edit(write to the file)
+                SharedPreferences.Editor myEdit = shChoice.edit();
+
+                // Storing the key and its value as the data fetched from edittext
+                myEdit.putString("placeId", placeId);
+
+                // Once the changes have been made,
+                // we need to commit to apply those changes made,
+                // otherwise, it will throw an error
+                myEdit.apply();
+            });
+
+//        });
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+
+        mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
+            // Storing data into SharedPreferences
+            SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
+
+            // Creating an Editor object to edit(write to the file)
+            SharedPreferences.Editor myEdit = shChoice.edit();
+
+            // Storing the key and its value as the data fetched from edittext
+            myEdit.putString("placeId", placeId);
+
+            // Once the changes have been made,
+            // we need to commit to apply those changes made,
+            // otherwise, it will throw an error
+            myEdit.apply();
+        });
+
+    }
 
 }

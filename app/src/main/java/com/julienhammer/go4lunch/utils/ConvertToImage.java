@@ -11,7 +11,7 @@ import com.julienhammer.go4lunch.BuildConfig;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class ConvertToImage {
-    public static final String PHOTO_URL = "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&key=%s&maxheight=100";
+    public static final String PHOTO_URL = "https://maps.googleapis.com/maps/api/place/photo?photoreference=%s&key=%s&maxheight=400";
 
     public static void loadGooglePhoto(Context context, ImageView imageView, String photoreference) {
         String url = String.format(PHOTO_URL, photoreference, BuildConfig.MAPS_API_KEY);

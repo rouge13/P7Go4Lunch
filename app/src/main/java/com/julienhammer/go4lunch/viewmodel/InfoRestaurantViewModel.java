@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.data.restaurants.InfoRestaurantRepository;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
@@ -25,4 +26,9 @@ public class InfoRestaurantViewModel extends ViewModel {
         mInfoRestaurantRepository.setInfoRestaurant(infoRestaurant);
 
     }
+//    public void createRestaurantLiked(String restaurantPlaceId, FirebaseUser userId){
+//        mInfoRestaurantRepository.createRestaurantLiked(restaurantPlaceId, userId);
+//    }
+
+//    public void setRestaurantLikes()
 }

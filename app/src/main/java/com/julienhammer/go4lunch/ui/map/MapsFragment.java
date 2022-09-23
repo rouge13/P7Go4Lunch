@@ -28,11 +28,18 @@ import com.google.maps.model.PlacesSearchResult;
 
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
@@ -118,35 +125,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 // ZOOM IN, ANIMATE CAMERA
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 // TO DO
-
-
-
-
                 //searchModelsList is the list of all markers
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-
-                Marker[] allMarkers = new Marker[placesSearchResults.length];
-                for (int i = 0; i <= (placesSearchResults.length) -1; i++){
+//                int permanentlyClosed = 0;
+                ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
+                ArrayList<Marker> allMarkers = new ArrayList<Marker>();
+//                RestaurantDetails[] allRestaurants = new RestaurantDetails[placesSearchResults.length - permanentlyClosed];
+//                Marker[] allMarkers = new Marker[allRestaurants.length];
+                for (int i = 0; i <= placesSearchResults.length -1; i++){
                     double latPlace = placesSearchResults[i].geometry.location.lat;
                     double longPlace = placesSearchResults[i].geometry.location.lng;
                     String placeName = placesSearchResults[i].name;
-                    // adding on click listener to marker of google maps.
-
-
-
-
-                    allMarkers[i] = mMap.addMarker(new MarkerOptions().position(new LatLng(latPlace, longPlace)).title(placeName));
                     String markerName = placesSearchResults[i].name;
-                    Toast.makeText(getContext(), "Clicked location is " + markerName, Toast.LENGTH_SHORT).show();
 
                     String openNowCase = "";
                     String photoRef = "";
                     String mMissingPhoto = "%20image%20missing%20reference";
 
                     if (placesSearchResults[i].permanentlyClosed){
-                        photoRef = "Permanently closed";
+                        i++;
                     } else {
                         if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
                             if (placesSearchResults[i].openingHours.openNow) {
@@ -162,32 +158,36 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         } else {
                             photoRef = mMissingPhoto;
                         }
+                        RestaurantDetails restaurantDetails = new RestaurantDetails(
+                                placesSearchResults[i].placeId,
+                                placesSearchResults[i].name,
+                                placesSearchResults[i].vicinity,
+                                photoRef,
+                                openNowCase);
+                        allRestaurants.add(restaurantDetails);
 
+                        MarkerOptions markerOptions = new MarkerOptions().position(
+                                new LatLng(latPlace, longPlace)).
+                                title(placeName);
+                        allMarkers.add(mMap.addMarker(markerOptions));
                     }
 
-                    mInfoRestaurantViewModel.setInfoRestaurant(new RestaurantDetails(
-
-                            placesSearchResults[i].placeId,
-                            placesSearchResults[i].name,
-                            placesSearchResults[i].vicinity,
-                                    photoRef,
-                                    openNowCase
-                    )
-                    );
-                    AppCompatActivity activity = (AppCompatActivity) requireView().getContext();
-
-                    activity.getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
-
-
-//                            String phoneNumber = placesSearchResults[i].
                 }
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(@NonNull Marker marker) {
+                        String markerName = marker.getTitle();
 
+                        for (int i = 0; i<allMarkers.size(); i++){
+                            if (Objects.equals(allMarkers.get(i).getTitle(), markerName)){
+                                mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
+                                Toast.makeText(getContext(), "Clicked location is " + markerName, Toast.LENGTH_SHORT).show();
+                                EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(allRestaurants.get(i)));
+                                break;
+                            }
+                        }
 
                         return false;
-//                        Toast.makeText(this, "Clicked location is " + markerName, Toast.LENGTH_SHORT).show();
-
-
-
                     }
                 });
 
@@ -206,7 +206,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
 //            });
 //        });
-
+//        }
     }
 
     @Nullable
@@ -242,27 +242,5 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         super.onResume();
 
     }
-
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//        if (userLocation != null){
-//            AtomicReference<Double> CameraLat = new AtomicReference<>((double) 0);
-//            AtomicReference<Double> CameraLong = new AtomicReference<>((double) 0);
-//            mMap.setOnCameraIdleListener(() -> {
-//                CameraLat.set(mMap.getCameraPosition().target.latitude);
-//                CameraLong.set(mMap.getCameraPosition().target.longitude);
-//
-//            });
-//            mMap.setOnMapLoadedCallback(() -> Log.e("TAG", mMap.getCameraPosition().target.toString()));
-//            CameraPosition currentPlace = new CameraPosition.Builder()
-//                    .target(new LatLng(CameraLat.get(),CameraLong.get()))
-//                    .zoom(14).build();
-//
-//
-//            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
-//            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(currentPlace));
-//        }
-//    }
 
 }

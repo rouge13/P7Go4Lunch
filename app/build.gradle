@@ -13,12 +13,12 @@ android {
             keyPassword '1asc2rg3uk'
         }
     }
-    compileSdk 31
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.julienhammer.go4lunch"
         minSdk 21
-        targetSdk 31
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -79,18 +79,18 @@ dependencies {
 //    implementation 'com.google.android.gms:play-services-ads:21.1.0'
 //    implementation 'com.google.android.ads:mediation-test-suite:3.0.0'
 //    implementation 'com.google.android.flexbox:flexbox:1.1.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
-    implementation 'androidx.navigation:navigation-fragment:2.4.2'
-    implementation 'androidx.navigation:navigation-ui:2.4.2'
+    implementation 'androidx.navigation:navigation-fragment:2.5.2'
+    implementation 'androidx.navigation:navigation-ui:2.5.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.databinding:databinding-common:7.2.1'
+    implementation 'androidx.databinding:databinding-common:7.3.0'
     implementation 'com.google.firebase:firebase-database:20.0.5'
 //    implementation 'com.google.android.ads:mediation-test-suite:2.0.0'
 

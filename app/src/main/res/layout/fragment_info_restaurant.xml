@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white"
-    tools:context=".ui.list.restaurant.InfoRestaurantFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:background="@color/white"
+        android:fillViewport="true"
         android:id="@+id/info_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
+        tools:context=".ui.list.restaurant.InfoRestaurantFragment"
+>
 
-
-        >
-        <ImageView
+    <ImageView
             android:id="@+id/item_restaurant_image"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="300dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/ic_restaurant_info_example"
-            />
-        <ImageView
-            android:id="@+id/item_backward_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_arrow_back_24"
-            />
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/item_add_favorite_restaurant_button"
+            app:layout_constraintBottom_toTopOf="@id/restaurant_information"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+
+    />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/item_choice_restaurant_button"
             android:layout_width="56dp"
             android:layout_height="58dp"
             android:layout_marginEnd="20dp"
@@ -51,170 +43,219 @@
             app:backgroundTint="@color/white"
             app:tint="@null"
             app:srcCompat="@drawable/ic_baseline_check_circle_24"
-            />
+    />
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/restaurant_information"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/item_restaurant_image"
-        android:background="@color/orange_red"
-        android:paddingVertical="12sp"
-        >
-        <TextView
-            android:id="@+id/restaurant_info_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/restaurant_information"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="@string/restaurant_name"
-            android:textColor="@color/white"
-            android:textSize="13sp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="5sp"
-            >
+            app:layout_constraintBottom_toTopOf="@id/restaurant_info_shortcuts_app"
+            android:background="@color/orange_red"
+            android:paddingVertical="12sp"
+    >
+        <TextView
+                android:id="@+id/restaurant_info_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/restaurant_name"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="5sp"
+
+        >
 
         </TextView>
 
         <TextView
-            android:id="@+id/restaurant_info_food_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="@string/restaurant_address"
-            android:textColor="@color/white"
-            android:textSize="10sp"
-            app:layout_constraintTop_toBottomOf="@id/restaurant_info_name"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="5sp"
-            >
+                android:id="@+id/restaurant_info_food_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/restaurant_address"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                app:layout_constraintTop_toBottomOf="@id/restaurant_info_name"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="5sp"
+        >
 
         </TextView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-        <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/restaurant_info_shortcuts_app"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/restaurant_information"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/restaurant_info_workmate_related"
             android:background="@color/white"
-            android:paddingVertical="12sp"
-            >
+            android:paddingVertical="15sp"
+    >
 
-
-            <ImageView
-                android:id="@+id/restaurant_info_call_icon"
+        <androidx.cardview.widget.CardView
+                android:id="@+id/card_call"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_call_24"
-                android:clickable="true"
-                android:focusable="true"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/restaurant_info_like_icon"
-                >
+                app:layout_constraintEnd_toStartOf="@+id/card_like"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardElevation="0dp"
+        >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+            <ImageView
+                    android:id="@+id/restaurant_info_call_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_baseline_call_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/restaurant_info_call"
+            >
 
             </ImageView>
             <TextView
-                android:id="@+id/restaurant_info_call"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="@string/restaurant_call"
-                android:textColor="@color/red"
-                android:textSize="13sp"
-                app:layout_constraintTop_toBottomOf="@+id/restaurant_info_call_icon"
-                app:layout_constraintStart_toStartOf="@+id/restaurant_info_call_icon"
-                app:layout_constraintEnd_toEndOf="@+id/restaurant_info_call_icon"
-                >
+                    android:id="@+id/restaurant_info_call"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/restaurant_call"
+                    android:textColor="@color/red"
+                    android:textSize="13sp"
+                    app:layout_constraintTop_toBottomOf="@+id/restaurant_info_call_icon"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+            >
 
             </TextView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
 
 
-            <ImageView
-                android:id="@+id/restaurant_info_like_icon"
+        <androidx.cardview.widget.CardView
+                android:id="@+id/card_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_star_24"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/card_call"
+                app:layout_constraintEnd_toStartOf="@+id/card_website"
+                android:orientation="vertical"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/restaurant_info_call_icon"
-                app:layout_constraintEnd_toStartOf="@+id/restaurant_info_website_icon"
-                >
+                app:cardElevation="0dp"
+        >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+            <ImageView
+                    android:id="@+id/restaurant_info_like_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_baseline_star_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/restaurant_info_like"
+
+            >
 
             </ImageView>
             <TextView
-                android:id="@+id/restaurant_info_like"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="@string/restaurant_like"
-                android:textColor="@color/red"
-                android:textSize="13sp"
-                app:layout_constraintTop_toBottomOf="@+id/restaurant_info_like_icon"
-                app:layout_constraintStart_toStartOf="@+id/restaurant_info_like_icon"
-                app:layout_constraintEnd_toEndOf="@+id/restaurant_info_like_icon"
-                >
+                    android:id="@+id/restaurant_info_like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/restaurant_like"
+                    android:textColor="@color/red"
+                    android:textSize="13sp"
+                    app:layout_constraintTop_toBottomOf="@+id/restaurant_info_like_icon"
+                    app:layout_constraintStart_toStartOf="@+id/restaurant_info_like_icon"
+                    app:layout_constraintEnd_toEndOf="@+id/restaurant_info_like_icon"
+            >
 
             </TextView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
-            <ImageView
-                android:id="@+id/restaurant_info_website_icon"
+        <androidx.cardview.widget.CardView
+                android:id="@+id/card_website"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_baseline_public_24"
-                android:clickable="true"
-                android:focusable="true"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/restaurant_info_like_icon"
+                app:layout_constraintStart_toEndOf="@id/card_like"
                 app:layout_constraintEnd_toEndOf="parent"
-                >
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"
+                app:cardElevation="0dp"
+        >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+            <ImageView
+                    android:id="@+id/restaurant_info_website_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_baseline_public_24"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/restaurant_info_website"
+            >
 
             </ImageView>
 
             <TextView
-                android:id="@+id/restaurant_info_website"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="@string/restaurant_website"
-                android:textColor="@color/red"
-                android:textSize="13sp"
-                app:layout_constraintTop_toBottomOf="@+id/restaurant_info_website_icon"
-                app:layout_constraintStart_toStartOf="@+id/restaurant_info_website_icon"
-                app:layout_constraintEnd_toEndOf="@+id/restaurant_info_website_icon"
-                >
+                    android:id="@+id/restaurant_info_website"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="@string/restaurant_website"
+                    android:textColor="@color/red"
+                    android:textSize="13sp"
+                    app:layout_constraintTop_toBottomOf="@+id/restaurant_info_website_icon"
+                    app:layout_constraintStart_toStartOf="@+id/restaurant_info_website_icon"
+                    app:layout_constraintEnd_toEndOf="@+id/restaurant_info_website_icon"
+            >
 
             </TextView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
 
 
 
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/restaurant_info_workmate_related"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/restaurant_info_shortcuts_app"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/white"
-        android:paddingVertical="12sp"
-        >
+            android:id="@+id/restaurant_info_workmate_related"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            app:layout_constraintTop_toBottomOf="@id/restaurant_info_shortcuts_app"
+            android:background="@color/white"
+            android:paddingVertical="12sp"
+    >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/workmates_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            tools:listitem="@layout/item_workmates"
-            />
+                android:id="@+id/workmates_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                tools:listitem="@layout/item_workmates"
+        />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
-
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 

@@ -2,8 +2,8 @@ package com.julienhammer.go4lunch.ui.workmates;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -54,5 +54,6 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
         this.workmatesArrayList = workmatesArrayList;
         notifyDataSetChanged();
     }
+
 }
 
