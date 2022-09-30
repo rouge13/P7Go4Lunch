@@ -9,6 +9,8 @@ import com.google.android.gms.tasks.SuccessContinuation;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.List;
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
@@ -18,6 +20,14 @@ public class User implements Parcelable {
     private String userEmail;
     private String userPlaceId;
     private String userPhotoUrl;
+    List<String> userRestaurantLikes;
+    public List<String> getUserRestaurantLikes() {
+        return userRestaurantLikes;
+    }
+
+    public void setUserRestaurantLikes(List<String> userRestaurantLikes) {
+        this.userRestaurantLikes = userRestaurantLikes;
+    }
 
     public String getUserPhotoUrl() {
         return userPhotoUrl;
@@ -59,12 +69,13 @@ public class User implements Parcelable {
         this.userPlaceId = userPlaceId;
     }
 
-    public User(String userId, String userName, String userEmail, String userPlaceId, String userPhotoUrl) {
+    public User(String userId, String userName, String userEmail, String userPlaceId, String userPhotoUrl, List<String> userRestaurantLikes) {
         this.userId = userId;
         this.userName = userName;
         this.userEmail = userEmail;
         this.userPlaceId = userPlaceId;
         this.userPhotoUrl = userPhotoUrl;
+        this.userRestaurantLikes = userRestaurantLikes;
     }
 
     public User(){
@@ -77,6 +88,7 @@ public class User implements Parcelable {
         userEmail = in.readString();
         userPlaceId = in.readString();
         userPhotoUrl = in.readString();
+        userRestaurantLikes = in.createStringArrayList();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -103,6 +115,7 @@ public class User implements Parcelable {
         dest.writeString(userEmail);
         dest.writeString(userPlaceId);
         dest.writeString(userPhotoUrl);
+        dest.writeStringList(userRestaurantLikes);
 
     }
 

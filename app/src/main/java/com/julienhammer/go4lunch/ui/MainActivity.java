@@ -49,6 +49,7 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.List;
 import java.util.Objects;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
@@ -148,9 +149,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      
                 }
             });
-
-
-
+//            mUserViewModel.allUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser());
+//
+//            mUserViewModel.getAllTheRestaurantLikes().observe(this, userRestaurantLikes -> {
+//                List<String> listUserRestaurantLikes = userRestaurantLikes;
+//                for (int i = 0; i <= (listUserRestaurantLikes.size() - 1) ; i++){
+//                    String placeId = listUserRestaurantLikes.get(i);
+//                }
+//            });
 
             ViewPager viewPager = binding.viewPager;
             ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -322,55 +328,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // When the user closes the application
     // onPause() will be called
     // and data will be stored
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(this,restaurantDetails ->
-//        {
-            mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+////        mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(this,restaurantDetails ->
+////        {
+//            mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+//
+//            mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
+//                // Storing data into SharedPreferences
+//                SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
+//
+//                // Creating an Editor object to edit(write to the file)
+//                SharedPreferences.Editor myEdit = shChoice.edit();
+//
+//                // Storing the key and its value as the data fetched from edittext
+//                myEdit.putString("placeId", placeId);
+//
+//                // Once the changes have been made,
+//                // we need to commit to apply those changes made,
+//                // otherwise, it will throw an error
+//                myEdit.apply();
+//            });
+//
+////        });
+//
+//    }
 
-            mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
-                // Storing data into SharedPreferences
-                SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-
-                // Creating an Editor object to edit(write to the file)
-                SharedPreferences.Editor myEdit = shChoice.edit();
-
-                // Storing the key and its value as the data fetched from edittext
-                myEdit.putString("placeId", placeId);
-
-                // Once the changes have been made,
-                // we need to commit to apply those changes made,
-                // otherwise, it will throw an error
-                myEdit.apply();
-            });
-
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//        mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+//
+//        mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
+//            // Storing data into SharedPreferences
+//            SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
+//
+//            // Creating an Editor object to edit(write to the file)
+//            SharedPreferences.Editor myEdit = shChoice.edit();
+//
+//            // Storing the key and its value as the data fetched from edittext
+//            myEdit.putString("placeId", placeId);
+//
+//            // Once the changes have been made,
+//            // we need to commit to apply those changes made,
+//            // otherwise, it will throw an error
+//            myEdit.apply();
 //        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-
-        mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
-            // Storing data into SharedPreferences
-            SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-
-            // Creating an Editor object to edit(write to the file)
-            SharedPreferences.Editor myEdit = shChoice.edit();
-
-            // Storing the key and its value as the data fetched from edittext
-            myEdit.putString("placeId", placeId);
-
-            // Once the changes have been made,
-            // we need to commit to apply those changes made,
-            // otherwise, it will throw an error
-            myEdit.apply();
-        });
-
-    }
+//
+//    }
 
 }

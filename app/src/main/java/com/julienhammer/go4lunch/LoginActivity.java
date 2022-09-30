@@ -100,9 +100,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(){
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
-            }
+//            if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+//                loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
+//            }
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();

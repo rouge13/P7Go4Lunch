@@ -85,17 +85,6 @@ public class InfoRestaurantRepository {
 //        }
 //    }
 
-    public void setRestaurantLikes(FirebaseUser user, String restaurantPlaceId){
-
-        DocumentReference washingtonRef = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(restaurantPlaceId);
-
-        // Atomically add a new region to the "regions" array field.
-        washingtonRef.update(FIELD_RESTAURANT_LIKES, FieldValue.arrayUnion(user.getUid()));
-
-//        // Atomically remove a region from the "regions" array field.
-//        washingtonRef.update(FIELD_RESTAURANT_LIKES, FieldValue.arrayRemove("east_coast"));
-
-    }
 
     // Get the Collection Reference
     private CollectionReference getInfoRestaurantCollection(){

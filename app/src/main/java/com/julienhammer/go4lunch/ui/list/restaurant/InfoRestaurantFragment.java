@@ -68,34 +68,58 @@ public class InfoRestaurantFragment extends Fragment {
 //        }
         mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(getViewLifecycleOwner(),restaurantDetails ->
         {
-
             mRestaurantInfo = restaurantDetails;
-            SharedPreferences prf = activity.getSharedPreferences("MyRestaurantChoice", MODE_PRIVATE);
-            String placeIdInFirebase = prf.getString("placeId", "");
-            if (!Objects.equals(mRestaurantInfo.getIdRes(), placeIdInFirebase)){
-                binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_block_48));
-            } else {
-                binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_check_circle_24));
-            }
-            binding.restaurantInfoName.setText(mRestaurantInfo.getNameRes());
-            ConvertToImage.loadGooglePhoto(view.getContext(), binding.itemRestaurantImage, restaurantDetails.getPhotoRefRes());
-            binding.itemChoiceRestaurantButton.setOnClickListener(new View.OnClickListener() {
-                @SuppressLint("UseCompatLoadingForDrawables")
-                @Override
-                public void onClick(View v) {
-                    SharedPreferences prf = activity.getSharedPreferences("MyRestaurantChoice", MODE_PRIVATE);
-                    String placeIdInFirebase = prf.getString("placeId", "");
-                    if (Objects.equals(mRestaurantInfo.getIdRes(), placeIdInFirebase)){
-                        changeValueOfSharedPreferences("");
-                        mUserViewModel.unSetUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-                        binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_block_48));
-                    } else {
-                        changeValueOfSharedPreferences(mRestaurantInfo.getIdRes());
-                        mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(),mRestaurantInfo.getIdRes());
-                        binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_check_circle_24));
-                    }
+            mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+            mUserViewModel.thisRestaurantIsLiked(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()), mRestaurantInfo.getIdRes());
+            mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(getViewLifecycleOwner(), placeId -> {
+                if (!Objects.equals(mRestaurantInfo.getIdRes(), placeId)){
+                    binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_block_48));
+                } else {
+                    binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_check_circle_24));
                 }
+                binding.restaurantInfoName.setText(mRestaurantInfo.getNameRes());
+                ConvertToImage.loadGooglePhoto(view.getContext(), binding.itemRestaurantImage, restaurantDetails.getPhotoRefRes());
+                binding.itemChoiceRestaurantButton.setOnClickListener(new View.OnClickListener() {
+                    @SuppressLint("UseCompatLoadingForDrawables")
+                    @Override
+                    public void onClick(View v) {
+                        if (Objects.equals(mRestaurantInfo.getIdRes(), placeId)){
+                            mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(),"");
+                            binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_block_48));
+                        } else {
+                            mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(),mRestaurantInfo.getIdRes());
+                            binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_check_circle_24));
+                        }
+                    }
+                });
+
+
             });
+            mUserViewModel.getIfRestaurantIsLiked().observe(getViewLifecycleOwner(), isLiked -> {
+                if (isLiked){
+                    binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_rate_24));
+                } else {
+                    binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+                }
+
+
+
+            });
+
+//            binding.cardLike.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if (isLiked){
+//                        mUserViewModel.setUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser(), "");
+//                        binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_24));
+//                    } else {
+//                        mUserViewModel.setUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser(), mRestaurantInfo.getIdRes());
+//                        binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_rate_24));
+//
+//                    }
+//                }
+//            });
+
 //            binding.cardLike.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View view) {
@@ -125,13 +149,13 @@ public class InfoRestaurantFragment extends Fragment {
 
     }
 
-    private void changeValueOfSharedPreferences(String restaurantId){
-        // Storing data into SharedPreferences
-        SharedPreferences shChoice = activity.getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-        SharedPreferences.Editor myEdit = shChoice.edit();
-        myEdit.putString("placeId", restaurantId);
-        myEdit.apply();
-    }
+//    private void changeValueOfSharedPreferences(String restaurantId){
+//        // Storing data into SharedPreferences
+//        SharedPreferences shChoice = activity.getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
+//        SharedPreferences.Editor myEdit = shChoice.edit();
+//        myEdit.putString("placeId", restaurantId);
+//        myEdit.apply();
+//    }
 
 
 

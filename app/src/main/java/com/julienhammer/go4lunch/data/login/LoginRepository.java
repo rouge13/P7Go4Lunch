@@ -12,6 +12,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.julienhammer.go4lunch.models.User;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -46,12 +48,13 @@ public class LoginRepository {
             String userEmail = user.getEmail();
             String userPlaceId = "";
             String userPhotoUrl;
+            List<String> userRestaurantLikes = new ArrayList<>();
             if (user.getPhotoUrl() != null){
                 userPhotoUrl = user.getPhotoUrl().toString();
             } else {
                 userPhotoUrl = "https://abs.twimg.com/sticky/default_profile_images/default_profile_normal.png";
             }
-            User userToCreate = new User(uid, userName, userEmail, userPlaceId, userPhotoUrl);
+            User userToCreate = new User(uid, userName, userEmail, userPlaceId, userPhotoUrl, userRestaurantLikes);
 
             Task<DocumentSnapshot> userData = getUserData();
             // If the user already exist in Firestore, we get his data (USER_PLACE_ID)
