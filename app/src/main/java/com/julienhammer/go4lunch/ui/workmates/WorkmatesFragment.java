@@ -79,7 +79,7 @@ public class WorkmatesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        adapter = new RecyclerViewWorkmateAdapter();
+        adapter = new RecyclerViewWorkmateAdapter(false);
         mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
             ArrayList<User> allWorkmates = new ArrayList<User>();
             for (int i = 0; i <= (workmate.size()) -1; i++){

@@ -2,6 +2,8 @@ package com.julienhammer.go4lunch.data.login;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -14,7 +16,6 @@ import com.julienhammer.go4lunch.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -30,8 +31,13 @@ public class LoginRepository {
     private static final String USER_PHOTO_URL = "userPhotoUrl";
     private static final String TAG = "Value is egal to ";
     private String uid;
-    Boolean userCaseAdded;
+    private final MutableLiveData<Boolean> userCaseAddedMutableLiveData = new MutableLiveData<>();
+
     FirebaseUser currentUser;
+
+    public LiveData<Boolean> getIfUserAlreadyAdded(){
+        return userCaseAddedMutableLiveData;
+    }
 
 
     // Get the Collection Reference
@@ -77,8 +83,7 @@ public class LoginRepository {
         }
     }
 
-    public Boolean getUserCase(String userUIDAdded) {
-        userCaseAdded = false;
+    public void isUserAddedInFirebase(String userUIDAdded) {
         FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
         CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
         Query query = userRef.whereEqualTo(USER_ID_FIELD, userUIDAdded);
@@ -86,14 +91,19 @@ public class LoginRepository {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
 //                        Log.d(TAG, document.getId() + " => " + document.getData());
-                    userCaseAdded = document.exists();
+//                    userCaseAdded.set(document.exists());
+                    if(document.exists()){
+                        userCaseAddedMutableLiveData.postValue(document.exists());
+
+                    } else {
+                        userCaseAddedMutableLiveData.postValue(false);
+                    }
                 }
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
 
-        return userCaseAdded;
 
     }
 

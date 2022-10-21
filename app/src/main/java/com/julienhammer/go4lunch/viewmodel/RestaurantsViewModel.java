@@ -1,14 +1,17 @@
 package com.julienhammer.go4lunch.viewmodel;
 
+import android.content.Context;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.firebase.auth.FirebaseUser;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.restaurants.RestaurantsRepository;
+
+import java.util.List;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -29,7 +32,5 @@ public class RestaurantsViewModel extends ViewModel {
         mRestaurantsRepository.getAllRestaurants(apiKey, userLocation);
 
     }
-
-
 
 }

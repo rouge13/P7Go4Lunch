@@ -1,15 +1,7 @@
 package com.julienhammer.go4lunch.models;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import androidx.annotation.RequiresApi;
-
-import com.google.android.libraries.places.api.model.PhotoMetadata;
-import com.google.maps.model.Photo;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

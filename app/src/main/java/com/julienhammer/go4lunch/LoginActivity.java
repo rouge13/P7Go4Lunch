@@ -1,32 +1,22 @@
 package com.julienhammer.go4lunch;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.appcompat.app.AppCompatActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -100,9 +90,15 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess(){
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            loginViewModel.isUserAddedInFirebase(FirebaseAuth.getInstance().getCurrentUser().getUid());
 //            if (!loginViewModel.getUserCaseAdded(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
 //                loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
 //            }
+            loginViewModel.getIfUserAlreadyAdded().observe(this, isAlreadyAdded -> {
+                if (!isAlreadyAdded){
+                    loginViewModel.createUser(FirebaseAuth.getInstance().getCurrentUser());
+                }
+            } );
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();

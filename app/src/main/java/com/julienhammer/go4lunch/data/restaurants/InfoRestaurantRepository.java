@@ -1,42 +1,45 @@
 package com.julienhammer.go4lunch.data.restaurants;
 
-import android.location.Location;
+import android.content.Context;
 
-import android.util.Log;
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.*;
-import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.utils.NearbySearch;
+import com.julienhammer.go4lunch.models.User;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class InfoRestaurantRepository {
-    private static final String COLLECTION_NAME = "restaurants";
-    private static final String RES_ID_FIELD = "restaurantId";
-    private static final String RES_PLACE_ID_FIELD = "restaurantPlaceId";
+    private static final String COLLECTION_NAME = "users";
+    private static final String USER_PLACE_ID_FIELD = "userPlaceId";
     private static final String TAG = "Value is egal to ";
-    private static final String FIELD_RESTAURANT_LIKES = "restaurantLikes";
-    private static volatile InfoRestaurantRepository instance;
-    private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private CollectionReference userRef = db.collection(COLLECTION_NAME);
+    private static volatile InfoRestaurantRepository instance;
+//    FirebaseFirestore mFirestore;
+    private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
+    private PlacesClient placesClient;
+    private static MutableLiveData<Place> restaurantDetailsInfo = new MutableLiveData<>();
+    private static MutableLiveData<List<User>> mAllWorkmatesInThisRestaurantMutableLiveData = new MutableLiveData<>();
     public InfoRestaurantRepository(){
         InfoRestaurantRepository.mInfoRestaurantMutableLiveData = new MutableLiveData<>();
-
     }
     public LiveData<RestaurantDetails> getInfoRestaurantLiveData() {
         return mInfoRestaurantMutableLiveData;
@@ -48,42 +51,47 @@ public class InfoRestaurantRepository {
         }
     }
 
-//    public void createRestaurantLiked(String restaurantPlaceId, FirebaseUser user){
-//        if (restaurantPlaceId != null){
-//
-//            Map<String, Object> restaurantLiked = new HashMap<>();
-//            restaurantLiked.put(RES_PLACE_ID_FIELD, restaurantPlaceId);
-//            restaurantLiked.put(RES_ID_FIELD, Arrays.asList(user));
-//
-//
-//            FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(restaurantPlaceId)
-//                    .set(restaurantLiked)
-//                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                        @Override
-//                        public void onSuccess(Void aVoid) {
-//                            Log.d(TAG, "DocumentSnapshot successfully written!");
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.w(TAG, "Error writing document", e);
-//                        }
-//                    });
-//
-//
-////            Task<DocumentSnapshot> restaurantData = getRestaurantData();
-////            // If the user already exist in Firestore, we get his data (USER_PLACE_ID)
-////            restaurantData.addOnSuccessListener(documentSnapshot -> {
-////                if (documentSnapshot.contains(USER_ID_FIELD)){
-////                    userToCreate.setUserPlaceId((String) documentSnapshot.get(USER_PLACE_ID));
-////                }
-////                this.getUsersCollection().document(uid).set(userToCreate);
-////            });
-//
-//
-//        }
-//    }
+    public void initPlacesDetailsClientInfo(Context context){
+        placesClient = Places.createClient(context);
+    }
+
+    public LiveData<Place> getRestaurantDetailsInfoLiveData(){
+        return restaurantDetailsInfo;
+    }
+
+    public void initRestaurantsDetailsInfo(String placeId){
+        List<Place.Field> fields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
+
+        // Construct a request object, passing the place ID and fields array.
+        final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, fields);
+        Task<FetchPlaceResponse> placeTask = placesClient.fetchPlace(request);
+
+        placeTask.addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+            @Override
+            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+//                restaurantDetails.add(fetchPlaceResponse);
+                restaurantDetailsInfo.postValue(fetchPlaceResponse.getPlace());
+            }
+        });
+    }
+
+    public void initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseUser user, String placeId) {
+        userRef.whereEqualTo(USER_PLACE_ID_FIELD, placeId).addSnapshotListener((value, error) -> {
+            List<User> workmates = new ArrayList<>();
+            if (value != null){
+                for (QueryDocumentSnapshot doc : value){
+                    if (doc != null){
+                        workmates.add(doc.toObject(User.class));
+                    }
+                }
+            }
+            mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
+        });
+    }
+
+    public LiveData<List<User>> getAllWorkmatesInThisRestaurantLiveData(){
+        return mAllWorkmatesInThisRestaurantMutableLiveData;
+    }
 
 
     // Get the Collection Reference

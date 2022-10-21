@@ -26,6 +26,7 @@ import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -136,7 +137,9 @@ public class ListFragment extends Fragment {
                                         placesSearchResults[i].name,
                                         placesSearchResults[i].vicinity,
                                         photoRef,
-                                        openNowCase);
+                                        openNowCase
+
+                                );
                                 allRestaurants.add(restaurantDetails);
                             }
 

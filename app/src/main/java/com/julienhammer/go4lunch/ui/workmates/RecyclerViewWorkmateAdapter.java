@@ -3,20 +3,18 @@ package com.julienhammer.go4lunch.ui.workmates;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.databinding.ItemWorkmatesBinding;
-import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 //import com.julienhammer.go4lunch.models.Workmate;
-import com.julienhammer.go4lunch.ui.list.RecyclerViewListViewHolder;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
-import com.julienhammer.go4lunch.R;
 
 import java.util.ArrayList;
 
@@ -25,7 +23,10 @@ import java.util.ArrayList;
  */
 public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerViewWorkmateViewHolder> {
     ArrayList<User> workmatesArrayList = new ArrayList<>();
-
+    boolean displayFargmentInfoRestaurant;
+    public RecyclerViewWorkmateAdapter(boolean displayFragmentInfo) {
+        this.displayFargmentInfoRestaurant = displayFragmentInfo;
+    }
 
     @NonNull
     @Override
@@ -39,10 +40,12 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
         Context context = holder.itemView.getContext();
         User workmate = workmatesArrayList.get(position);
         ConvertToImage.loadIcon(context, holder.BindingItemWorkmate.imageWorkmateViewPhoto, workmate.getUserPhotoUrl());
-        holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + " is eating something somewhere.");
-
+        if (this.displayFargmentInfoRestaurant){
+            holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + " is joining!");
+        } else {
+            holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + " is eating something somewhere.");
+        }
     }
-
 
     @Override
     public int getItemCount() {
@@ -51,9 +54,16 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @SuppressLint("NotifyDataSetChanged")
     public void setData(ArrayList<User> workmatesArrayList) {
-        this.workmatesArrayList = workmatesArrayList;
+        if (this.workmatesArrayList == null){
+            this.workmatesArrayList = new ArrayList<>();
+        }
+        this.workmatesArrayList.clear();
+        if(workmatesArrayList != null){
+            this.workmatesArrayList.addAll(workmatesArrayList);
+        }
         notifyDataSetChanged();
     }
+
 
 }
 

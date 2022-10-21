@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 
+import com.google.android.libraries.places.api.Places;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -94,11 +95,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View view = binding.getRoot();
         setContentView(view);
         configureViewModel();
+        mInfoRestaurantViewModel.initPlacesClientInfo(this);
         navHeaderBinding = ActivityMainNavHeaderBinding.bind(binding.activityMainNavView.getHeaderView(0));
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
-
         ActivityCompat.requestPermissions(this,
                 new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
@@ -106,17 +107,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         },
         PackageManager.PERMISSION_GRANTED
         );
-
-
-
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-
-
-
             LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
             boolean gps_enabled = false;
             boolean network_enabled = false;
@@ -149,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
      
                 }
             });
+
+
 //            mUserViewModel.allUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser());
 //
 //            mUserViewModel.getAllTheRestaurantLikes().observe(this, userRestaurantLikes -> {
@@ -161,8 +157,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ViewPager viewPager = binding.viewPager;
             ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(mViewPagerAdapter);
-
-
             binding.buttomNavigationView.setOnItemSelectedListener(item -> {
                 //        // Handle item selection
                 switch (item.getItemId()) {

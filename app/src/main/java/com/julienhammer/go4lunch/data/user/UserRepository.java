@@ -147,13 +147,13 @@ public class UserRepository {
         userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-             for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-                 User userInformation = documentSnapshot.toObject(User.class);
-                 for (String userRestaurantLikes : userInformation.getUserRestaurantLikes()){
+                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
+                    User userInformation = documentSnapshot.toObject(User.class);
+                    for (String userRestaurantLikes : userInformation.getUserRestaurantLikes()){
 
-                     mUserRestaurantLikes.add(userRestaurantLikes);
-                 }
-             }
+                        mUserRestaurantLikes.add(userRestaurantLikes);
+                    }
+                }
             }
         });
 
@@ -193,29 +193,55 @@ public class UserRepository {
 
     public void setUserRestaurantLikes(FirebaseUser user, String placeId){
 
-//        DocumentReference userRestaurantLike = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(user.getUid());
-//        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-//        CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
         userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, placeId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
+                boolean restaurantLiked;
                 if (task.isSuccessful()) {
 
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        DocumentReference docIdRef = userRef.document(document.getId());
-                        docIdRef.update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayUnion(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull @NotNull Task<Void> task) {
-//                                userLikeRestaurantMutableLiveData.postValue(placeId);
-                                thisRestaurantIsLiked(user,placeId);
+                    QuerySnapshot doc = task.getResult();
+                    if (doc != null) {
+                        restaurantLiked = doc.isEmpty();
+                        if (restaurantLiked) {
+                            DocumentReference docIdRef = userRef.document(user.getUid());
+                            docIdRef.update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayUnion(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
 
+                                    userLikeRestaurantMutableLiveData.postValue(false);
 
-                            }
-                        });
+                                }
+                            });
 
+                        } else {
+                            DocumentReference docIdRef = userRef.document(user.getUid());
+                            docIdRef.update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayRemove(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
 
+                                    userLikeRestaurantMutableLiveData.postValue(true);
+
+                                }
+                            });
+                        }
                     }
                 }
+
+//                    for (QueryDocumentSnapshot document : task.getResult()) {
+//                        DocumentReference docIdRef = userRef.document(document.getId());
+//                        docIdRef.update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayUnion(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                            @Override
+//                            public void onComplete(@NonNull @NotNull Task<Void> task) {
+////                                userLikeRestaurantMutableLiveData.postValue(placeId);
+//                                thisRestaurantIsLiked(user,placeId);
+//
+//
+//                            }
+//                        });
+//
+//
+//                    }
+
             }
         });
 
@@ -239,36 +265,22 @@ public class UserRepository {
 
 
     public void thisRestaurantIsLiked(FirebaseUser user, String placeId){
-
-//        Query query = userRef.whereEqualTo(USER_ID_FIELD, userId);
-//
-//        query.get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-        userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, "3").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, placeId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
-                for (QueryDocumentSnapshot documentSnapshot : task.getResult()){
-
-
-//                    document.getString("userPlaceId"));
-//                    documentSnapshot.get("userRestaurantLikes")
-                    boolean restaurantLiked = documentSnapshot.exists();
-
-
+                boolean restaurantLiked;
+                if (task.isSuccessful()){
+                    QuerySnapshot doc = task.getResult();
+                    if (doc != null) {
+                        restaurantLiked = doc.isEmpty();
+                    } else {
+                        restaurantLiked = true;
+                    }
                     userLikeRestaurantMutableLiveData.postValue(restaurantLiked);
-
                 }
             }
-
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull @NotNull Exception e) {
-
-            }
         });
-
-
     }
 
 
