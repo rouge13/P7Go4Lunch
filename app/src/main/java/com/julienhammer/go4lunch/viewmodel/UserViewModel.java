@@ -40,7 +40,7 @@ public class UserViewModel extends ViewModel {
         mUserRepository = UserRepository.getInstance();
     }
 
-    public LiveData<String> getIfSelectedRestaurantIsChoiced() {
+    public LiveData<String> getSelectedRestaurantIsChoiced() {
         return mUserRepository.getSelectedRestaurantChoiced();
     }
 

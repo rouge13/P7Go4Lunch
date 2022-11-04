@@ -1,5 +1,7 @@
 package com.julienhammer.go4lunch.ui;
 
+import android.content.SharedPreferences;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
@@ -18,7 +20,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.LocationManager;
@@ -30,7 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-import com.google.android.libraries.places.api.Places;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.android.material.navigation.NavigationView;
@@ -41,6 +42,7 @@ import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
+import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
@@ -50,7 +52,6 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.List;
 import java.util.Objects;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
@@ -73,7 +74,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     LocationManager lm;
     boolean gps_enabled = false;
     boolean network_enabled = false;
-
+    private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
+    private static String PLACE_ID = "placeId";
+    private static String RESTAURANT_NAME = "nameRes";
+    private static String RESTAURANT_ADDRESS = "addressRes";
+    private static String RESTAURANT_OPEN_NOW = "openNowRes";
+    private static String RESTAURANT_PHOTO_REF = "photoRefRes";
+    private static String RESTAURANT_RATING = "ratingRes";
+    private static String RESTAURANT_LAT = "latRes";
+    private static String RESTAURANT_LNG = "lngRes";
+//    ExecutorService executor = Executors.newSingleThreadExecutor();
+    RestaurantDetails restaurantChoiced;
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -138,12 +149,73 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mLocationViewModel.refresh();
             mLocationViewModel.getLocationLiveData().observe(this, location -> {
                 if (location != null){
-
                     mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
-     
                 }
             });
+            mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+            mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
+                saveValueOfTheRestaurantChoicePlaceId(placeId);
 
+            });
+//            mUserViewModel.userRestaurantSelected(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//            mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
+//                mRestaurantsViewModel.getRestaurantsLiveData().observe(this, placesSearchResults -> {
+//                    String photoRef;
+//                    String mMissingPhoto = "%20image%20missing%20reference";
+//                    for (int i = 0; i <= placesSearchResults.length - 1 ; i++ ) {
+//                        if (Objects.equals(placeId, placesSearchResults[i].placeId)) {
+//                            String openNowCase = "";
+//                            if (placesSearchResults[i].permanentlyClosed) {
+//                                i++;
+//                            } else {
+//                                if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
+//                                    if (placesSearchResults[i].openingHours.openNow) {
+//                                        openNowCase = "Open now";
+//                                    } else {
+//                                        openNowCase = "Closed now";
+//                                    }
+//                                } else {
+//                                    openNowCase = "Doesn't show if it's open";
+//                                }
+//                                if (placesSearchResults[i].photos != null) {
+//                                    photoRef = placesSearchResults[i].photos[0].photoReference;
+//                                } else {
+//                                    photoRef = mMissingPhoto;
+//                                }
+//                                LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
+//                                RestaurantDetails restaurantDetails = new RestaurantDetails(
+//                                        placesSearchResults[i].placeId,
+//                                        placesSearchResults[i].name,
+//                                        placesSearchResults[i].vicinity,
+//                                        photoRef,
+//                                        openNowCase,
+//                                        placesSearchResults[i].rating,
+//                                        resLocation
+//                                );
+////                                                restaurantChoiced.add(restaurantDetails);
+//                                mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
+//
+////                                // Storing data into SharedPreferences
+////                                SharedPreferences shChoice = this.getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
+////
+////                                // Creating an Editor object to edit(write to the file)
+////                                SharedPreferences.Editor myEdit = shChoice.edit();
+////
+////                                // Storing the key and its value as the data fetched from edittext
+////                                myEdit.putString("placeId", placeId);
+////
+////                                // Once the changes have been made,
+////                                // we need to commit to apply those changes made,
+////                                // otherwise, it will throw an error
+////                                myEdit.apply();
+//                            }
+//
+//                        }
+//                    }
+//
+//
+//                });
+//            });
 
 //            mUserViewModel.allUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser());
 //
@@ -182,6 +254,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void saveValueOfTheRestaurantChoicePlaceId(String placeId) {
+        // Storing data into SharedPreferences
+        SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        // Creating an Editor object to edit(write to the file)
+        SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
+        // Storing the key and its value as the data fetched from edittext
+        myEdit.putString(PLACE_ID, placeId);
+        // Once the changes have been made,
+        // we need to commit to apply those changes made,
+        // otherwise, it will throw an error
+        myEdit.apply();
+    }
 
 
     private void configureViewModel() {
@@ -280,6 +364,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_your_lunch:
+                SharedPreferences prefs = getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
+                String restaurantChoicedId = prefs.getString(PLACE_ID,"");
+                if (!Objects.equals(restaurantChoicedId, "")){
+                    LatLng resLocation = new LatLng(prefs.getFloat(RESTAURANT_LAT,0) , prefs.getFloat(RESTAURANT_LNG,0));
+                    RestaurantDetails restaurantDetailsChoiced = new RestaurantDetails(
+                            prefs.getString(PLACE_ID,""),
+                            prefs.getString(RESTAURANT_NAME,""),
+                            prefs.getString(RESTAURANT_ADDRESS,""),
+                            prefs.getString(RESTAURANT_PHOTO_REF,""),
+                            prefs.getString(RESTAURANT_OPEN_NOW,""),
+                            prefs.getFloat(RESTAURANT_RATING,0),
+                            resLocation
+                    );
+                    mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetailsChoiced);
+                    EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetailsChoiced));
+                } else {
+                    Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             case R.id.nav_settings:
                 break;

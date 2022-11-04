@@ -11,6 +11,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ItemWorkmatesBinding;
 import com.julienhammer.go4lunch.models.User;
 //import com.julienhammer.go4lunch.models.Workmate;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
  */
 public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerViewWorkmateViewHolder> {
     ArrayList<User> workmatesArrayList = new ArrayList<>();
+    ArrayList<String> restaurantsPlaceName = new ArrayList<>();
     boolean displayFargmentInfoRestaurant;
     public RecyclerViewWorkmateAdapter(boolean displayFragmentInfo) {
         this.displayFargmentInfoRestaurant = displayFragmentInfo;
@@ -41,9 +43,14 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
         User workmate = workmatesArrayList.get(position);
         ConvertToImage.loadIcon(context, holder.BindingItemWorkmate.imageWorkmateViewPhoto, workmate.getUserPhotoUrl());
         if (this.displayFargmentInfoRestaurant){
-            holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + " is joining!");
+            holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.is_joining));
         } else {
-            holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + " is eating something somewhere.");
+            String restaurantPlaceName = restaurantsPlaceName.get(position);
+            if (restaurantPlaceName.equals("")){
+                holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.not_selected));
+            } else {
+                holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.is_eating_to) + restaurantPlaceName);
+            }
         }
     }
 
@@ -53,15 +60,22 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(ArrayList<User> workmatesArrayList) {
+    public void setData(ArrayList<User> workmatesArrayList, ArrayList<String> restaurantsPlaceName) {
+
+
+
         if (this.workmatesArrayList == null){
             this.workmatesArrayList = new ArrayList<>();
         }
-        this.workmatesArrayList.clear();
+
         if(workmatesArrayList != null){
+            this.workmatesArrayList.clear();
+            this.restaurantsPlaceName.clear();
             this.workmatesArrayList.addAll(workmatesArrayList);
+            this.restaurantsPlaceName.addAll(restaurantsPlaceName);
+            notifyDataSetChanged();
+
         }
-        notifyDataSetChanged();
     }
 
 

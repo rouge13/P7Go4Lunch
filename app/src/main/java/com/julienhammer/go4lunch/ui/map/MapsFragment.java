@@ -1,5 +1,6 @@
 package com.julienhammer.go4lunch.ui.map;
 
+import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,6 +32,7 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
+import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
@@ -40,6 +42,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
@@ -55,6 +59,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
     SupportMapFragment mapFragment = null;
     CameraPosition cameraPosition = null;
+    private static String PLACE_ID = "placeId";
+    private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
+    private static String RESTAURANT_NAME = "nameRes";
+    private static String RESTAURANT_ADDRESS = "addressRes";
+    private static String RESTAURANT_OPEN_NOW = "openNowRes";
+    private static String RESTAURANT_PHOTO_REF = "photoRefRes";
+    private static String RESTAURANT_RATING = "ratingRes";
+    private static String RESTAURANT_LAT = "latRes";
+    private static String RESTAURANT_LNG = "lngRes";
+
 //    final CameraPosition currentCameraPosition = null;
     //    MapView mapView = null;
 
@@ -92,7 +106,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
      * user has installed Google Play services and returned to the app.
      */
 
-    @SuppressLint("MissingPermission")
+    @SuppressLint({"MissingPermission", "PotentialBehaviorOverride"})
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -107,6 +121,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
 //                mainExecutor.execute(()->{
         mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+
             mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults ->
             {
                 userLocation = location;
@@ -135,8 +150,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     double latPlace = placesSearchResults[i].geometry.location.lat;
                     double longPlace = placesSearchResults[i].geometry.location.lng;
                     String placeName = placesSearchResults[i].name;
-                    String markerName = placesSearchResults[i].name;
-
                     String openNowCase = "";
                     String photoRef = "";
                     String mMissingPhoto = "%20image%20missing%20reference";
@@ -158,13 +171,29 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         } else {
                             photoRef = mMissingPhoto;
                         }
+                        LatLng resLocation = new LatLng(latPlace , longPlace);
                         RestaurantDetails restaurantDetails = new RestaurantDetails(
                                 placesSearchResults[i].placeId,
                                 placesSearchResults[i].name,
                                 placesSearchResults[i].vicinity,
                                 photoRef,
-                                openNowCase
+                                openNowCase,
+                                placesSearchResults[i].rating,
+                                resLocation
                                 );
+                        SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
+                        String restaurantChoicedId = prefs.getString(PLACE_ID,"");
+                        if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
+
+                            saveValueOfTheRestaurantChoiceAllDataNeeded(
+                                    placesSearchResults[i].name,
+                                    placesSearchResults[i].vicinity,
+                                    photoRef,
+                                    openNowCase,
+                                    placesSearchResults[i].rating,
+                                    (float) latPlace,
+                                    (float) longPlace);
+                        }
                         allRestaurants.add(restaurantDetails);
 
                         MarkerOptions markerOptions = new MarkerOptions().position(
@@ -242,6 +271,25 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
 
+    }
+
+    private void saveValueOfTheRestaurantChoiceAllDataNeeded(String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
+        // Storing data into SharedPreferences
+        SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        // Creating an Editor object to edit(write to the file)
+        SharedPreferences.Editor myEdit = shChoice.edit();
+        // Storing the key and its value as the data fetched from edittext
+        myEdit.putString(RESTAURANT_NAME, nameRes);
+        myEdit.putString(RESTAURANT_ADDRESS, addressRes);
+        myEdit.putString(RESTAURANT_PHOTO_REF, photoRefRes);
+        myEdit.putString(RESTAURANT_OPEN_NOW, openNowRes);
+        myEdit.putFloat(RESTAURANT_RATING, ratingRes);
+        myEdit.putFloat(RESTAURANT_LAT, latRes);
+        myEdit.putFloat(RESTAURANT_LNG, lngRes);
+        // Once the changes have been made,
+        // we need to commit to apply those changes made,
+        // otherwise, it will throw an error
+        myEdit.apply();
     }
 
 }

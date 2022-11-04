@@ -55,5 +55,12 @@
     <string name="open_location_settings">Paramètre GPS</string>
     <string name="no_restaurant_phone_number">"The phone number is missing for "</string>
     <string name="no_restaurant_website">"The website is missing for "</string>
+    <string name="restaurant_dist_from_location">120m</string>
+    <string name="restaurant_number_of_user_choice">(1)</string>
+    <string name="restaurant_not_selected">" has not selected a restaurant."</string>
+    <string name="not_selected">" has not selected a restaurant."</string>
+    <string name="is_joining">" is joining!"</string>
+    <string name="is_eating_to">" is eating to : "</string>
+    <string name="no_restaurant_choiced">No restaurant is choiced for this user.</string>
 
 </resources>

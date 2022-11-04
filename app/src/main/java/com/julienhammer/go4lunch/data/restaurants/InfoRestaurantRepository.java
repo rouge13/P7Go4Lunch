@@ -32,6 +32,7 @@ public class InfoRestaurantRepository {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection(COLLECTION_NAME);
+    private static MutableLiveData<Integer> mCountWorkmatesInRestaurant;
     private static volatile InfoRestaurantRepository instance;
 //    FirebaseFirestore mFirestore;
     private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
@@ -85,7 +86,7 @@ public class InfoRestaurantRepository {
                     }
                 }
             }
-            mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
+            mAllWorkmatesInThisRestaurantMutableLiveData.setValue(workmates);
         });
     }
 
@@ -105,6 +106,18 @@ public class InfoRestaurantRepository {
         }else{
             return null;
         }
+    }
+
+    public LiveData<Integer> countWorkmatesForRestaurant(String placeId) {
+        MutableLiveData<Integer> countWorkmatesLiveData = new MutableLiveData<>();
+        db.collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, placeId).addSnapshotListener((value, error) -> {
+            int countWorkmates = 0;
+            if (value != null){
+                countWorkmates = value.size();
+            }
+            countWorkmatesLiveData.setValue(countWorkmates);
+        });
+        return countWorkmatesLiveData;
     }
 
     public static InfoRestaurantRepository getInstance(){

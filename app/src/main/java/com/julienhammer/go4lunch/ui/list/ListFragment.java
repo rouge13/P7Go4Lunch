@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
@@ -99,17 +100,18 @@ public class ListFragment extends Fragment {
         configureViewModel();
         initRestaurantsList();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        adapter = new RecyclerViewListAdapter();
+//        adapter = new RecyclerViewListAdapter();
 
 
-            Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
-            executor.execute(() -> {
+        Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
+        executor.execute(() -> {
 
-                mainExecutor.execute(() -> {
+            mainExecutor.execute(() -> {
 
-                    mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                    mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults ->
-                    {
+                mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                    adapter = new RecyclerViewListAdapter(new LatLng(location.getLatitude(),location.getLongitude()));
+                    mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+
                         String photoRef;
                         String mMissingPhoto = "%20image%20missing%20reference";
                         ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
@@ -132,13 +134,15 @@ public class ListFragment extends Fragment {
                                 } else {
                                     photoRef = mMissingPhoto;
                                 }
+                                LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat , placesSearchResults[i].geometry.location.lng);
                                 RestaurantDetails restaurantDetails = new RestaurantDetails(
                                         placesSearchResults[i].placeId,
                                         placesSearchResults[i].name,
                                         placesSearchResults[i].vicinity,
                                         photoRef,
-                                        openNowCase
-
+                                        openNowCase,
+                                        placesSearchResults[i].rating,
+                                        resLocation
                                 );
                                 allRestaurants.add(restaurantDetails);
                             }

@@ -56,4 +56,12 @@ public class InfoRestaurantViewModel extends ViewModel {
     public LiveData<List<User>> getAllWorkmatesInThisRestaurantLiveData(){
         return mInfoRestaurantRepository.getAllWorkmatesInThisRestaurantLiveData();
     }
+
+    public  LiveData<Integer>  getCountWorkmatesForRestaurant(String placeId){
+        return mInfoRestaurantRepository.countWorkmatesForRestaurant(placeId);
+    }
+
+//    public LiveData<Integer> getCountWorkmatesInRestaurantLiveData(){
+//        return mInfoRestaurantRepository.getCountWorkmatesInRestaurantLiveData();
+//    }
 }
