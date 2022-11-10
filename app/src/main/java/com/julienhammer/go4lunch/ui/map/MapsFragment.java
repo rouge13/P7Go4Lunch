@@ -193,6 +193,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                     placesSearchResults[i].rating,
                                     (float) latPlace,
                                     (float) longPlace);
+                        } else {
+                            deleteValueForPlaceId();
                         }
                         allRestaurants.add(restaurantDetails);
 
@@ -220,23 +222,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         return false;
                     }
                 });
-
-
-//                    });
-
             });
-
         });
+    }
 
-
-
-
-
-
-
-//            });
-//        });
-//        }
+    private void deleteValueForPlaceId() {
+        SharedPreferences shPlaceIdChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
+        myEdit.putString(PLACE_ID, "");
+        myEdit.apply();
     }
 
     @Nullable

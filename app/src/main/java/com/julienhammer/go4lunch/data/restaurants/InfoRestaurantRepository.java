@@ -114,6 +114,7 @@ public class InfoRestaurantRepository {
             int countWorkmates = 0;
             if (value != null){
                 countWorkmates = value.size();
+
             }
             countWorkmatesLiveData.setValue(countWorkmates);
         });

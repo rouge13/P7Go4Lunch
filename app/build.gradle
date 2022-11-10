@@ -139,6 +139,10 @@ dependencies {
     //EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
 
+    //Worker for setting the notification in a specific time if Restaurant is set
+    implementation 'androidx.work:work-runtime:2.7.1'
+
+
 }
 
 

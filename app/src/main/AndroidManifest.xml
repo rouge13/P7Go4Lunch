@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.julienhammer.go4lunch">
     <uses-feature android:name="android.hardware.telephony" android:required="false"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="your.application.package.permission.MAPS_RECEIVE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -55,6 +56,14 @@
         </activity>
     <!--        MAIN ACTIVITY PAGE -->
     <activity android:name=".ui.MainActivity" />
+    <receiver android:name=".notification.NotificationBroadcast"/>
+    <!-- If this receiver listens for broadcasts sent from the system or from
+     other apps, even other apps that you own, set android:exported to "true". -->
+<!--    <receiver android:name=".notification.NotificationBroadcast" android:exported="false">-->
+<!--        <intent-filter>-->
+<!--            <action android:name="APP_SPECIFIC_BROADCAST" />-->
+<!--        </intent-filter>-->
+<!--    </receiver>-->
     </application>
 
 </manifest>

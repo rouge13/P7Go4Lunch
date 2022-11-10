@@ -1,9 +1,15 @@
 package com.julienhammer.go4lunch.ui;
 
+import android.app.AlarmManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -31,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 
+import androidx.work.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -43,6 +50,9 @@ import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
+import com.julienhammer.go4lunch.models.User;
+import com.julienhammer.go4lunch.notification.NotificationBroadcast;
+//import com.julienhammer.go4lunch.notification.NotificationHandler;
 import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
@@ -52,7 +62,10 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 
@@ -83,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String RESTAURANT_RATING = "ratingRes";
     private static String RESTAURANT_LAT = "latRes";
     private static String RESTAURANT_LNG = "lngRes";
-//    ExecutorService executor = Executors.newSingleThreadExecutor();
+    //    ExecutorService executor = Executors.newSingleThreadExecutor();
     RestaurantDetails restaurantChoiced;
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -97,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.onConfigurationChanged(newConfig);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint("NonConstantResourceId")
     @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     @Override
@@ -106,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         View view = binding.getRoot();
         setContentView(view);
         configureViewModel();
+        createNotificationChannel();
         mInfoRestaurantViewModel.initPlacesClientInfo(this);
         navHeaderBinding = ActivityMainNavHeaderBinding.bind(binding.activityMainNavView.getHeaderView(0));
         configureToolBar();
@@ -113,10 +128,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureNavigationView();
         ActivityCompat.requestPermissions(this,
                 new String[]{
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-        },
-        PackageManager.PERMISSION_GRANTED
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                },
+                PackageManager.PERMISSION_GRANTED
         );
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
@@ -145,6 +160,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 alertDialog.setNegativeButton(R.string.Cancel,null);
                 alertDialog.show();
             }
+            Context context = this.getApplicationContext();
+
 
             mLocationViewModel.refresh();
             mLocationViewModel.getLocationLiveData().observe(this, location -> {
@@ -152,11 +169,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
                 }
             });
+
             mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
             mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
                 saveValueOfTheRestaurantChoicePlaceId(placeId);
+                if (placeId != null){
+                    mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseAuth.getInstance().getCurrentUser(), placeId);
 
+                    //define constraints
+                    mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(this, workmates -> {
+                        addWorkmatesToSharedPreferences(context, workmates);
+
+
+
+                    });
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    setNotificationAlarm();
+                    Toast.makeText(this, "Notification has been set", Toast.LENGTH_SHORT).show();
+//                    }
+
+
+//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+//                        Constraints constraints = new Constraints.Builder()
+//                                .setRequiresDeviceIdle(false)
+//                                .setRequiresCharging(false)
+//                                .setRequiredNetworkType(NetworkType.CONNECTED)
+//                                .setRequiresBatteryNotLow(true)
+//                                .setRequiresStorageNotLow(true)
+//                                .build();
+//                        PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(NotificationHandler.class, 10, TimeUnit.SECONDS)
+//                                .setConstraints(constraints)
+//                                .build();
+//                        WorkManager.getInstance().enqueueUniquePeriodicWork(getApplicationContext().getString(R.string.app_name),ExistingPeriodicWorkPolicy.REPLACE,periodicWork);
+//                    }
+
+                }
             });
+
 //            mUserViewModel.userRestaurantSelected(FirebaseAuth.getInstance().getCurrentUser().getUid());
 //            mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
 //                mRestaurantsViewModel.getRestaurantsLiveData().observe(this, placesSearchResults -> {
@@ -254,6 +303,66 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    private void setNotificationAlarm() {
+//        if (ActivityCompat.checkSelfPermission(this,
+//                Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(this, NotificationBroadcast.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        // Set the alarm to start at 12:00 a.m.
+        Calendar calendar = Calendar.getInstance();
+
+//            calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+//            calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+//            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 17);
+        calendar.set(Calendar.MINUTE, 20);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
+        // With setInexactRepeating(), you have to use one of the AlarmManager interval
+// constants--in this case, AlarmManager.INTERVAL_DAY.
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+
+//        }
+//        else {
+//            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+//            startActivity(intent);
+//        }
+
+
+    }
+
+    //    private void createRestaurantNotificationChannel(){
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = "RestaurantReminderChannel";
+//            String description = "Channel for Go4Lunch application";
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel("notifyRestaurant", name, importance);
+//            channel.setDescription(description);
+//
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
+
     private void saveValueOfTheRestaurantChoicePlaceId(String placeId) {
         // Storing data into SharedPreferences
         SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
@@ -264,6 +373,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Once the changes have been made,
         // we need to commit to apply those changes made,
         // otherwise, it will throw an error
+        myEdit.apply();
+    }
+
+    private void addWorkmatesToSharedPreferences(Context context, List<User> workmates) {
+        // Storing data into SharedPreferences
+        SharedPreferences shChoice = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
+
+        // Creating an Editor object to edit(write to the file)
+        SharedPreferences.Editor myEdit = shChoice.edit();
+
+        ArrayList<String> workmatesUserNameAdded = new ArrayList<>();
+        // Storing the key and its value as the data fetched from edittext
+        for (int i = 0; i < workmates.size(); i++){
+            workmatesUserNameAdded.add(workmates.get(i).getUserName());
+        }
+
+        // create an object of StringBuilder class
+        StringBuilder builder = new StringBuilder();
+//        if (workmatesUserNameAdded.iterator().hasNext()) {
+        for (String workmatesUserName : workmatesUserNameAdded) {
+
+            builder.append(workmatesUserName + " ");
+        }
+
+//        }
+//        else if (!workmatesUserNameAdded.iterator().hasNext()){
+//            for (String workmatesUserName : workmatesUserNameAdded) {
+//                builder.append(workmatesUserName);
+//            }
+//        }
+        // convert StringBuilder object into string
+        String stringAllWorkmates = builder.toString();
+        myEdit.putString(context.getString(R.string.shared_workmates), stringAllWorkmates);
         myEdit.apply();
     }
 
@@ -385,6 +527,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case R.id.nav_settings:
+                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();
@@ -420,60 +563,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
     }
 
-    // Store the data in the SharedPreference
-    // in the onPause() method
-    // When the user closes the application
-    // onPause() will be called
-    // and data will be stored
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-////        mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(this,restaurantDetails ->
-////        {
-//            mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-//
-//            mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
-//                // Storing data into SharedPreferences
-//                SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-//
-//                // Creating an Editor object to edit(write to the file)
-//                SharedPreferences.Editor myEdit = shChoice.edit();
-//
-//                // Storing the key and its value as the data fetched from edittext
-//                myEdit.putString("placeId", placeId);
-//
-//                // Once the changes have been made,
-//                // we need to commit to apply those changes made,
-//                // otherwise, it will throw an error
-//                myEdit.apply();
-//            });
-//
-////        });
-//
-//    }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-//
-//        mUserViewModel.getIfSelectedRestaurantIsChoiced().observe(this, placeId -> {
-//            // Storing data into SharedPreferences
-//            SharedPreferences shChoice = getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-//
-//            // Creating an Editor object to edit(write to the file)
-//            SharedPreferences.Editor myEdit = shChoice.edit();
-//
-//            // Storing the key and its value as the data fetched from edittext
-//            myEdit.putString("placeId", placeId);
-//
-//            // Once the changes have been made,
-//            // we need to commit to apply those changes made,
-//            // otherwise, it will throw an error
-//            myEdit.apply();
-//        });
-//
-//    }
+
 
 }

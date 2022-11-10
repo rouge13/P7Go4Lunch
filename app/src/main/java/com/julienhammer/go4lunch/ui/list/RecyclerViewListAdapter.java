@@ -2,6 +2,7 @@ package com.julienhammer.go4lunch.ui.list;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
+import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
@@ -28,8 +30,11 @@ import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -101,6 +106,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             }
         });
     }
+
+
 
     private void initInfoRestaurantViewModel(Context context) {
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();

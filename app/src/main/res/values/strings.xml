@@ -62,5 +62,12 @@
     <string name="is_joining">" is joining!"</string>
     <string name="is_eating_to">" is eating to : "</string>
     <string name="no_restaurant_choiced">No restaurant is choiced for this user.</string>
+    <string name="content_name">Name</string>
+    <string name="Address">Address</string>
+    <string name="channel_name">RestaurantReminderChannel</string>
+    <string name="channel_description">Channel for Go4Lunch application</string>
+    <string name="channel_id">notifyRestaurant</string>
+    <string name="content_title">Restaurant of the day.</string>
+    <string name="shared_workmates">sharedWorkmates</string>
 
 </resources>
