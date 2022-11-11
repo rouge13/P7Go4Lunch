@@ -177,12 +177,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseAuth.getInstance().getCurrentUser(), placeId);
 
                     //define constraints
-                    mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(this, workmates -> {
-                        addWorkmatesToSharedPreferences(context, workmates);
-
-
-
-                    });
+//                    mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(this, workmates -> {
+//                        addWorkmatesToSharedPreferences(context, workmates);
+//
+//
+//
+//                    });
 //                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     setNotificationAlarm();
                     Toast.makeText(this, "Notification has been set", Toast.LENGTH_SHORT).show();
@@ -328,18 +328,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Set the alarm to start at 12:00 a.m.
         Calendar calendar = Calendar.getInstance();
 
-//            calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
-//            calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
-//            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 17);
-        calendar.set(Calendar.MINUTE, 20);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.MINUTE, 5);
         calendar.set(Calendar.SECOND,0);
         calendar.set(Calendar.MILLISECOND,0);
         // With setInexactRepeating(), you have to use one of the AlarmManager interval
 // constants--in this case, AlarmManager.INTERVAL_DAY.
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
 
 //        }
 //        else {
@@ -376,38 +375,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         myEdit.apply();
     }
 
-    private void addWorkmatesToSharedPreferences(Context context, List<User> workmates) {
-        // Storing data into SharedPreferences
-        SharedPreferences shChoice = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
-
-        // Creating an Editor object to edit(write to the file)
-        SharedPreferences.Editor myEdit = shChoice.edit();
-
-        ArrayList<String> workmatesUserNameAdded = new ArrayList<>();
-        // Storing the key and its value as the data fetched from edittext
-        for (int i = 0; i < workmates.size(); i++){
-            workmatesUserNameAdded.add(workmates.get(i).getUserName());
-        }
-
-        // create an object of StringBuilder class
-        StringBuilder builder = new StringBuilder();
-//        if (workmatesUserNameAdded.iterator().hasNext()) {
-        for (String workmatesUserName : workmatesUserNameAdded) {
-
-            builder.append(workmatesUserName + " ");
-        }
-
+//    private void addWorkmatesToSharedPreferences(Context context, List<User> workmates) {
+//        // Storing data into SharedPreferences
+//        SharedPreferences shChoice = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
+//
+//        // Creating an Editor object to edit(write to the file)
+//        SharedPreferences.Editor myEdit = shChoice.edit();
+//
+//        ArrayList<String> workmatesUserNameAdded = new ArrayList<>();
+//        // Storing the key and its value as the data fetched from edittext
+//        for (int i = 0; i < workmates.size(); i++){
+//            workmatesUserNameAdded.add(workmates.get(i).getUserName());
 //        }
-//        else if (!workmatesUserNameAdded.iterator().hasNext()){
-//            for (String workmatesUserName : workmatesUserNameAdded) {
-//                builder.append(workmatesUserName);
-//            }
+//
+//        // create an object of StringBuilder class
+//        StringBuilder builder = new StringBuilder();
+////        if (workmatesUserNameAdded.iterator().hasNext()) {
+//        for (String workmatesUserName : workmatesUserNameAdded) {
+//
+//            builder.append(workmatesUserName + " ");
 //        }
-        // convert StringBuilder object into string
-        String stringAllWorkmates = builder.toString();
-        myEdit.putString(context.getString(R.string.shared_workmates), stringAllWorkmates);
-        myEdit.apply();
-    }
+//
+////        }
+////        else if (!workmatesUserNameAdded.iterator().hasNext()){
+////            for (String workmatesUserName : workmatesUserNameAdded) {
+////                builder.append(workmatesUserName);
+////            }
+////        }
+//        // convert StringBuilder object into string
+//        String stringAllWorkmates = builder.toString();
+//        myEdit.putString(context.getString(R.string.shared_workmates), stringAllWorkmates);
+//        myEdit.apply();
+//    }
 
 
     private void configureViewModel() {

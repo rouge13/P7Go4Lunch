@@ -6,20 +6,74 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.models.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
 public class NotificationBroadcast extends BroadcastReceiver {
 
+    private static final String COLLECTION_NAME = "users";
+    private static final String USER_PLACE_ID_FIELD = "userPlaceId";
+    private static String PLACE_ID = "placeId";
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";
 
+
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences prefs = context.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
-        SharedPreferences prefsWorkmates = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
+
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, prefs.getString(PLACE_ID,"")).addSnapshotListener((value, error) -> {
+            List<User> workmates = new ArrayList<>();
+            if (value != null){
+                for (QueryDocumentSnapshot doc : value){
+                    if (doc != null){
+                        workmates.add(doc.toObject(User.class));
+                    }
+                }
+            }
+            showNotification(context, workmates, prefs);
+
+        });
+    }
+
+    private void showNotification(Context context, List<User> workmates, SharedPreferences prefs) {
+        StringBuilder builder = new StringBuilder();
+        String stringAllWorkmates = context.getString(R.string.no_workmates);
+        if (workmates.size() != 0){
+            ArrayList<String> workmatesUserNameAdded = new ArrayList<>();
+            // Storing the key and its value as the data fetched from edittext
+            for (int i = 0; i < workmates.size(); i++){
+                workmatesUserNameAdded.add(workmates.get(i).getUserName());
+            }
+
+            // create an object of StringBuilder class
+
+//        if (workmatesUserNameAdded.iterator().hasNext()) {
+            for (String workmatesUserName : workmatesUserNameAdded) {
+
+                builder.append(workmatesUserName + " ");
+            }
+
+//        }
+//        else if (!workmatesUserNameAdded.iterator().hasNext()){
+//            for (String workmatesUserName : workmatesUserNameAdded) {
+//                builder.append(workmatesUserName);
+//            }
+//        }
+            // convert StringBuilder object into string
+            stringAllWorkmates = builder.toString();
+        }
+
+
+//        SharedPreferences prefsWorkmates = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
         NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(
                 context, context.getString(R.string.channel_id))
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -35,7 +89,7 @@ public class NotificationBroadcast extends BroadcastReceiver {
                                 + ". "
                                 + context.getString(R.string.title_workmates_view)
                                 + " : "
-                                + prefsWorkmates.getString(context.getString(R.string.shared_workmates), "")
+                                + stringAllWorkmates
                                 + "."
                 ))
 
@@ -48,44 +102,5 @@ public class NotificationBroadcast extends BroadcastReceiver {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(200, notificationCompat.build());
     }
-
-
-
-
-//    private static final String TAG = "MyBroadcastReceiver";
-//    @Override
-//    public void onReceive(Context context, Intent intent) {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("Action: " + intent.getAction() + "\n");
-//        sb.append("URI: " + intent.toUri(Intent.URI_INTENT_SCHEME).toString() + "\n");
-//        String log = sb.toString();
-//        Log.d(TAG, log);
-//        Toast.makeText(context, log, Toast.LENGTH_LONG).show();
-//    }
-
-
-//    private static final String TAG = "MyBroadcastReceiver";
-//
-//    private final Executor backgroundExecutor = Executors.newSingleThreadExecutor();
-//
-//    @Override
-//    public void onReceive(Context context, Intent intent) {
-//        final PendingResult pendingResult = goAsync();
-//
-//        backgroundExecutor.execute(() -> {
-//            try {
-//                // Do some background work
-//                StringBuilder sb = new StringBuilder();
-//                sb.append("Action: ").append(intent.getAction()).append("\n");
-//                sb.append("URI: ").append(intent.toUri(Intent.URI_INTENT_SCHEME)).append("\n");
-//                String log = sb.toString();
-//                Log.d(TAG, log);
-//            } finally {
-//                // Must call finish() so the BroadcastReceiver can be recycled
-//                pendingResult.finish();
-//            }
-//        });
-//    }
-
 
 }
