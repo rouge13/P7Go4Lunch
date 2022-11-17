@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.Parcel;
+import android.util.Log;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,12 +39,23 @@ import android.view.MenuItem;
 import android.view.View;
 
 
-import androidx.work.*;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.maps.android.SphericalUtil;
 import com.julienhammer.go4lunch.LoginActivity;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
@@ -50,7 +63,6 @@ import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.notification.NotificationBroadcast;
 //import com.julienhammer.go4lunch.notification.NotificationHandler;
 import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
@@ -61,15 +73,16 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static androidx.constraintlayout.widget.Constraints.TAG;
 //import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String MY_SEARCH_ON_COMPLETE = "searchRestaurant";
     private UserViewModel mUserViewModel;
     private LocationViewModel mLocationViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
@@ -89,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean network_enabled = false;
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String PLACE_ID = "placeId";
+    private static String USER_ID = "userId";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";
     private static String RESTAURANT_OPEN_NOW = "openNowRes";
@@ -96,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static String RESTAURANT_RATING = "ratingRes";
     private static String RESTAURANT_LAT = "latRes";
     private static String RESTAURANT_LNG = "lngRes";
+    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
     //    ExecutorService executor = Executors.newSingleThreadExecutor();
     RestaurantDetails restaurantChoiced;
     @Override
@@ -167,113 +182,55 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mLocationViewModel.getLocationLiveData().observe(this, location -> {
                 if (location != null){
                     mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
+//                    double distanceFromCenterToCorner = 5000 * Math.sqrt(2.0);
+//
+//                    LatLng southwestCorner = SphericalUtil.computeOffset(new LatLng(location.getLatitude(), location.getLongitude()), distanceFromCenterToCorner, 225.0);
+//                    LatLng northeastCorner = SphericalUtil.computeOffset(new LatLng(location.getLatitude(), location.getLongitude()), distanceFromCenterToCorner, 45.0);
+//                    RectangularBounds boundUserLocation = new RectangularBounds() {
+//                        @Override
+//                        public int describeContents() {
+//                            return 0;
+//                        }
+//
+//                        @Override
+//                        public void writeToParcel(Parcel parcel, int i) {
+//
+//                        }
+//
+//                        @NonNull
+//                        @NotNull
+//                        @Override
+//                        public LatLng getNortheast() {
+//                            return northeastCorner;
+//                        }
+//
+//                        @NonNull
+//                        @NotNull
+//                        @Override
+//                        public LatLng getSouthwest() {
+//                            return southwestCorner;
+//                        }
+//                    };
+//                    initAutoCompleteSupportFragment(boundUserLocation);
+
                 }
             });
 
             mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
             mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
-                saveValueOfTheRestaurantChoicePlaceId(placeId);
                 if (placeId != null){
+                    saveValueOfTheRestaurantChoicePlaceId(FirebaseAuth.getInstance().getCurrentUser(), placeId);
                     mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseAuth.getInstance().getCurrentUser(), placeId);
 
-                    //define constraints
-//                    mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(this, workmates -> {
-//                        addWorkmatesToSharedPreferences(context, workmates);
-//
-//
-//
-//                    });
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     setNotificationAlarm();
                     Toast.makeText(this, "Notification has been set", Toast.LENGTH_SHORT).show();
-//                    }
-
-
-//                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-//                        Constraints constraints = new Constraints.Builder()
-//                                .setRequiresDeviceIdle(false)
-//                                .setRequiresCharging(false)
-//                                .setRequiredNetworkType(NetworkType.CONNECTED)
-//                                .setRequiresBatteryNotLow(true)
-//                                .setRequiresStorageNotLow(true)
-//                                .build();
-//                        PeriodicWorkRequest periodicWork = new PeriodicWorkRequest.Builder(NotificationHandler.class, 10, TimeUnit.SECONDS)
-//                                .setConstraints(constraints)
-//                                .build();
-//                        WorkManager.getInstance().enqueueUniquePeriodicWork(getApplicationContext().getString(R.string.app_name),ExistingPeriodicWorkPolicy.REPLACE,periodicWork);
-//                    }
-
                 }
             });
+            if (!Places.isInitialized()){
+                Places.initialize(getApplicationContext(), String.valueOf(R.string.google_api_key));
+            }
+            PlacesClient placesClient = Places.createClient(this);
 
-//            mUserViewModel.userRestaurantSelected(FirebaseAuth.getInstance().getCurrentUser().getUid());
-//            mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
-//                mRestaurantsViewModel.getRestaurantsLiveData().observe(this, placesSearchResults -> {
-//                    String photoRef;
-//                    String mMissingPhoto = "%20image%20missing%20reference";
-//                    for (int i = 0; i <= placesSearchResults.length - 1 ; i++ ) {
-//                        if (Objects.equals(placeId, placesSearchResults[i].placeId)) {
-//                            String openNowCase = "";
-//                            if (placesSearchResults[i].permanentlyClosed) {
-//                                i++;
-//                            } else {
-//                                if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
-//                                    if (placesSearchResults[i].openingHours.openNow) {
-//                                        openNowCase = "Open now";
-//                                    } else {
-//                                        openNowCase = "Closed now";
-//                                    }
-//                                } else {
-//                                    openNowCase = "Doesn't show if it's open";
-//                                }
-//                                if (placesSearchResults[i].photos != null) {
-//                                    photoRef = placesSearchResults[i].photos[0].photoReference;
-//                                } else {
-//                                    photoRef = mMissingPhoto;
-//                                }
-//                                LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
-//                                RestaurantDetails restaurantDetails = new RestaurantDetails(
-//                                        placesSearchResults[i].placeId,
-//                                        placesSearchResults[i].name,
-//                                        placesSearchResults[i].vicinity,
-//                                        photoRef,
-//                                        openNowCase,
-//                                        placesSearchResults[i].rating,
-//                                        resLocation
-//                                );
-////                                                restaurantChoiced.add(restaurantDetails);
-//                                mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
-//
-////                                // Storing data into SharedPreferences
-////                                SharedPreferences shChoice = this.getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-////
-////                                // Creating an Editor object to edit(write to the file)
-////                                SharedPreferences.Editor myEdit = shChoice.edit();
-////
-////                                // Storing the key and its value as the data fetched from edittext
-////                                myEdit.putString("placeId", placeId);
-////
-////                                // Once the changes have been made,
-////                                // we need to commit to apply those changes made,
-////                                // otherwise, it will throw an error
-////                                myEdit.apply();
-//                            }
-//
-//                        }
-//                    }
-//
-//
-//                });
-//            });
-
-//            mUserViewModel.allUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser());
-//
-//            mUserViewModel.getAllTheRestaurantLikes().observe(this, userRestaurantLikes -> {
-//                List<String> listUserRestaurantLikes = userRestaurantLikes;
-//                for (int i = 0; i <= (listUserRestaurantLikes.size() - 1) ; i++){
-//                    String placeId = listUserRestaurantLikes.get(i);
-//                }
-//            });
 
             ViewPager viewPager = binding.viewPager;
             ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -284,13 +241,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     case android.R.id.home:
                         toggle();
                         return true;
-                    case R.id.mapsFragment:
+                    case R.id.maps_fragment:
                         viewPager.setCurrentItem(0);
                         return true;
-                    case R.id.listFragment:
+                    case R.id.list_fragment:
                         viewPager.setCurrentItem(1);
                         return true;
-                    case R.id.workmatesFragment:
+                    case R.id.workmates_fragment:
                         viewPager.setCurrentItem(2);
                         return true;
                     default:
@@ -302,6 +259,37 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         EventBus.getDefault().register(this);
 
     }
+
+//    private void initAutoCompleteSupportFragment(RectangularBounds boundUserLocation) {
+//        // Initialize the AutocompleteSupportFragment.
+//        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+//                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+//        if (autocompleteFragment != null){
+//            autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
+//            autocompleteFragment.setLocationRestriction(RectangularBounds.newInstance(boundUserLocation.getSouthwest(), boundUserLocation.getNortheast()));
+//            autocompleteFragment.setCountries("FR");
+//
+//            // Specify the types of place data to return.
+//            autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+//
+//            // Set up a PlaceSelectionListener to handle the response.
+//            autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//                @Override
+//                public void onPlaceSelected(@NonNull Place place) {
+//                    // TODO: Get info about the selected place.
+//                    Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+//                }
+//
+//
+//                @Override
+//                public void onError(@NonNull Status status) {
+//                    // TODO: Handle the error.
+//                    Log.i(TAG, "An error occurred: " + status);
+//                }
+//            });
+//        }
+//
+//    }
 
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -329,11 +317,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Calendar calendar = Calendar.getInstance();
 
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
-        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
-        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-        calendar.set(Calendar.HOUR_OF_DAY, 11);
-        calendar.set(Calendar.MINUTE, 5);
+//        calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH));
+//        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
+//        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
+        calendar.set(Calendar.HOUR_OF_DAY, 15);
+        calendar.set(Calendar.MINUTE, 38);
         calendar.set(Calendar.SECOND,0);
         calendar.set(Calendar.MILLISECOND,0);
         // With setInexactRepeating(), you have to use one of the AlarmManager interval
@@ -362,13 +350,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        }
 //    }
 
-    private void saveValueOfTheRestaurantChoicePlaceId(String placeId) {
+    private void saveValueOfTheRestaurantChoicePlaceId(FirebaseUser user, String placeId) {
         // Storing data into SharedPreferences
         SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
         // Creating an Editor object to edit(write to the file)
         SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
         // Storing the key and its value as the data fetched from edittext
         myEdit.putString(PLACE_ID, placeId);
+        myEdit.putString(USER_ID, user.getUid());
         // Once the changes have been made,
         // we need to commit to apply those changes made,
         // otherwise, it will throw an error
@@ -563,6 +552,119 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                final MarkerOptions markerOptions = new MarkerOptions();
+                Toast.makeText(getApplicationContext(), String.valueOf(place.getLatLng()), Toast.LENGTH_LONG).show();
+                // Setting the position for the marker
+                markerOptions.position(place.getLatLng());
+                // Setting the title for the marker.
+                // This will be displayed on taping the marker
+                markerOptions.title(place.getName());
 
 
+                // Storing data into SharedPreferences
+                SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_SEARCH_ON_COMPLETE,MODE_PRIVATE);
+                // Creating an Editor object to edit(write to the file)
+                SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
+
+                String openNowCase = "";
+                String photoRef = "";
+                String mMissingPhoto = "%20image%20missing%20reference";
+
+
+                // Storing the key and its value as the data fetched from edittext
+                myEdit.putString(PLACE_ID, place.getId());
+                myEdit.putString(RESTAURANT_NAME, place.getName());
+                myEdit.putString(RESTAURANT_ADDRESS, place.getAddress());
+                if (place.getOpeningHours().getPeriods().toString() != null){
+                    myEdit.putString(RESTAURANT_OPEN_NOW, place.getOpeningHours().getPeriods().toString());
+                } else {
+                    myEdit.putString(RESTAURANT_OPEN_NOW, "");
+                }
+                if (place.getPhotoMetadatas().get(0).toString() != null){
+                    myEdit.putString(RESTAURANT_PHOTO_REF, place.getPhotoMetadatas().get(0).toString());
+                } else {
+                    myEdit.putString(RESTAURANT_PHOTO_REF, "");
+                }
+                myEdit.putString(RESTAURANT_RATING, place.getName());
+                myEdit.putString(RESTAURANT_LAT, place.getName());
+                myEdit.putString(RESTAURANT_LNG, place.getName());
+
+
+                // Once the changes have been made,
+                // we need to commit to apply those changes made,
+                // otherwise, it will throw an error
+                myEdit.apply();
+
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
+            }
+            return;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public void searchAutoCompleteRestaurant(View view) {
+
+        mLocationViewModel.getLocationLiveData().observe(this, location -> {
+            if (location != null){
+                double distanceFromCenterToCorner = 5000 * Math.sqrt(2.0);
+
+                LatLng southwestCorner = SphericalUtil.computeOffset(new LatLng(location.getLatitude(), location.getLongitude()), distanceFromCenterToCorner, 225.0);
+                LatLng northeastCorner = SphericalUtil.computeOffset(new LatLng(location.getLatitude(), location.getLongitude()), distanceFromCenterToCorner, 45.0);
+                RectangularBounds boundUserLocation = new RectangularBounds() {
+                    @Override
+                    public int describeContents() {
+                        return 0;
+                    }
+
+                    @Override
+                    public void writeToParcel(Parcel parcel, int i) {
+
+                    }
+
+                    @NonNull
+                    @NotNull
+                    @Override
+                    public LatLng getNortheast() {
+                        return northeastCorner;
+                    }
+
+                    @NonNull
+                    @NotNull
+                    @Override
+                    public LatLng getSouthwest() {
+                        return southwestCorner;
+                    }
+                };
+
+                Intent intent = new Autocomplete.IntentBuilder(
+                        AutocompleteActivityMode.OVERLAY,
+                        Arrays.asList(
+                                Place.Field.ID,
+                                Place.Field.NAME)
+                )
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        .setLocationRestriction(RectangularBounds.newInstance(boundUserLocation.getSouthwest(), boundUserLocation.getNortheast()))
+                        .setCountries(Collections.singletonList("FR"))
+                        .build(this);
+
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
+
+
+
+            }
+        });
+
+
+    }
 }

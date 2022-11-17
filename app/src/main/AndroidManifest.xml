@@ -56,7 +56,11 @@
         </activity>
     <!--        MAIN ACTIVITY PAGE -->
     <activity android:name=".ui.MainActivity" />
-    <receiver android:name=".notification.NotificationBroadcast"/>
+    <receiver
+            android:name=".notification.NotificationBroadcast"
+            android:enabled="true"
+            android:exported="true"
+    />
     <!-- If this receiver listens for broadcasts sent from the system or from
      other apps, even other apps that you own, set android:exported to "true". -->
 <!--    <receiver android:name=".notification.NotificationBroadcast" android:exported="false">-->

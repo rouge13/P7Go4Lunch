@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.julienhammer.go4lunch.R;
@@ -24,6 +26,7 @@ public class NotificationBroadcast extends BroadcastReceiver {
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";
+    private static String USER_ID_FIELD = "userId";
 
 
     @Override
@@ -42,6 +45,7 @@ public class NotificationBroadcast extends BroadcastReceiver {
             showNotification(context, workmates, prefs);
 
         });
+        Log.d("MyAlarm", "Alarm just fired");
     }
 
     private void showNotification(Context context, List<User> workmates, SharedPreferences prefs) {

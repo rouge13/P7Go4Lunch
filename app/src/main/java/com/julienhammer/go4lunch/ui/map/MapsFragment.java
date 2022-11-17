@@ -147,6 +147,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //                RestaurantDetails[] allRestaurants = new RestaurantDetails[placesSearchResults.length - permanentlyClosed];
 //                Marker[] allMarkers = new Marker[allRestaurants.length];
                 for (int i = 0; i <= placesSearchResults.length -1; i++){
+                    String placeId = placesSearchResults[i].placeId;
                     double latPlace = placesSearchResults[i].geometry.location.lat;
                     double longPlace = placesSearchResults[i].geometry.location.lng;
                     String placeName = placesSearchResults[i].name;
@@ -183,7 +184,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                 );
                         SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
                         String restaurantChoicedId = prefs.getString(PLACE_ID,"");
-                        if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
+                        if (Objects.equals(restaurantChoicedId, placeId)) {
 
                             saveValueOfTheRestaurantChoiceAllDataNeeded(
                                     placesSearchResults[i].name,

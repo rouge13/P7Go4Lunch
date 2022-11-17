@@ -70,5 +70,6 @@
     <string name="content_title">Restaurant of the day.</string>
     <string name="shared_workmates">sharedWorkmates</string>
     <string name="no_workmates">No workmates is eating here.</string>
+    <string name="search_restaurant">Search restaurant</string>
 
 </resources>
