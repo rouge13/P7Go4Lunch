@@ -16,8 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
     >
-
-
         <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -25,7 +23,6 @@
                 android:id="@+id/activity_main_app_bar_layout"
                 app:layout_constraintTop_toTopOf="parent"
         >
-
 
             <!-- Toolbar -->
             <androidx.appcompat.widget.Toolbar
@@ -48,18 +45,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"/>
 
-<!--                <fragment android:id="@+id/autocomplete_fragment"-->
-<!--                          android:icon="@android:drawable/ic_menu_search"-->
-<!--                          android:layout_gravity="right"-->
-<!--                          android:layout_width="wrap_content"-->
-<!--                          android:layout_height="wrap_content"-->
-<!--                          android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"-->
-<!--                />-->
-
             </androidx.appcompat.widget.Toolbar>
-
-
-
 
         </com.google.android.material.appbar.AppBarLayout>
 

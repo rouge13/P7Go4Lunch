@@ -1,4 +1,4 @@
-package com.julienhammer.go4lunch.ui.list.restaurant;
+package com.julienhammer.go4lunch.ui.restaurant;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;

@@ -60,6 +60,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     SupportMapFragment mapFragment = null;
     CameraPosition cameraPosition = null;
     private static String PLACE_ID = "placeId";
+    private static final String MY_SEARCH_ON_COMPLETE = "searchRestaurant";
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";

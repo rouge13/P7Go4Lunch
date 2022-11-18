@@ -226,27 +226,8 @@ public class UserRepository {
                         }
                     }
                 }
-
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        DocumentReference docIdRef = userRef.document(document.getId());
-//                        docIdRef.update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayUnion(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull @NotNull Task<Void> task) {
-////                                userLikeRestaurantMutableLiveData.postValue(placeId);
-//                                thisRestaurantIsLiked(user,placeId);
-//
-//
-//                            }
-//                        });
-//
-//
-//                    }
-
             }
         });
-
-        // Atomically remove a region from the "regions" array field.
-//        washingtonRef.update(FIELD_RESTAURANT_LIKES, FieldValue.arrayRemove("east_coast"));
 
     }
 
@@ -262,8 +243,6 @@ public class UserRepository {
             return instance;
         }
     }
-
-
     public void thisRestaurantIsLiked(FirebaseUser user, String placeId){
         userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, placeId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
@@ -283,30 +262,4 @@ public class UserRepository {
         });
     }
 
-
-//    public void thisRestaurantIsLiked(FirebaseUser user, String placeId){
-//
-//        userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, placeId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
-//                for (QueryDocumentSnapshot document : task.getResult()) {
-//                    DocumentReference docIdRef = userRef.document(document.getId());
-//                    docIdRef.update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayUnion(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                        @Override
-//                        public void onComplete(@NonNull @NotNull Task<Void> task) {
-////                                userLikeRestaurantMutableLiveData.postValue(placeId);
-//                            thisRestaurantIsLiked(user,placeId);
-//
-//
-//                        }
-//                    });
-//
-//
-//                }
-//            }
-//        });
-//
-//
-//
-//    }
 }

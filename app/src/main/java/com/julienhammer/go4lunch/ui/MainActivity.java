@@ -41,7 +41,6 @@ import android.view.View;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.RectangularBounds;
@@ -65,7 +64,7 @@ import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.notification.NotificationBroadcast;
 //import com.julienhammer.go4lunch.notification.NotificationHandler;
-import com.julienhammer.go4lunch.ui.list.restaurant.InfoRestaurantFragment;
+import com.julienhammer.go4lunch.ui.restaurant.InfoRestaurantFragment;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
@@ -418,9 +417,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar.setTitle(R.string.hungry);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayHomeAsUpEnabled(false);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(false);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
+        }
 
     }
 
@@ -447,8 +447,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.bottom_navigation_menu, menu);
-        getMenuInflater().inflate(R.menu.activity_main_info_menu, menu);
+
+//        getMenuInflater().inflate(R.menu.activity_main_info_menu, menu);
         return true;
     }
 
@@ -558,48 +558,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-                final MarkerOptions markerOptions = new MarkerOptions();
-                Toast.makeText(getApplicationContext(), String.valueOf(place.getLatLng()), Toast.LENGTH_LONG).show();
-                // Setting the position for the marker
-                markerOptions.position(place.getLatLng());
-                // Setting the title for the marker.
-                // This will be displayed on taping the marker
-                markerOptions.title(place.getName());
-
+//                final MarkerOptions markerOptions = new MarkerOptions();
+//                Toast.makeText(getApplicationContext(), String.valueOf(place.getLatLng()), Toast.LENGTH_LONG).show();
+//                // Setting the position for the marker
+//                markerOptions.position(place.getLatLng());
+//                // Setting the title for the marker.
+//                // This will be displayed on taping the marker
+//                markerOptions.title(place.getName());
 
                 // Storing data into SharedPreferences
                 SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_SEARCH_ON_COMPLETE,MODE_PRIVATE);
-                // Creating an Editor object to edit(write to the file)
                 SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
-
-                String openNowCase = "";
-                String photoRef = "";
-                String mMissingPhoto = "%20image%20missing%20reference";
-
-
-                // Storing the key and its value as the data fetched from edittext
                 myEdit.putString(PLACE_ID, place.getId());
                 myEdit.putString(RESTAURANT_NAME, place.getName());
                 myEdit.putString(RESTAURANT_ADDRESS, place.getAddress());
-                if (place.getOpeningHours().getPeriods().toString() != null){
+                if (place.getOpeningHours() != null && place.getOpeningHours().getPeriods() != null){
                     myEdit.putString(RESTAURANT_OPEN_NOW, place.getOpeningHours().getPeriods().toString());
                 } else {
                     myEdit.putString(RESTAURANT_OPEN_NOW, "");
                 }
-                if (place.getPhotoMetadatas().get(0).toString() != null){
+                if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
                     myEdit.putString(RESTAURANT_PHOTO_REF, place.getPhotoMetadatas().get(0).toString());
                 } else {
-                    myEdit.putString(RESTAURANT_PHOTO_REF, "");
+                    myEdit.putString(RESTAURANT_PHOTO_REF, "%20image%20missing%20reference");
                 }
-                myEdit.putString(RESTAURANT_RATING, place.getName());
-                myEdit.putString(RESTAURANT_LAT, place.getName());
-                myEdit.putString(RESTAURANT_LNG, place.getName());
-
-
-                // Once the changes have been made,
-                // we need to commit to apply those changes made,
-                // otherwise, it will throw an error
+                if (place.getRating() != null){
+                    myEdit.putFloat(RESTAURANT_RATING, place.getRating().floatValue());
+                } else {
+                    myEdit.putFloat(RESTAURANT_RATING, 0);
+                }
+                if (place.getLatLng() != null) {
+                    myEdit.putFloat(RESTAURANT_LAT, (float) place.getLatLng().latitude);
+                    myEdit.putFloat(RESTAURANT_LNG, (float) place.getLatLng().longitude);
+                }
                 myEdit.apply();
+
+                showSearchResultInDetails(place);
 
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
@@ -611,6 +605,48 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void showSearchResultInDetails(Place place) {
+        String placeId = place.getId();
+        String placeName = place.getName();
+        String placeAddress = place.getAddress();
+        String placeOpenNow = "";
+        String placePhotoRef = "";
+        float placeRating = 0;
+        LatLng placeLatLng = null;
+        if (place.getOpeningHours() != null && place.getOpeningHours().getPeriods() != null){
+            placeOpenNow = place.getOpeningHours().getPeriods().toString();
+        } else {
+            placeOpenNow = "";
+        }
+        if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
+            placePhotoRef = place.getPhotoMetadatas().get(0).toString();
+        } else {
+            placePhotoRef = "%20image%20missing%20reference";
+        }
+        if (place.getRating() != null){
+            placeRating = place.getRating().floatValue();
+        } else {
+            placeRating = 0;
+        }
+        if (place.getLatLng() != null) {
+            placeLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
+        }
+
+        RestaurantDetails restaurantDetails = new RestaurantDetails(
+                placeId,
+                placeName,
+                placeAddress,
+                placePhotoRef,
+                placeOpenNow,
+                placeRating,
+                placeLatLng
+        );
+
+        mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
+        Toast.makeText(getApplicationContext(), "Clicked location is " + placeName, Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
     }
 
     public void searchAutoCompleteRestaurant(View view) {
