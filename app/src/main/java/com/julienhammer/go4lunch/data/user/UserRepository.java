@@ -105,45 +105,7 @@ public class UserRepository {
     }
 
     public void allUserRestaurantLikes(FirebaseUser user){
-
         List<String> mUserRestaurantLikes = new ArrayList<>();
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference userDatabaseRef = database.getReference(COLLECTION_NAME).child(user.getUid()).child(USER_RESTAURANT_LIKES_ARRAY);
-//
-//        userDatabaseRef.addValueEventListener(new ValueEventListener() {
-//
-//
-//            @Override
-//            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-//                String likes = snapshot.getValue(String.class);
-//                mUserRestaurantLikes.add(likes);
-////                allUserRestaurantLikesMutableLiveData.postValue(snapshot.getValue(String.class));
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-//                Log.d(TAG, error.getMessage());
-//            }
-//        });
-
-//        database.getReference(COLLECTION_NAME).child(user.getUid()).child(USER_RESTAURANT_LIKES_ARRAY).addValueEventListener(new ValueEventListener(){
-//
-//            @Override
-//            public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-//
-//                    if (snapshot.getValue() != null){
-//                        String likes = snapshot.getValue().toString();
-//                        mUserRestaurantLikes.add(likes);
-//                    }
-//                }
-//
-//            @Override
-//            public void onCancelled(@NonNull @NotNull DatabaseError error) {
-//
-//            }
-//        });
-
-
         userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -156,27 +118,7 @@ public class UserRepository {
                 }
             }
         });
-
         allUserRestaurantLikesMutableLiveData.postValue(mUserRestaurantLikes);
-//        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-//        CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
-//        Query query = userRef.whereEqualTo(USER_ID_FIELD, userId);
-//
-//        query.get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                for (QueryDocumentSnapshot document : task.getResult()) {
-////                        Log.d(TAG, document.getId() + " => " + document.getData());
-////                    document.getData().get(USER_PLACE_ID_FIELD).equals(placeId);
-//                    userSelectedRestaurantMutableLiveData.postValue(document.get);
-////                        userRestaurantChoiceAdded.set(Objects.equals(document.getData(), placeId));
-////                        userRef.document().update(USER_PLACE_ID, "");
-//                }
-//            } else {
-//                Log.d(TAG, "Error getting documents: ", task.getException());
-//
-//            }
-//        });
-
     }
 
     public void setUserRestaurantChoice(String userId, String placeId){

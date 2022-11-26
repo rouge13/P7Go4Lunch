@@ -18,6 +18,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.maps.model.LatLng;
 import com.julienhammer.go4lunch.data.login.LoginRepository;
 import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
 import com.julienhammer.go4lunch.ui.map.MapsFragment;
@@ -52,16 +53,22 @@ public class LocationRepository {
 
     @RequiresPermission(anyOf = {"android.permission.ACCESS_COARSE_LOCATION", "android.permission.ACCESS_FINE_LOCATION"})
     public void startLocationRequest() {
-        Task<Location> location= fusedLocationProviderClient.getLastLocation();
+        Task<Location> location = fusedLocationProviderClient.getLastLocation();
         location.addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 Location userLocation = (Location) task.getResult();
                 if (userLocation == null){
+
                     userLocation = new Location("network");
                     userLocation.setLatitude(48.5735);
                     userLocation.setLongitude(7.7523);
                 }
                 locationMutableLiveData.postValue(userLocation);
+//                Location userLocation = new Location("network");
+//                userLocation.setLatitude(48.6451);
+//                userLocation.setLongitude(7.7115);
+//                locationMutableLiveData.postValue(userLocation);
+
             }
         });
     }

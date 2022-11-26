@@ -89,6 +89,9 @@ public class InfoRestaurantFragment extends Fragment {
             binding.restaurantInfoLike.setText(R.string.restaurant_like);
             binding.restaurantInfoWebsite.setText(R.string.restaurant_website);
             mRestaurantInfo = restaurantDetails;
+
+            mInfoRestaurantViewModel.initRestaurantsDetailsInfo(mRestaurantInfo.getIdRes());
+            mUserViewModel.thisRestaurantIsLiked(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()), mRestaurantInfo.getIdRes());
             mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseAuth.getInstance().getCurrentUser(), mRestaurantInfo.getIdRes());
             mUserViewModel.getSelectedRestaurantIsChoiced().observe(getViewLifecycleOwner(), placeId -> {
 
@@ -114,6 +117,7 @@ public class InfoRestaurantFragment extends Fragment {
                             myEdit.putString(PLACE_ID, mRestaurantInfo.getIdRes());
                             myEdit.apply();
                             saveValueOfTheRestaurantChoiceAllDataNeeded(
+                                    mRestaurantInfo.getIdRes(),
                                     mRestaurantInfo.getNameRes(),
                                     mRestaurantInfo.getAddressRes(),
                                     mRestaurantInfo.getPhotoRefRes(),
@@ -126,7 +130,7 @@ public class InfoRestaurantFragment extends Fragment {
                     }
                 });
             });
-            mUserViewModel.thisRestaurantIsLiked(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()), mRestaurantInfo.getIdRes());
+
             mUserViewModel.getIfRestaurantIsLiked().observe(getViewLifecycleOwner(), isNotInListOfLikes -> {
                 checkIfRestaurantIsLiked(isNotInListOfLikes);
                 binding.cardLike.setOnClickListener(new View.OnClickListener() {
@@ -138,7 +142,7 @@ public class InfoRestaurantFragment extends Fragment {
                 });
             });
 
-            mInfoRestaurantViewModel.initRestaurantsDetailsInfo(mRestaurantInfo.getIdRes());
+
             mInfoRestaurantViewModel.getRestaurantDetailsInfoLiveData().observe(getViewLifecycleOwner(), place -> {
 //                String phoneNumber = place.getPhoneNumber();
                 String websiteRestaurant = place.getWebsiteUri().toString();
@@ -157,16 +161,16 @@ public class InfoRestaurantFragment extends Fragment {
             });
             RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
             binding.workmatesView.setLayoutManager(layoutManager);
-            adapter = new RecyclerViewWorkmateAdapter(true);
+            adapter = new RecyclerViewWorkmateAdapter(true, getActivity());
 
             mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(getViewLifecycleOwner(), allWorkmatesInThisRestaurant -> {
                 ArrayList<User> allWorkmatesInThisRestaurantList = new ArrayList<User>();
-                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<>();
+//                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<>();
                 for (int i = 0; i <= (allWorkmatesInThisRestaurant.size()) -1; i++){
                     allWorkmatesInThisRestaurantList.add(allWorkmatesInThisRestaurant.get(i));
                 }
                 binding.workmatesView.setAdapter(adapter);
-                adapter.setData(allWorkmatesInThisRestaurantList, restaurantNameWhereTheWorkmateEat);
+                adapter.setData(allWorkmatesInThisRestaurantList);
             });
 
             binding.itemBackwardButton.setOnClickListener(new View.OnClickListener() {
@@ -205,9 +209,9 @@ public class InfoRestaurantFragment extends Fragment {
 
     private void checkIfRestaurantIsLiked(boolean isNotInListOfLikes) {
         if (!isNotInListOfLikes){
-            binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_rate_24));
+            binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_rate_yellow_24));
         } else {
-            binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_rating_18));
+            binding.restaurantInfoLikeIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_star_rate_24));
         }
     }
     private void callOnPhoneNumber(Place place) {
@@ -252,12 +256,13 @@ public class InfoRestaurantFragment extends Fragment {
         ((AppCompatActivity)getActivity()).getSupportActionBar().show();
     }
 
-    private void saveValueOfTheRestaurantChoiceAllDataNeeded(String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
+    private void saveValueOfTheRestaurantChoiceAllDataNeeded(String placeId, String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
         // Storing data into SharedPreferences
         SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
         // Creating an Editor object to edit(write to the file)
         SharedPreferences.Editor myEdit = shChoice.edit();
         // Storing the key and its value as the data fetched from edittext
+        myEdit.putString(PLACE_ID, placeId);
         myEdit.putString(RESTAURANT_NAME, nameRes);
         myEdit.putString(RESTAURANT_ADDRESS, addressRes);
         myEdit.putString(RESTAURANT_PHOTO_REF, photoRefRes);

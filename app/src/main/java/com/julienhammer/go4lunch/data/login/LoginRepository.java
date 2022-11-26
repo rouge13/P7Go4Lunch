@@ -2,6 +2,7 @@ package com.julienhammer.go4lunch.data.login;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.tasks.Task;
@@ -105,6 +106,25 @@ public class LoginRepository {
         });
 
 
+    }
+
+    @NonNull
+    public LiveData<String> getUserSelectedRestaurantChoice(String userId){
+        MutableLiveData<String> userPlaceIdMutableLiveData = new MutableLiveData<>();
+        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+        CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
+        Query query = userRef.whereEqualTo(USER_ID_FIELD, userId);
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    userPlaceIdMutableLiveData.postValue(document.getString("userPlaceId"));
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
+        return userPlaceIdMutableLiveData;
     }
 
     public static LoginRepository getInstance() {

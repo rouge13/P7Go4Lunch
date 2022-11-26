@@ -25,6 +25,10 @@ public class LoginViewModel extends ViewModel {
         return loginRepository.getIfUserAlreadyAdded();
     }
 
+    public LiveData<String> getUserSelectedRestaurantChoice(String userId){
+        return loginRepository.getUserSelectedRestaurantChoice(userId);
+    }
+
     public LoginViewModel() {
         mFirestore = FirebaseFirestore.getInstance();
         loginRepository = LoginRepository.getInstance();

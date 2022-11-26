@@ -188,6 +188,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         if (Objects.equals(restaurantChoicedId, placeId)) {
 
                             saveValueOfTheRestaurantChoiceAllDataNeeded(
+                                    placesSearchResults[i].placeId,
                                     placesSearchResults[i].name,
                                     placesSearchResults[i].vicinity,
                                     photoRef,
@@ -195,9 +196,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                     placesSearchResults[i].rating,
                                     (float) latPlace,
                                     (float) longPlace);
-                        } else {
-                            deleteValueForPlaceId();
                         }
+//                        else {
+//                            deleteValueForPlaceId();
+//                        }
                         allRestaurants.add(restaurantDetails);
 
                         MarkerOptions markerOptions = new MarkerOptions().position(
@@ -269,12 +271,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    private void saveValueOfTheRestaurantChoiceAllDataNeeded(String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
+    private void saveValueOfTheRestaurantChoiceAllDataNeeded(String placeId, String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
         // Storing data into SharedPreferences
         SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
         // Creating an Editor object to edit(write to the file)
         SharedPreferences.Editor myEdit = shChoice.edit();
         // Storing the key and its value as the data fetched from edittext
+        myEdit.putString(PLACE_ID, placeId);
         myEdit.putString(RESTAURANT_NAME, nameRes);
         myEdit.putString(RESTAURANT_ADDRESS, addressRes);
         myEdit.putString(RESTAURANT_PHOTO_REF, photoRefRes);

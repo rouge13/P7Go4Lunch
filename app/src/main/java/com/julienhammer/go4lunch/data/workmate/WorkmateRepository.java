@@ -61,7 +61,7 @@ public class WorkmateRepository {
                     }
                 }
             }
-            mAllWorkmatesMutableLiveData.setValue(workmates);
+            mAllWorkmatesMutableLiveData.postValue(workmates);
         });
         return mAllWorkmatesMutableLiveData;
     }

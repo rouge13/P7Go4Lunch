@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.libraries.places.api.model.Place;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.restaurants.RestaurantsRepository;
 
@@ -27,7 +28,6 @@ public class RestaurantsViewModel extends ViewModel {
     public void getAllRestaurants(String apiKey, Location userLocation){
         mRestaurantsRepository.getAllRestaurants(apiKey, userLocation);
     }
-
 
 
 }

@@ -15,6 +15,7 @@ import com.julienhammer.go4lunch.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -32,20 +33,23 @@ public class NotificationBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences prefs = context.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
-
-        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, prefs.getString(PLACE_ID,"")).addSnapshotListener((value, error) -> {
-            List<User> workmates = new ArrayList<>();
-            if (value != null){
-                for (QueryDocumentSnapshot doc : value){
-                    if (doc != null){
-                        workmates.add(doc.toObject(User.class));
+        if (!Objects.equals(prefs.getString(PLACE_ID,""), "")){
+            FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, prefs.getString(PLACE_ID,"")).addSnapshotListener((value, error) -> {
+                List<User> workmates = new ArrayList<>();
+                if (value != null){
+                    for (QueryDocumentSnapshot doc : value){
+                        if (doc != null){
+                            workmates.add(doc.toObject(User.class));
+                        }
                     }
                 }
-            }
-            showNotification(context, workmates, prefs);
+                showNotification(context, workmates, prefs);
 
-        });
-        Log.d("MyAlarm", "Alarm just fired");
+            });
+            Log.d("MyAlarm", "Alarm just fired");
+        }
+
+
     }
 
     private void showNotification(Context context, List<User> workmates, SharedPreferences prefs) {

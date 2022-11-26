@@ -5,9 +5,13 @@
       <map>
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/HJIcon_background.xml" value="0.2815" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_block_48.xml" value="0.2635" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.278" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_ramen_dining_24.xml" value="0.2005" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_rating_18.xml" value="0.2635" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_rating_24.xml" value="0.2445" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_star_rate_24.xml" value="0.2635" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_baseline_star_rate_yellow_24.xml" value="0.2635" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_launcher_lunch_time_2_people_background.xml" value="0.2005" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_logo1.xml" value="0.1095" />
@@ -19,7 +23,7 @@
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout-v23/activity_login.xml" value="0.4390625" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.1706827309236948" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_login.xml" value="0.25" />
-        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main_nav_header.xml" value="0.33" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_restaurant_info.xml" value="0.33" />
         <entry key="..\:/DOCUMENTS/Toi/Alternance/Openclassrooms/Projets/Projet_7/Go4Lunch/app/src/main/res/layout/activity_user.xml" value="0.25" />

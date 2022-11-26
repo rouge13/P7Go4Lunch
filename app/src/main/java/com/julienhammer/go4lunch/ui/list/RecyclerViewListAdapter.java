@@ -65,7 +65,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
 
         mInfoRestaurantViewModel.getCountWorkmatesForRestaurant(restaurantDetails.getIdRes()).observe((MainActivity) context, integer -> {
-            if (integer > 0) {
+            if (integer > 0 && !Objects.equals(restaurantDetails.getIdRes(), "")) {
                 holder.bindingItemPlace.textRestaurantNumberUserChoice.setVisibility(View.VISIBLE);
                 holder.bindingItemPlace.imageUserIcon.setVisibility(View.VISIBLE);
                 holder.bindingItemPlace.textRestaurantNumberUserChoice.setText(String.format(Locale.getDefault(),"(%d)", integer));

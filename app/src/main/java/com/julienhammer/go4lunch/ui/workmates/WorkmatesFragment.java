@@ -14,6 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.util.ArrayUtils;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
@@ -29,6 +32,7 @@ import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -92,28 +96,48 @@ public class WorkmatesFragment extends Fragment {
         initRestaurantsList();
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        adapter = new RecyclerViewWorkmateAdapter(false);
+//        if (!Places.isInitialized()){
+//            Places.initialize(requireActivity().getApplicationContext(), String.valueOf(R.string.google_api_key));
+//        }
+//        PlacesClient placesClient = Places.createClient(requireActivity());
+        adapter = new RecyclerViewWorkmateAdapter(false, getActivity());
         mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
             mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
-                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<String>();
+//                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<String>();
                 ArrayList<User> allWorkmates = new ArrayList<User>();
 
-                for (int t = 0; t <= (workmate.size()) -1; t++){
-                    allWorkmates.add(workmate.get(t));
-                    for (int i = 0; i <= (placesSearchResults.length) -1; i++){
-                        if (Objects.equals(workmate.get(t).getUserPlaceId(), placesSearchResults[i].placeId)){
-                            restaurantNameWhereTheWorkmateEat.add(t, placesSearchResults[i].name);
-                            break;
+//                ArrayList<String> allPlaceIdFromNearbySearch = new ArrayList<>();
+//                for (int i = 0; i <= (placesSearchResults.length -1); i++){
+//                    allPlaceIdFromNearbySearch.add(placesSearchResults[i].placeId);
+//                }
+//                for (int t = 0; t <= (workmate.size()) -1; t++){
+//                    allWorkmates.add(workmate.get(t));
+//
+//                    if (Objects.equals(workmate.get(t).getUserPlaceId(), "")) {
+//                        restaurantNameWhereTheWorkmateEat.add(t, "");
+//                    }
+//
+//                    else if (allPlaceIdFromNearbySearch.contains(workmate.get(t).getUserPlaceId())){
+//                        for (int i = 0; i <= (placesSearchResults.length -1); i++){
+//                            if (Objects.equals(workmate.get(t).getUserPlaceId(), placesSearchResults[i].placeId)) {
+//                                restaurantNameWhereTheWorkmateEat.add(t, placesSearchResults[i].name);
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    else {
 
-                        }
-                        else if (Objects.equals(workmate.get(t).getUserPlaceId(), "")) {
-                            restaurantNameWhereTheWorkmateEat.add(t, "");
-                            break;
-                        }
-                    }
-                }
+//                        int workmateNumber = t;
+//                        mRestaurantsViewModel.getNameOfRestaurantIfMissingInSearchResult(workmate.get(t).getUserPlaceId()).observe(getViewLifecycleOwner(), place -> {
+//                            restaurantNameWhereTheWorkmateEat.add(workmateNumber, place.getName());
+//
+//                        });
+//                    }
+//                }
 
-                adapter.setData(allWorkmates, restaurantNameWhereTheWorkmateEat);
+
+
+                adapter.setData(allWorkmates);
                 binding.workmatesView.setLayoutManager(layoutManager);
                 binding.workmatesView.setAdapter(adapter);
 

@@ -21,6 +21,7 @@ import com.julienhammer.go4lunch.models.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -86,7 +87,8 @@ public class InfoRestaurantRepository {
                     }
                 }
             }
-            mAllWorkmatesInThisRestaurantMutableLiveData.setValue(workmates);
+
+            mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
         });
     }
 

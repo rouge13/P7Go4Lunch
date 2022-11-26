@@ -55,7 +55,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.maps.android.SphericalUtil;
-import com.julienhammer.go4lunch.LoginActivity;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
@@ -217,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
             mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
-                if (placeId != null){
+                if (placeId != null && !Objects.equals(placeId, "")){
                     saveValueOfTheRestaurantChoicePlaceId(FirebaseAuth.getInstance().getCurrentUser(), placeId);
                     mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseAuth.getInstance().getCurrentUser(), placeId);
 
@@ -303,14 +302,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.S)
+//    @RequiresApi(api = Build.VERSION_CODES.S)
     private void setNotificationAlarm() {
 //        if (ActivityCompat.checkSelfPermission(this,
 //                Manifest.permission.SCHEDULE_EXACT_ALARM) == PackageManager.PERMISSION_GRANTED){
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(this, NotificationBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+
+        PendingIntent pendingIntent = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        }
 
         // Set the alarm to start at 12:00 a.m.
         Calendar calendar = Calendar.getInstance();
@@ -558,42 +564,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);
                 Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-//                final MarkerOptions markerOptions = new MarkerOptions();
-//                Toast.makeText(getApplicationContext(), String.valueOf(place.getLatLng()), Toast.LENGTH_LONG).show();
-//                // Setting the position for the marker
-//                markerOptions.position(place.getLatLng());
-//                // Setting the title for the marker.
-//                // This will be displayed on taping the marker
-//                markerOptions.title(place.getName());
-
                 // Storing data into SharedPreferences
                 SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_SEARCH_ON_COMPLETE,MODE_PRIVATE);
                 SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
-                myEdit.putString(PLACE_ID, place.getId());
-                myEdit.putString(RESTAURANT_NAME, place.getName());
-                myEdit.putString(RESTAURANT_ADDRESS, place.getAddress());
-                if (place.getOpeningHours() != null && place.getOpeningHours().getPeriods() != null){
-                    myEdit.putString(RESTAURANT_OPEN_NOW, place.getOpeningHours().getPeriods().toString());
-                } else {
-                    myEdit.putString(RESTAURANT_OPEN_NOW, "");
-                }
-                if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
-                    myEdit.putString(RESTAURANT_PHOTO_REF, place.getPhotoMetadatas().get(0).toString());
-                } else {
-                    myEdit.putString(RESTAURANT_PHOTO_REF, "%20image%20missing%20reference");
-                }
-                if (place.getRating() != null){
-                    myEdit.putFloat(RESTAURANT_RATING, place.getRating().floatValue());
-                } else {
-                    myEdit.putFloat(RESTAURANT_RATING, 0);
-                }
-                if (place.getLatLng() != null) {
-                    myEdit.putFloat(RESTAURANT_LAT, (float) place.getLatLng().latitude);
-                    myEdit.putFloat(RESTAURANT_LNG, (float) place.getLatLng().longitude);
-                }
-                myEdit.apply();
+                if (!Objects.equals(place.getId(), "")){
+                    myEdit.putString(PLACE_ID, place.getId());
+                    myEdit.putString(RESTAURANT_NAME, place.getName());
+                    if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
+                        myEdit.putString(RESTAURANT_PHOTO_REF, place.getPhotoMetadatas().get(0).toString());
+                    } else {
+                        myEdit.putString(RESTAURANT_PHOTO_REF, "AW30NDyTtr4RxhXVXvp0Ls4NWt8l0VZG-zUl7n0wpOqMgfW9iWGaA6o55RE5AMkIlSRpTFlsaohDbXYiLNmik6xHPKkFJau2SH0TCLzEGS9Zobrx05SsqA_dxh5dJfKG55PU3UWS5jyzPo5KFarCFkasji1g8q6NReKuT9M2DjyWLy3fKwZo");
+                    }
+                    myEdit.apply();
 
-                showSearchResultInDetails(place);
+                    showSearchResultInDetails(place);
+                }
+
 
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
                 // TODO: Handle the error.
@@ -610,20 +596,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void showSearchResultInDetails(Place place) {
         String placeId = place.getId();
         String placeName = place.getName();
-        String placeAddress = place.getAddress();
+        String placeAddress = "";
+        if (place.getAddress() != null){
+            placeAddress = place.getAddress();
+        } else {
+            placeAddress = "";
+        }
         String placeOpenNow = "";
         String placePhotoRef = "";
         float placeRating = 0;
         LatLng placeLatLng = null;
         if (place.getOpeningHours() != null && place.getOpeningHours().getPeriods() != null){
             placeOpenNow = place.getOpeningHours().getPeriods().toString();
-        } else {
+        }
+        else {
             placeOpenNow = "";
         }
         if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
-            placePhotoRef = place.getPhotoMetadatas().get(0).toString();
+            placePhotoRef = place.getPhotoMetadatas().get(0).zza();
         } else {
-            placePhotoRef = "%20image%20missing%20reference";
+            placePhotoRef = "AW30NDyTtr4RxhXVXvp0Ls4NWt8l0VZG-zUl7n0wpOqMgfW9iWGaA6o55RE5AMkIlSRpTFlsaohDbXYiLNmik6xHPKkFJau2SH0TCLzEGS9Zobrx05SsqA_dxh5dJfKG55PU3UWS5jyzPo5KFarCFkasji1g8q6NReKuT9M2DjyWLy3fKwZo";
         }
         if (place.getRating() != null){
             placeRating = place.getRating().floatValue();
@@ -687,7 +679,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         AutocompleteActivityMode.OVERLAY,
                         Arrays.asList(
                                 Place.Field.ID,
-                                Place.Field.NAME)
+                                Place.Field.NAME,
+                                Place.Field.PHOTO_METADATAS,
+                                Place.Field.LAT_LNG)
                 )
                         .setTypeFilter(TypeFilter.ESTABLISHMENT)
                         .setLocationRestriction(RectangularBounds.newInstance(boundUserLocation.getSouthwest(), boundUserLocation.getNortheast()))
