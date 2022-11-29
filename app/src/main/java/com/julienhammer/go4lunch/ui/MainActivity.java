@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Parcel;
 import android.util.Log;
+import android.widget.SearchView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -453,7 +454,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.search_autocomplete_menu, menu);
+        MenuItem menuItemSearch = menu.findItem(R.id.search_autocomplete);
+        SearchView searchView = (SearchView) menuItemSearch.getActionView();
+        searchView.setQueryHint("Search restaurants");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                searchAutoCompleteRestaurant();
+                return false;
+            }
 
+            @Override
+            public boolean onQueryTextChange(String s) {
+
+                return false;
+            }
+        });
 //        getMenuInflater().inflate(R.menu.activity_main_info_menu, menu);
         return true;
     }
@@ -641,7 +658,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
     }
 
-    public void searchAutoCompleteRestaurant(View view) {
+    public void searchAutoCompleteRestaurant() {
 
         mLocationViewModel.getLocationLiveData().observe(this, location -> {
             if (location != null){
@@ -675,6 +692,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 };
 
+
                 Intent intent = new Autocomplete.IntentBuilder(
                         AutocompleteActivityMode.OVERLAY,
                         Arrays.asList(
@@ -697,4 +715,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     }
+
 }

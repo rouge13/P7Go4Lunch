@@ -35,19 +35,19 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
                     app:layout_constraintBottom_toTopOf="@id/view_pager">
 
-                <ImageView
-                        android:id="@+id/search_restaurant"
-                        android:background="@android:drawable/ic_menu_search"
-                        app:showAsAction="collapseActionView|never"
-                        app:actionViewClass="android.widget.SearchView"
-                        android:onClick="searchAutoCompleteRestaurant"
-                        android:title="@string/search_restaurant"
-                        android:layout_gravity="right"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:contentDescription="@string/search_restaurant"
-                        android:layout_marginEnd="10dp"
-                />
+<!--                <ImageView-->
+<!--                        android:id="@+id/search_restaurant"-->
+<!--                        android:background="@android:drawable/ic_menu_search"-->
+<!--                        app:showAsAction="collapseActionView|never"-->
+<!--                        app:actionViewClass="android.widget.SearchView"-->
+<!--                        android:onClick="searchAutoCompleteRestaurant"-->
+<!--                        android:title="@string/search_restaurant"-->
+<!--                        android:layout_gravity="right"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:contentDescription="@string/search_restaurant"-->
+<!--                        android:layout_marginEnd="10dp"-->
+<!--                />-->
 
             </androidx.appcompat.widget.Toolbar>
 

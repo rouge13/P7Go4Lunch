@@ -165,12 +165,12 @@ public class InfoRestaurantFragment extends Fragment {
 
             mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(getViewLifecycleOwner(), allWorkmatesInThisRestaurant -> {
                 ArrayList<User> allWorkmatesInThisRestaurantList = new ArrayList<User>();
-//                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<>();
+                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<>();
                 for (int i = 0; i <= (allWorkmatesInThisRestaurant.size()) -1; i++){
                     allWorkmatesInThisRestaurantList.add(allWorkmatesInThisRestaurant.get(i));
                 }
                 binding.workmatesView.setAdapter(adapter);
-                adapter.setData(allWorkmatesInThisRestaurantList);
+                adapter.setData(allWorkmatesInThisRestaurantList, restaurantNameWhereTheWorkmateEat);
             });
 
             binding.itemBackwardButton.setOnClickListener(new View.OnClickListener() {

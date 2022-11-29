@@ -3,8 +3,10 @@ package com.julienhammer.go4lunch.ui.workmates;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
@@ -71,24 +73,23 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
                     public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                         if (fetchPlaceResponse.getPlace() != null && fetchPlaceResponse.getPlace().getName() != null && !fetchPlaceResponse.getPlace().getName().isEmpty()){
                             holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.is_eating_to) + fetchPlaceResponse.getPlace().getName());
+                            holder.BindingItemWorkmate.textViewInformation.setOnClickListener(view -> Toast.makeText(context, workmate.getUserName() + context.getResources().getString(R.string.is_eating_to) + fetchPlaceResponse.getPlace().getName(), Toast.LENGTH_LONG).show());
                         }
                         else {
                             holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.not_selected));
+                            holder.BindingItemWorkmate.textViewInformation.setOnClickListener(view -> Toast.makeText(context, workmate.getUserName() + context.getResources().getString(R.string.not_selected), Toast.LENGTH_LONG).show());
                         }
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull @NotNull Exception e) {
                         holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.not_selected));
+                        holder.BindingItemWorkmate.textViewInformation.setOnClickListener(view -> Toast.makeText(context, workmate.getUserName() + context.getResources().getString(R.string.not_selected), Toast.LENGTH_LONG).show());
                     }
                 });
-
-
-
-
             } else {
                 holder.BindingItemWorkmate.textViewInformation.setText(workmate.getUserName() + context.getResources().getString(R.string.not_selected));
+                holder.BindingItemWorkmate.textViewInformation.setOnClickListener(view -> Toast.makeText(context, workmate.getUserName() + context.getResources().getString(R.string.not_selected), Toast.LENGTH_LONG).show());
             }
         }
     }
@@ -99,7 +100,7 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(ArrayList<User> workmatesArrayList) {
+    public void setData(ArrayList<User> workmatesArrayList, ArrayList<String> restaurantsPlaceName) {
 
 
 
@@ -109,9 +110,9 @@ public class RecyclerViewWorkmateAdapter extends RecyclerView.Adapter<RecyclerVi
 
         if(workmatesArrayList != null){
             this.workmatesArrayList.clear();
-//            this.restaurantsPlaceName.clear();
+            this.restaurantsPlaceName.clear();
             this.workmatesArrayList.addAll(workmatesArrayList);
-//            this.restaurantsPlaceName.addAll(restaurantsPlaceName);
+            this.restaurantsPlaceName.addAll(restaurantsPlaceName);
             notifyDataSetChanged();
 
         }

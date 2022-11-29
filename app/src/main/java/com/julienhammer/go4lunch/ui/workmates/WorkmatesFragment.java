@@ -105,7 +105,11 @@ public class WorkmatesFragment extends Fragment {
             mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
 //                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<String>();
                 ArrayList<User> allWorkmates = new ArrayList<User>();
-
+                ArrayList<String> allRestaurantsName = new ArrayList<>();
+                for (int t = 0; t <= (workmate.size()) -1; t++) {
+                    allWorkmates.add(workmate.get(t));
+                    allRestaurantsName.add("");
+                }
 //                ArrayList<String> allPlaceIdFromNearbySearch = new ArrayList<>();
 //                for (int i = 0; i <= (placesSearchResults.length -1); i++){
 //                    allPlaceIdFromNearbySearch.add(placesSearchResults[i].placeId);
@@ -137,7 +141,7 @@ public class WorkmatesFragment extends Fragment {
 
 
 
-                adapter.setData(allWorkmates);
+                adapter.setData(allWorkmates, allRestaurantsName);
                 binding.workmatesView.setLayoutManager(layoutManager);
                 binding.workmatesView.setAdapter(adapter);
 
