@@ -35,23 +35,35 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.ActionBar"
                     app:layout_constraintBottom_toTopOf="@id/view_pager">
 
-<!--                <ImageView-->
-<!--                        android:id="@+id/search_restaurant"-->
-<!--                        android:background="@android:drawable/ic_menu_search"-->
-<!--                        app:showAsAction="collapseActionView|never"-->
-<!--                        app:actionViewClass="android.widget.SearchView"-->
-<!--                        android:onClick="searchAutoCompleteRestaurant"-->
-<!--                        android:title="@string/search_restaurant"-->
-<!--                        android:layout_gravity="right"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:contentDescription="@string/search_restaurant"-->
-<!--                        android:layout_marginEnd="10dp"-->
-<!--                />-->
+                <ImageView
+                        android:id="@+id/search_restaurant_image"
+                        android:background="@android:drawable/ic_menu_search"
+                        app:showAsAction="collapseActionView|never"
+                        app:actionViewClass="android.widget.SearchView"
+                        android:title="@string/search_restaurant"
+                        android:layout_gravity="right"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:contentDescription="@string/search_restaurant"
+                        android:layout_marginEnd="10dp"
+                />
+                <EditText
+                    android:background="#FFF"
+                    android:id="@+id/restaurant_search_edit_text"
+                    android:textColorHint="@color/black"
+                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/search_restaurant"
+                    android:drawableLeft="@drawable/ic_baseline_search_24"
+                    android:drawableRight="@drawable/ic_baseline_keyboard_voice_24"
+                    />
+
 
             </androidx.appcompat.widget.Toolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
+
 
         <androidx.viewpager.widget.ViewPager
                 android:id="@+id/view_pager"
@@ -60,6 +72,18 @@
                 app:layout_constraintBottom_toTopOf="@id/buttom_navigation_view"
                 app:layout_constraintTop_toBottomOf="@+id/activity_main_app_bar_layout"
         />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/restaurants_recycler_view"
+            android:background="#FFF"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@id/activity_main_app_bar_layout"
+            app:layout_constraintBottom_toTopOf="@id/buttom_navigation_view"
+            tools:listitem="@layout/item_restaurant_search"
+            />
 
         <FrameLayout
                 android:id="@+id/container_layout"

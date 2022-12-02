@@ -71,5 +71,6 @@
     <string name="shared_workmates">sharedWorkmates</string>
     <string name="no_workmates">No workmates is eating here.</string>
     <string name="search_restaurant">Search restaurant</string>
+    <string name="go_to_restaurant_selection">Restaurant selection</string>
 
 </resources>
