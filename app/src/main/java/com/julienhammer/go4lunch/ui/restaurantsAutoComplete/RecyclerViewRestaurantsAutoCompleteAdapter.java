@@ -17,9 +17,12 @@ import android.widget.Filterable;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Response;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,8 +41,13 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.maps.android.SphericalUtil;
 import com.julienhammer.go4lunch.databinding.ItemRestaurantSearchBinding;
+import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantAutoComplete;
+import com.julienhammer.go4lunch.models.RestaurantDetails;
+import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -61,6 +69,7 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
     private ArrayList<RestaurantAutoComplete> mResultList = new ArrayList<>();
     ItemRestaurantSearchBinding binding;
     private View.OnClickListener clickListener;
+    InfoRestaurantViewModel mInfoRestaurantViewModel;
 
     private Context mContext;
     private CharacterStyle STYLE_BOLD;
@@ -208,17 +217,54 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAutoCompleteHolder holder, int position) {
         Context context = holder.itemView.getContext();
+        initInfoRestaurantViewModel(context);
         RestaurantAutoComplete item = mResultList.get(position);
 
-        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
+
+        List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,Place.Field.PHOTO_METADATAS);
         final FetchPlaceRequest request = FetchPlaceRequest.builder(item.placeId, placeFields).build();
         Task<FetchPlaceResponse> restaurantTask = placesClient.fetchPlace(request);
         restaurantTask.addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
             @Override
             public void onSuccess(FetchPlaceResponse response) {
                 if (response.getPlace() != null && response.getPlace().getName() != null){
+
+
                     holder.bindingItemRestaurantSearch.textViewRestaurantName.setText(response.getPlace().getName());
                     holder.bindingItemRestaurantSearch.textViewRestaurantAddress.setText(response.getPlace().getAddress());
+                    holder.itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String addressRes = "";
+                            String openNowRes = "";
+                            String photoRefRes = "AW30NDyTtr4RxhXVXvp0Ls4NWt8l0VZG-zUl7n0wpOqMgfW9iWGaA6o55RE5AMkIlSRpTFlsaohDbXYiLNmik6xHPKkFJau2SH0TCLzEGS9Zobrx05SsqA_dxh5dJfKG55PU3UWS5jyzPo5KFarCFkasji1g8q6NReKuT9M2DjyWLy3fKwZo";
+                            float ratingRes = 0;
+                            LatLng locationRes= new LatLng(0,0);
+                            if (response.getPlace().getAddress() != null){
+                                addressRes = response.getPlace().getAddress();
+                            }
+                            if (response.getPlace().isOpen() != null){
+                                openNowRes = response.getPlace().isOpen().toString();
+                            }
+//                            if (((zzap) ((zzar) ((zzh) response).zza).zzj.get(0)).zzd != null){
+//                                photoRefRes = response.getPlace().getPhotoMetadatas().get(0).toString();
+//                            }
+
+
+                            RestaurantDetails restaurantDetails = new RestaurantDetails(
+                                    response.getPlace().getId(),
+                                    response.getPlace().getName(),
+                                    addressRes,
+                                    photoRefRes,
+                                    openNowRes,
+                                    ratingRes,
+                                    locationRes
+                            );
+
+                            mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
+                            EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
+                        }
+                    });
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -238,6 +284,12 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
     @Override
     public int getItemCount() {
         return mResultList.size();
+    }
+
+    private void initInfoRestaurantViewModel(Context context) {
+        ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
+        mInfoRestaurantViewModel =
+                new ViewModelProvider((FragmentActivity) context, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
     }
 
 
