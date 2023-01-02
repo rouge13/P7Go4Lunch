@@ -237,7 +237,7 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                         public void onClick(View view) {
                             String addressRes = "";
                             String openNowRes = "";
-                            String photoRefRes = "AW30NDyTtr4RxhXVXvp0Ls4NWt8l0VZG-zUl7n0wpOqMgfW9iWGaA6o55RE5AMkIlSRpTFlsaohDbXYiLNmik6xHPKkFJau2SH0TCLzEGS9Zobrx05SsqA_dxh5dJfKG55PU3UWS5jyzPo5KFarCFkasji1g8q6NReKuT9M2DjyWLy3fKwZo";
+                            String photoRefRes = "";
                             float ratingRes = 0;
                             LatLng locationRes= new LatLng(0,0);
                             if (response.getPlace().getAddress() != null){

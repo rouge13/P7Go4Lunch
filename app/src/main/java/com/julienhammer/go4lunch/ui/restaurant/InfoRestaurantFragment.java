@@ -146,6 +146,11 @@ public class InfoRestaurantFragment extends Fragment {
             mInfoRestaurantViewModel.getRestaurantDetailsInfoLiveData().observe(getViewLifecycleOwner(), place -> {
 //                String phoneNumber = place.getPhoneNumber();
                 String websiteRestaurant = place.getWebsiteUri().toString();
+                if (Objects.equals(mRestaurantInfo.getPhotoRefRes(), "")){
+                    mInfoRestaurantViewModel.getRestaurantPhotoBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+                        binding.itemRestaurantImage.setImageBitmap(bitmap);
+                    });
+                }
                 binding.cardCall.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

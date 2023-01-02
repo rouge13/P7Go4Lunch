@@ -161,12 +161,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     } else {
                         if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
                             if (placesSearchResults[i].openingHours.openNow) {
-                                openNowCase = "Open now";
+                                openNowCase = String.valueOf(R.string.openNowCaseTrue);
                             } else {
-                                openNowCase = "Closed now";
+                                openNowCase = String.valueOf(R.string.openNowCaseFalse);
                             }
                         } else {
-                            openNowCase = "Doesn't show if it's open";
+                            openNowCase = String.valueOf(R.string.openNowCaseNotShowing);
                         }
                         if (placesSearchResults[i].photos != null) {
                             photoRef = placesSearchResults[i].photos[0].photoReference;
@@ -217,7 +217,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         for (int i = 0; i<allMarkers.size(); i++){
                             if (Objects.equals(allMarkers.get(i).getTitle(), markerName)){
                                 mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
-                                Toast.makeText(getContext(), "Clicked location is " + markerName, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), R.string.clickedLocationIs + markerName, Toast.LENGTH_SHORT).show();
                                 EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(allRestaurants.get(i)));
                                 break;
                             }

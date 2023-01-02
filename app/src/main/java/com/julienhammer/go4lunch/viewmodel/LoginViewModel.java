@@ -34,15 +34,8 @@ public class LoginViewModel extends ViewModel {
         loginRepository = LoginRepository.getInstance();
     }
 
-
-
     public void createUser(FirebaseUser user){
         loginRepository.createUser(user);
     }
-
-
-
-
-
 
 }

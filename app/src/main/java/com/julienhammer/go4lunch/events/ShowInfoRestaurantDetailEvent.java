@@ -20,5 +20,4 @@ public class ShowInfoRestaurantDetailEvent {
         this.mRestaurant = mRestaurant;
     }
 
-
 }

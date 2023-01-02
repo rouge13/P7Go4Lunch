@@ -90,25 +90,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public DrawerLayout drawer;
     NavigationView navigationView;
     RecyclerViewRestaurantsAutoCompleteAdapter adapter;
-    RecyclerView recyclerView;
+//    RecyclerView recyclerView;
     Toolbar toolbar;
-    Toolbar searchToolbar;
-    LocationManager lm;
-    boolean gpsEnabled = false;
-    boolean networkEnabled = false;
-    private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
-    private static String PLACE_ID = "placeId";
-    private static String USER_ID = "userId";
-    private static String RESTAURANT_NAME = "nameRes";
-    private static String RESTAURANT_ADDRESS = "addressRes";
-    private static String RESTAURANT_OPEN_NOW = "openNowRes";
-    private static String RESTAURANT_PHOTO_REF = "photoRefRes";
-    private static String RESTAURANT_RATING = "ratingRes";
-    private static String RESTAURANT_LAT = "latRes";
-    private static String RESTAURANT_LNG = "lngRes";
-    private static int AUTOCOMPLETE_REQUEST_CODE = 1;
+//    Toolbar searchToolbar;
+    private static final String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
+    private static final String PLACE_ID = "placeId";
+    private static final String USER_ID = "userId";
+    private static final String RESTAURANT_NAME = "nameRes";
+    private static final String RESTAURANT_ADDRESS = "addressRes";
+    private static final String RESTAURANT_OPEN_NOW = "openNowRes";
+    private static final String RESTAURANT_PHOTO_REF = "photoRefRes";
+    private static final String RESTAURANT_RATING = "ratingRes";
+    private static final String RESTAURANT_LAT = "latRes";
+    private static final String RESTAURANT_LNG = "lngRes";
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     //    ExecutorService executor = Executors.newSingleThreadExecutor();
-    RestaurantDetails restaurantChoiced;
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -120,8 +116,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onConfigurationChanged(newConfig);
         toggle.onConfigurationChanged(newConfig);
     }
-
-
 
     @RequiresApi(api = Build.VERSION_CODES.S)
     @SuppressLint("NonConstantResourceId")
@@ -201,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseAuth.getInstance().getCurrentUser(), placeId);
 
                     setNotificationAlarm();
-                    Toast.makeText(this, "Notification has been set", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.notificationSet, Toast.LENGTH_SHORT).show();
                 }
             });
             if (!Places.isInitialized()){
@@ -357,7 +351,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(this, NotificationBroadcast.class);
 
-
         PendingIntent pendingIntent = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
@@ -385,13 +378,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             calendar.set(Calendar.MILLISECOND,0);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
-
-
-
-
     }
-
-
 
     private void saveValueOfTheRestaurantChoicePlaceId(FirebaseUser user, String placeId) {
         // Storing data into SharedPreferences
@@ -620,165 +607,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
-//            if (resultCode == RESULT_OK) {
-//                Place place = Autocomplete.getPlaceFromIntent(data);
-//                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-//                // Storing data into SharedPreferences
-//                SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_SEARCH_ON_COMPLETE,MODE_PRIVATE);
-//                SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
-//                if (!Objects.equals(place.getId(), "")){
-//                    myEdit.putString(PLACE_ID, place.getId());
-//                    myEdit.putString(RESTAURANT_NAME, place.getName());
-//                    if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
-//                        myEdit.putString(RESTAURANT_PHOTO_REF, place.getPhotoMetadatas().get(0).toString());
-//                    } else {
-//                        myEdit.putString(RESTAURANT_PHOTO_REF, "AW30NDyTtr4RxhXVXvp0Ls4NWt8l0VZG-zUl7n0wpOqMgfW9iWGaA6o55RE5AMkIlSRpTFlsaohDbXYiLNmik6xHPKkFJau2SH0TCLzEGS9Zobrx05SsqA_dxh5dJfKG55PU3UWS5jyzPo5KFarCFkasji1g8q6NReKuT9M2DjyWLy3fKwZo");
-//                    }
-//                    myEdit.apply();
-//
-//                    showSearchResultInDetails(place);
-//                }
-//
-//
-//            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
-//                // TODO: Handle the error.
-//                Status status = Autocomplete.getStatusFromIntent(data);
-//                Log.i(TAG, status.getStatusMessage());
-//            } else if (resultCode == RESULT_CANCELED) {
-//                // The user canceled the operation.
-//            }
-//            return;
-//        }
-//        super.onActivityResult(requestCode, resultCode, data);
-//    }
-
-//    private void showSearchResultInDetails(Place place) {
-//        String placeId = place.getId();
-//        String placeName = place.getName();
-//        String placeAddress = "";
-//        if (place.getAddress() != null){
-//            placeAddress = place.getAddress();
-//        } else {
-//            placeAddress = "";
-//        }
-//        String placeOpenNow = "";
-//        String placePhotoRef = "";
-//        float placeRating = 0;
-//        LatLng placeLatLng = null;
-//        if (place.getOpeningHours() != null && place.getOpeningHours().getPeriods() != null){
-//            placeOpenNow = place.getOpeningHours().getPeriods().toString();
-//        }
-//        else {
-//            placeOpenNow = "";
-//        }
-//        if ( place.getPhotoMetadatas() != null && place.getPhotoMetadatas().size() > 0){
-//            placePhotoRef = place.getPhotoMetadatas().get(0).zza();
-//        } else {
-//            placePhotoRef = "AW30NDyTtr4RxhXVXvp0Ls4NWt8l0VZG-zUl7n0wpOqMgfW9iWGaA6o55RE5AMkIlSRpTFlsaohDbXYiLNmik6xHPKkFJau2SH0TCLzEGS9Zobrx05SsqA_dxh5dJfKG55PU3UWS5jyzPo5KFarCFkasji1g8q6NReKuT9M2DjyWLy3fKwZo";
-//        }
-//        if (place.getRating() != null){
-//            placeRating = place.getRating().floatValue();
-//        } else {
-//            placeRating = 0;
-//        }
-//        if (place.getLatLng() != null) {
-//            placeLatLng = new LatLng(place.getLatLng().latitude, place.getLatLng().longitude);
-//        }
-//
-//        RestaurantDetails restaurantDetails = new RestaurantDetails(
-//                placeId,
-//                placeName,
-//                placeAddress,
-//                placePhotoRef,
-//                placeOpenNow,
-//                placeRating,
-//                placeLatLng
-//        );
-//
-//        mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
-//        Toast.makeText(getApplicationContext(), "Clicked location is " + placeName, Toast.LENGTH_SHORT).show();
-//        EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
-//    }
-
-//    public void searchAutoCompleteRestaurant() {
-//
-//        mLocationViewModel.getLocationLiveData().observe(this, location -> {
-//            if (location != null){
-//                double distanceFromCenterToCorner = 5000 * Math.sqrt(2.0);
-//
-//                LatLng southwestCorner = SphericalUtil.computeOffset(new LatLng(location.getLatitude(), location.getLongitude()), distanceFromCenterToCorner, 225.0);
-//                LatLng northeastCorner = SphericalUtil.computeOffset(new LatLng(location.getLatitude(), location.getLongitude()), distanceFromCenterToCorner, 45.0);
-//                RectangularBounds boundUserLocation = new RectangularBounds() {
-//                    @Override
-//                    public int describeContents() {
-//                        return 0;
-//                    }
-//
-//                    @Override
-//                    public void writeToParcel(Parcel parcel, int i) {
-//
-//                    }
-//
-//                    @NonNull
-//                    @NotNull
-//                    @Override
-//                    public LatLng getNortheast() {
-//                        return northeastCorner;
-//                    }
-//
-//                    @NonNull
-//                    @NotNull
-//                    @Override
-//                    public LatLng getSouthwest() {
-//                        return southwestCorner;
-//                    }
-//                };
-//
-//
-//                Intent intent = new Autocomplete.IntentBuilder(
-//                        AutocompleteActivityMode.OVERLAY,
-//                        Arrays.asList(
-//                                Place.Field.ID,
-//                                Place.Field.NAME,
-//                                Place.Field.PHOTO_METADATAS,
-//                                Place.Field.LAT_LNG)
-//                )
-//                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
-//                        .setLocationRestriction(RectangularBounds.newInstance(boundUserLocation.getSouthwest(), boundUserLocation.getNortheast()))
-//                        .setCountries(Collections.singletonList("FR"))
-//                        .build(this);
-//
-//                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-//
-//
-//
-//            }
-//        });
-//
-//
-//    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

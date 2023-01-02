@@ -61,12 +61,9 @@ public class NotificationBroadcast extends BroadcastReceiver {
             for (int i = 0; i < workmates.size(); i++){
                 workmatesUserNameAdded.add(workmates.get(i).getUserName());
             }
-
             // create an object of StringBuilder class
-
 //        if (workmatesUserNameAdded.iterator().hasNext()) {
             for (String workmatesUserName : workmatesUserNameAdded) {
-
                 builder.append(workmatesUserName + " ");
             }
 
@@ -79,7 +76,6 @@ public class NotificationBroadcast extends BroadcastReceiver {
             // convert StringBuilder object into string
             stringAllWorkmates = builder.toString();
         }
-
 
 //        SharedPreferences prefsWorkmates = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
         NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(
@@ -100,13 +96,9 @@ public class NotificationBroadcast extends BroadcastReceiver {
                                 + stringAllWorkmates
                                 + "."
                 ))
-
-
-
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.notify(200, notificationCompat.build());
     }

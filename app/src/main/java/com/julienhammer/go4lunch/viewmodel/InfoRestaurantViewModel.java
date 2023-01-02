@@ -1,6 +1,8 @@
 package com.julienhammer.go4lunch.viewmodel;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
@@ -31,11 +33,6 @@ public class InfoRestaurantViewModel extends ViewModel {
         mInfoRestaurantRepository.setInfoRestaurant(infoRestaurant);
 
     }
-//    public void createRestaurantLiked(String restaurantPlaceId, FirebaseUser userId){
-//        mInfoRestaurantRepository.createRestaurantLiked(restaurantPlaceId, userId);
-//    }
-
-//    public void setRestaurantLikes()
 
     public void initRestaurantsDetailsInfo(String placeId){
         mInfoRestaurantRepository.initRestaurantsDetailsInfo(placeId);
@@ -43,6 +40,10 @@ public class InfoRestaurantViewModel extends ViewModel {
 
     public LiveData<Place> getRestaurantDetailsInfoLiveData(){
         return mInfoRestaurantRepository.getRestaurantDetailsInfoLiveData();
+    }
+
+    public LiveData<Bitmap> getRestaurantPhotoBitmap(){
+        return mInfoRestaurantRepository.getRestaurantPhotoBitmap();
     }
 
     public void initPlacesClientInfo(Context context){

@@ -14,5 +14,5 @@ public class RestaurantAutoComplete {
             this.address = address;
         }
 
-    }
+}
 

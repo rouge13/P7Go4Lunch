@@ -29,9 +29,8 @@ import java.util.List;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class LocationRepository {
-    private static final int LOCATION_REQUEST_INTERVAL_MS = 10_000;
-    private static final float SMALLEST_DISPLACEMENT_THRESHOLD_METER = 25;
-    private static volatile LocationRepository instance;
+//    private static final int LOCATION_REQUEST_INTERVAL_MS = 10_000;
+//    private static final float SMALLEST_DISPLACEMENT_THRESHOLD_METER = 25;
 
     @NonNull
     private final FusedLocationProviderClient fusedLocationProviderClient;
@@ -44,8 +43,6 @@ public class LocationRepository {
     public LocationRepository(@NonNull FusedLocationProviderClient fusedLocationProviderClient) {
         this.fusedLocationProviderClient = fusedLocationProviderClient;
     }
-
-
 
     public LiveData<Location> getLocationLiveData() {
         return locationMutableLiveData;
@@ -64,23 +61,15 @@ public class LocationRepository {
                     userLocation.setLongitude(7.7523);
                 }
                 locationMutableLiveData.postValue(userLocation);
-//                Location userLocation = new Location("network");
-//                userLocation.setLatitude(48.6451);
-//                userLocation.setLongitude(7.7115);
-//                locationMutableLiveData.postValue(userLocation);
-
             }
         });
     }
 
     public void stopLocationRequest() {
+
         if (callback != null) {
             fusedLocationProviderClient.removeLocationUpdates(callback);
         }
     }
-
-
-
-
 
 }

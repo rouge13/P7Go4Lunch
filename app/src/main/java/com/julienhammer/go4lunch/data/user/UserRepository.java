@@ -47,46 +47,15 @@ public class UserRepository {
     public LiveData<List<String>> getAllTheRestaurantLikes(){
         return allUserRestaurantLikesMutableLiveData;
     }
-//    public LiveData<Boolean> getIfRestaurantIsSet(){
-//        return restaurantIsSet;
-//    }
-//
-//    public LiveData<Boolean> getIfRestaurantIsUnSet(){
-//        return restaurantIsUnSet;
-//    }
 
     public LiveData<String> getSelectedRestaurantChoiced() {
         return userSelectedRestaurantMutableLiveData;
     }
 
-
-//    public void userRestaurantIsChoiced(String userId, String placeId){
-//        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-//        DocumentReference userRef = rootRef.collection(COLLECTION_NAME).document(userId);
-//        Query query = userRef.getParent().whereEqualTo(USER_PLACE_ID_FIELD, placeId);
-//
-//        query.get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                for (QueryDocumentSnapshot document : task.getResult()) {
-////                        Log.d(TAG, document.getId() + " => " + document.getData());
-////                    document.getData().get(USER_PLACE_ID_FIELD).equals(placeId);
-//                    userHasSelectedThisRestaurantMutableLiveData.postValue(document.exists());
-////                        userRestaurantChoiceAdded.set(Objects.equals(document.getData(), placeId));
-////                        userRef.document().update(USER_PLACE_ID, "");
-//                        }
-//            } else {
-//                Log.d(TAG, "Error getting documents: ", task.getException());
-//
-//            }
-//        });
-//
-//    }
-
     public void userRestaurantSelected(String userId){
 //        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 //        CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
         Query query = userRef.whereEqualTo(USER_ID_FIELD, userId);
-
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -98,10 +67,8 @@ public class UserRepository {
                 }
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
-
             }
         });
-
     }
 
     public void allUserRestaurantLikes(FirebaseUser user){
@@ -130,7 +97,6 @@ public class UserRepository {
                 userSelectedRestaurantMutableLiveData.postValue(placeId);
             }
         });
-
     }
 
     public void setUserRestaurantLikes(FirebaseUser user, String placeId){
@@ -170,7 +136,6 @@ public class UserRepository {
                 }
             }
         });
-
     }
 
     public static UserRepository getInstance() {

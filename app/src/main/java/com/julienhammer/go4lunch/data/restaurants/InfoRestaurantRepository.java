@@ -1,6 +1,7 @@
 package com.julienhammer.go4lunch.data.restaurants;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -9,6 +10,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -21,7 +24,6 @@ import com.julienhammer.go4lunch.models.User;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -38,7 +40,8 @@ public class InfoRestaurantRepository {
 //    FirebaseFirestore mFirestore;
     private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
     private PlacesClient placesClient;
-    private static MutableLiveData<Place> restaurantDetailsInfo = new MutableLiveData<>();
+    private static MutableLiveData<Place> restaurantDetailsInfoMutableLiveData = new MutableLiveData<>();
+    private static MutableLiveData<Bitmap> restaurantPhotoBitmapMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<List<User>> mAllWorkmatesInThisRestaurantMutableLiveData = new MutableLiveData<>();
     public InfoRestaurantRepository(){
         InfoRestaurantRepository.mInfoRestaurantMutableLiveData = new MutableLiveData<>();
@@ -58,23 +61,29 @@ public class InfoRestaurantRepository {
     }
 
     public LiveData<Place> getRestaurantDetailsInfoLiveData(){
-        return restaurantDetailsInfo;
+        return restaurantDetailsInfoMutableLiveData;
     }
 
     public void initRestaurantsDetailsInfo(String placeId){
-        List<Place.Field> fields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI);
+        List<Place.Field> fields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.PHOTO_METADATAS);
 
         // Construct a request object, passing the place ID and fields array.
         final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, fields);
         Task<FetchPlaceResponse> placeTask = placesClient.fetchPlace(request);
 
+
         placeTask.addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
             @Override
             public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
 //                restaurantDetails.add(fetchPlaceResponse);
-                restaurantDetailsInfo.postValue(fetchPlaceResponse.getPlace());
+                restaurantDetailsInfoMutableLiveData.postValue(fetchPlaceResponse.getPlace());
+
+                final FetchPhotoRequest photoRequest = FetchPhotoRequest.newInstance(fetchPlaceResponse.getPlace().getPhotoMetadatas().get(0));
+                Task<FetchPhotoResponse> photoTask = placesClient.fetchPhoto(photoRequest);
+                photoTask.addOnSuccessListener(fetchPhotoResponse -> restaurantPhotoBitmapMutableLiveData.postValue(fetchPhotoResponse.getBitmap()));
             }
         });
+
     }
 
     public void initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseUser user, String placeId) {
@@ -121,6 +130,10 @@ public class InfoRestaurantRepository {
             countWorkmatesLiveData.setValue(countWorkmates);
         });
         return countWorkmatesLiveData;
+    }
+
+    public LiveData<Bitmap> getRestaurantPhotoBitmap() {
+        return restaurantPhotoBitmapMutableLiveData;
     }
 
     public static InfoRestaurantRepository getInstance(){

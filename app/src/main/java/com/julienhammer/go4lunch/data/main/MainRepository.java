@@ -53,29 +53,6 @@ public class MainRepository {
         return mMutableLiveData;
     }
 
-    // Get the Collection Reference
-//    private CollectionReference getUsersCollection(){
-//        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
-//    }
-
-//    // Get User Data from Firestore
-//    public Task<DocumentSnapshot> getUserData(){
-//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-//        if(currentUser != null){
-//            return this.getUsersCollection().document(currentUser.getUid()).get();
-//        }else{
-//            return null;
-//        }
-//    }
-
-//    // Update User place id
-//    public void updatePlaceIdForUserAndWorkmate(String userPlaceId) {
-//        currentUser = FirebaseAuth.getInstance().getCurrentUser();
-//        if(currentUser != null){
-//            this.getUsersCollection().document(currentUser.getUid()).update(USER_PLACE_ID, userPlaceId);
-//        }
-//    }
-
     public static MainRepository getInstance() {
         MainRepository result = instance;
         if (result != null){
@@ -88,6 +65,4 @@ public class MainRepository {
             return instance;
         }
     }
-
-
 }

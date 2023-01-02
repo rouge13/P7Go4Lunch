@@ -39,7 +39,6 @@ public class RestaurantsRepository {
                                  @NonNull FusedLocationProviderClient mFusedLocationProviderClient){
         RestaurantsRepository.mFusedLocationProviderClient = mFusedLocationProviderClient;
         RestaurantsRepository.mRestaurantMutableLiveData = new MutableLiveData<>();
-
     }
 
     // Get the Collection Reference
@@ -51,8 +50,6 @@ public class RestaurantsRepository {
         return mRestaurantMutableLiveData;
     }
 
-
-
     public void getAllRestaurants(String apiKey, Location userLocation) {
         PlacesSearchResult[] results;
         if (userLocation != null && apiKey != null){
@@ -60,24 +57,6 @@ public class RestaurantsRepository {
             mRestaurantMutableLiveData.postValue(results);
         }
     }
-
-//    public LiveData<Place> getNameOfRestaurantIfMissingInSearchResult(String placeId){
-//        MutableLiveData<Place> restaurant = new MutableLiveData<>();
-//        List<Place.Field> fields = Arrays.asList(Place.Field.NAME);
-//        // Construct a request object, passing the place ID and fields array.
-//        final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, fields);
-//        Task<FetchPlaceResponse> placeTask = placesClient.fetchPlace(request);
-//        placeTask.addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
-//            @Override
-//            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
-//                restaurant.postValue(fetchPlaceResponse.getPlace());
-//            }
-//        });
-//        return restaurant;
-//
-//    }
-
-
 
     public static RestaurantsRepository getInstance(){
 
@@ -92,7 +71,5 @@ public class RestaurantsRepository {
             return instance;
         }
     }
-
-
 
 }
