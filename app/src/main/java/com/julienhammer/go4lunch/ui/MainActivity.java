@@ -74,7 +74,6 @@ import java.util.*;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String MY_SEARCH_ON_COMPLETE = "searchRestaurant";
     private UserViewModel mUserViewModel;
     private LocationViewModel mLocationViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
@@ -199,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
             if (!Places.isInitialized()){
-                Places.initialize(getApplicationContext(), String.valueOf(R.string.google_api_key));
+                Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
             }
             PlacesClient placesClient = Places.createClient(this);
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,10 +44,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListViewHolder> {
     ArrayList<RestaurantDetails> mRestaurantArrayList = new ArrayList<>();
     InfoRestaurantViewModel mInfoRestaurantViewModel;
-    LatLng userLatLngLocation;
-    public RecyclerViewListAdapter(LatLng userLocation) {
-        this.userLatLngLocation = userLocation;
-    }
+    private LatLng mLocation;
 
     @NonNull
     @Override
@@ -75,29 +74,67 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 holder.bindingItemPlace.imageUserIcon.setVisibility(View.INVISIBLE);
             }
         });
+        holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
+        holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
+        holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+        mInfoRestaurantViewModel.casesOfStars(restaurantDetails.getRatingRes()).observe((LifecycleOwner) context, booleans -> {
+            ArrayList<Boolean> listOfStars = booleans;
+            for (int i = 0; i < listOfStars.size(); i++){
+                if (i == 0){
+                    if (listOfStars.get(i).equals(true)){
+                        holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+                    }
+                }
+                else if (i == 1){
+                    if (listOfStars.get(i).equals(true)){
+                        holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
+                    }
+                }
+                else if (i == 2){
+                    if (listOfStars.get(i).equals(true)){
+                        holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.VISIBLE);
+                    }
+                }
+//                else {
+//                    holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
+//                    holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
+//                    holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+//                }
 
-        if (restaurantDetails.getRatingRes() > 1 && restaurantDetails.getRatingRes() < 2.5){
-            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
-            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
-            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
-        }
-        else if (restaurantDetails.getRatingRes() >= 2.5 && restaurantDetails.getRatingRes() < 4){
-            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
-            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
-            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
-        }
-        else if (restaurantDetails.getRatingRes() >= 4){
-            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
-            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
-            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.VISIBLE);
-        } else {
-            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
-            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
-            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
-        }
-        double distance = SphericalUtil.computeDistanceBetween(restaurantDetails.getLocationRes(), this.userLatLngLocation);
-        int distanceArrondi = (int) Math.round(distance);
-        holder.bindingItemPlace.textRestaurantDist.setText(String.format(Locale.getDefault(),"%dm", distanceArrondi));
+            }
+        });
+
+
+//        if (restaurantDetails.getRatingRes() > 1 && restaurantDetails.getRatingRes() < 2.5){
+//            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+//            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
+//            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+//        }
+//        else if (restaurantDetails.getRatingRes() >= 2.5 && restaurantDetails.getRatingRes() < 4){
+//            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+//            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
+//            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+//        }
+//        else if (restaurantDetails.getRatingRes() >= 4){
+//            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+//            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
+//            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.VISIBLE);
+//        } else {
+//            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
+//            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
+//            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+//        }
+
+
+
+//        double distance = SphericalUtil.computeDistanceBetween(restaurantDetails.getLocationRes(), mLocation);
+//        int distanceArrondi = (int) Math.round(distance);
+
+        mInfoRestaurantViewModel.distanceFromLocation(mLocation,restaurantDetails.getLocationRes()).observe((LifecycleOwner) context, distance -> {
+            holder.bindingItemPlace.textRestaurantDist.setText(String.format(Locale.getDefault(),"%dm", distance));
+        });
+
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +160,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     @SuppressLint("NotifyDataSetChanged")
     public void setData(ArrayList<RestaurantDetails> restaurantArrayList) {
         this.mRestaurantArrayList = restaurantArrayList;
+        notifyDataSetChanged();
+    }
+
+    public void setLocation(LatLng location) {
+        this.mLocation = location;
         notifyDataSetChanged();
     }
 }

@@ -7,12 +7,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.auth.FirebaseUser;
 import com.julienhammer.go4lunch.data.restaurants.InfoRestaurantRepository;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,6 +62,14 @@ public class InfoRestaurantViewModel extends ViewModel {
 
     public  LiveData<Integer>  getCountWorkmatesForRestaurant(String placeId){
         return mInfoRestaurantRepository.countWorkmatesForRestaurant(placeId);
+    }
+
+    public LiveData<ArrayList<Boolean>> casesOfStars(Double rating){
+        return mInfoRestaurantRepository.casesOfStars(rating);
+    }
+
+    public LiveData<Integer> distanceFromLocation(LatLng location, LatLng restaurantLocation) {
+        return mInfoRestaurantRepository.distanceFromLocation(location, restaurantLocation);
     }
 
 }

@@ -51,8 +51,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private RestaurantsViewModel mRestaurantsViewModel;
     private InfoRestaurantViewModel mInfoRestaurantViewModel;
     private GoogleMap mMap;
-    private PlacesSearchResult mRestaurants;
-    //    ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static final String MISSING_PHOTO_REFERENCE = "%20image%20missing%20reference";
     private Location userLocation = null;
     public static MapsFragment newInstance() {
         return new MapsFragment();
@@ -60,7 +59,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     SupportMapFragment mapFragment = null;
     CameraPosition cameraPosition = null;
     private static String PLACE_ID = "placeId";
-    private static final String MY_SEARCH_ON_COMPLETE = "searchRestaurant";
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";
@@ -69,15 +67,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private static String RESTAURANT_RATING = "ratingRes";
     private static String RESTAURANT_LAT = "latRes";
     private static String RESTAURANT_LNG = "lngRes";
-
-//    final CameraPosition currentCameraPosition = null;
-    //    MapView mapView = null;
-
-    // -------------------
-    // DATA
-    // -------------------
-
-    // 2 - Configuring ViewModel
 
     private void configureViewModel() {
         ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
@@ -97,16 +86,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 new ViewModelProvider(requireActivity(), infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     * In this case, we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to
-     * install it inside the SupportMapFragment. This method will only be triggered once the
-     * user has installed Google Play services and returned to the app.
-     */
-
     @SuppressLint({"MissingPermission", "PotentialBehaviorOverride"})
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -114,106 +93,56 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         configureViewModel();
         initRestaurantsViewModel();
         initInfoRestaurantViewModel();
-//            mMap.clear();
-
-//            Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
-//            executor.execute(() -> {
-
-
-//                mainExecutor.execute(()->{
         mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-
-            mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults ->
-            {
+            mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
                 userLocation = location;
-
                 cameraPosition = new CameraPosition.Builder()
                         .target(new LatLng(userLocation.getLatitude(),userLocation.getLongitude()))
                         .zoom(14).build();
-
                 mMap.getUiSettings().setMapToolbarEnabled(false);
-                // MOVE THE CAMERA TO THE USER LOCATION
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(),location.getLongitude()), 14));
-
-                // DISPLAY BLUE DOT FOR USER LOCATION
                 mMap.setMyLocationEnabled(true);
-
-                // ZOOM IN, ANIMATE CAMERA
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                // TO DO
-                //searchModelsList is the list of all markers
-//                int permanentlyClosed = 0;
                 ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
                 ArrayList<Marker> allMarkers = new ArrayList<Marker>();
-//                RestaurantDetails[] allRestaurants = new RestaurantDetails[placesSearchResults.length - permanentlyClosed];
-//                Marker[] allMarkers = new Marker[allRestaurants.length];
                 for (int i = 0; i <= placesSearchResults.length -1; i++){
-                    String placeId = placesSearchResults[i].placeId;
-                    double latPlace = placesSearchResults[i].geometry.location.lat;
-                    double longPlace = placesSearchResults[i].geometry.location.lng;
-                    String placeName = placesSearchResults[i].name;
                     String openNowCase = "";
                     String photoRef = "";
-                    String mMissingPhoto = "%20image%20missing%20reference";
-
+                    String mMissingPhoto = MISSING_PHOTO_REFERENCE;
                     if (placesSearchResults[i].permanentlyClosed){
                         i++;
                     } else {
                         if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
                             if (placesSearchResults[i].openingHours.openNow) {
-                                openNowCase = String.valueOf(R.string.openNowCaseTrue);
+                                openNowCase = getString(R.string.openNowCaseTrue);
                             } else {
-                                openNowCase = String.valueOf(R.string.openNowCaseFalse);
+                                openNowCase = getString(R.string.openNowCaseFalse);
                             }
                         } else {
-                            openNowCase = String.valueOf(R.string.openNowCaseNotShowing);
+                            openNowCase = getString(R.string.openNowCaseNotShowing);
                         }
                         if (placesSearchResults[i].photos != null) {
                             photoRef = placesSearchResults[i].photos[0].photoReference;
                         } else {
                             photoRef = mMissingPhoto;
                         }
-                        LatLng resLocation = new LatLng(latPlace , longPlace);
-                        RestaurantDetails restaurantDetails = new RestaurantDetails(
-                                placesSearchResults[i].placeId,
-                                placesSearchResults[i].name,
-                                placesSearchResults[i].vicinity,
-                                photoRef,
-                                openNowCase,
-                                placesSearchResults[i].rating,
-                                resLocation
-                                );
+                        LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat , placesSearchResults[i].geometry.location.lng);
+                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowCase, placesSearchResults[i].rating, resLocation);
                         SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
                         String restaurantChoicedId = prefs.getString(PLACE_ID,"");
-                        if (Objects.equals(restaurantChoicedId, placeId)) {
-
-                            saveValueOfTheRestaurantChoiceAllDataNeeded(
-                                    placesSearchResults[i].placeId,
-                                    placesSearchResults[i].name,
-                                    placesSearchResults[i].vicinity,
-                                    photoRef,
-                                    openNowCase,
-                                    placesSearchResults[i].rating,
-                                    (float) latPlace,
-                                    (float) longPlace);
+                        if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
+                            saveValueOfTheRestaurantChoiceAllDataNeeded(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowCase, placesSearchResults[i].rating, (float) placesSearchResults[i].geometry.location.lat, (float) placesSearchResults[i].geometry.location.lng);
                         }
-//                        else {
-//                            deleteValueForPlaceId();
-//                        }
                         allRestaurants.add(restaurantDetails);
-
                         MarkerOptions markerOptions = new MarkerOptions().position(
-                                new LatLng(latPlace, longPlace)).
-                                title(placeName);
+                                new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng)).
+                                title(placesSearchResults[i].name);
                         allMarkers.add(mMap.addMarker(markerOptions));
                     }
-
                 }
                 mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                     @Override
                     public boolean onMarkerClick(@NonNull Marker marker) {
                         String markerName = marker.getTitle();
-
                         for (int i = 0; i<allMarkers.size(); i++){
                             if (Objects.equals(allMarkers.get(i).getTitle(), markerName)){
                                 mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
@@ -222,7 +151,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                 break;
                             }
                         }
-
                         return false;
                     }
                 });
@@ -230,20 +158,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void deleteValueForPlaceId() {
-        SharedPreferences shPlaceIdChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
-        SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
-        myEdit.putString(PLACE_ID, "");
-        myEdit.apply();
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-//        View view = inflater.inflate(R.layout.fragment_maps, container, false);
-//        mapView = (MapView) view.findViewById(R.id.map);
         return inflater.inflate(R.layout.fragment_maps, container, false);
     }
 
@@ -268,7 +187,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     private void saveValueOfTheRestaurantChoiceAllDataNeeded(String placeId, String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
@@ -285,9 +203,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         myEdit.putFloat(RESTAURANT_RATING, ratingRes);
         myEdit.putFloat(RESTAURANT_LAT, latRes);
         myEdit.putFloat(RESTAURANT_LNG, lngRes);
-        // Once the changes have been made,
-        // we need to commit to apply those changes made,
-        // otherwise, it will throw an error
         myEdit.apply();
     }
 

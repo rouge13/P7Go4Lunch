@@ -97,7 +97,7 @@ public class WorkmatesFragment extends Fragment {
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
 //        if (!Places.isInitialized()){
-//            Places.initialize(requireActivity().getApplicationContext(), String.valueOf(R.string.google_api_key));
+//            Places.initialize(requireActivity().getApplicationContext(), getString(R.string.google_api_key));
 //        }
 //        PlacesClient placesClient = Places.createClient(requireActivity());
         adapter = new RecyclerViewWorkmateAdapter(false, getActivity());

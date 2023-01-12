@@ -98,7 +98,7 @@ public class InfoRestaurantFragment extends Fragment {
                 checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
 
                 binding.restaurantInfoName.setText(mRestaurantInfo.getNameRes());
-                ConvertToImage.loadGooglePhoto(view.getContext(), binding.itemRestaurantImage, restaurantDetails.getPhotoRefRes());
+//                ConvertToImage.loadGooglePhoto(view.getContext(), binding.itemRestaurantImage, restaurantDetails.getPhotoRefRes());
                 binding.itemChoiceRestaurantButton.setOnClickListener(new View.OnClickListener() {
                     @SuppressLint("UseCompatLoadingForDrawables")
                     @Override
@@ -107,8 +107,6 @@ public class InfoRestaurantFragment extends Fragment {
                         SharedPreferences.Editor myEdit = shChoice.edit();
                         if (Objects.equals(mRestaurantInfo.getIdRes(), placeId)){
                             mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(),"");
-
-
                             myEdit.putString(PLACE_ID, "");
                             myEdit.apply();
 
@@ -146,11 +144,11 @@ public class InfoRestaurantFragment extends Fragment {
             mInfoRestaurantViewModel.getRestaurantDetailsInfoLiveData().observe(getViewLifecycleOwner(), place -> {
 //                String phoneNumber = place.getPhoneNumber();
                 String websiteRestaurant = place.getWebsiteUri().toString();
-                if (Objects.equals(mRestaurantInfo.getPhotoRefRes(), "")){
+//                if (Objects.equals(mRestaurantInfo.getPhotoRefRes(), "")){
                     mInfoRestaurantViewModel.getRestaurantPhotoBitmap().observe(getViewLifecycleOwner(), bitmap -> {
                         binding.itemRestaurantImage.setImageBitmap(bitmap);
                     });
-                }
+//                }
                 binding.cardCall.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

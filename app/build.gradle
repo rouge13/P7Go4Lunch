@@ -96,9 +96,12 @@ dependencies {
 //    implementation 'com.google.android.ads:mediation-test-suite:2.0.0'
 
 //    implementation 'androidx.databinding:baseLibrary:3.2.0-alpha11'
+
+    //Tests
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    testImplementation "org.mockito:mockito-core:3.+"
 
     // Navigation component
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.2'
@@ -142,8 +145,6 @@ dependencies {
     //Worker for setting the notification in a specific time if Restaurant is set
     implementation 'androidx.work:work-runtime:2.7.1'
 
-//    //Junit 5 for unit test
-//    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.0'
 
 }
 

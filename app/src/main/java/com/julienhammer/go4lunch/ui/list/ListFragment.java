@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -15,22 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
-import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.utils.NearbySearch;
-import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,30 +29,9 @@ import java.util.concurrent.Executors;
  * create an instance of this fragment.
  */
 public class ListFragment extends Fragment {
-
-    private LocationViewModel mLocationViewModel;
-    private RestaurantsViewModel mRestaurantsViewModel;
-    private static final String TAG = null;
-    private ListViewModel listViewModel;
     FragmentListBinding binding;
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    RecyclerViewListAdapter adapter;
-    private PlacesSearchResult placesSearchResult;
-
-
-    private void configureViewModel() {
-        ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
-        mLocationViewModel =
-                new ViewModelProvider(requireActivity(), locationViewModelFactory).get(LocationViewModel.class);
-    }
-
-    private void initRestaurantsList(){
-        ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
-        mRestaurantsViewModel =
-                new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
-
-    }
-
+    ViewModelFactory viewModelFactory = ViewModelFactory.getInstance();
+    private static final String MISSING_PHOTO_REFERENCE = "%20image%20missing%20reference";
 
     public ListFragment() {
         // Required empty public constructor
@@ -70,6 +40,7 @@ public class ListFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
+     *
      * @return A new instance of fragment ListFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -85,76 +56,69 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentListBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        configureViewModel();
-        initRestaurantsList();
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-//        adapter = new RecyclerViewListAdapter();
+        RecyclerViewListAdapter adapter = new RecyclerViewListAdapter();
+        initAdapterAndRv(adapter);
+        addLocationViewModel(adapter);
+        addAllRestaurantsViewModel(adapter);
+    }
 
-
-        Executor mainExecutor = ContextCompat.getMainExecutor(getContext());
-        executor.execute(() -> {
-
-            mainExecutor.execute(() -> {
-
-                mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                    adapter = new RecyclerViewListAdapter(new LatLng(location.getLatitude(),location.getLongitude()));
-                    mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
-
-                        String photoRef;
-                        String mMissingPhoto = "%20image%20missing%20reference";
-                        ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
-                        for (int i = 0; i <= (placesSearchResults.length) - 1; i++) {
-                            String openNowCase = "";
-                            if (placesSearchResults[i].permanentlyClosed){
-                                i++;
-                            } else {
-                                if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null ) {
-                                    if (placesSearchResults[i].openingHours.openNow) {
-                                        openNowCase = String.valueOf(R.string.openNowCaseTrue);
-                                    } else {
-                                        openNowCase = String.valueOf(R.string.openNowCaseFalse);
-                                    }
-                                } else {
-                                    openNowCase = String.valueOf(R.string.openNowCaseNotShowing);
-                                }
-                                if (placesSearchResults[i].photos != null){
-                                    photoRef = placesSearchResults[i].photos[0].photoReference;
-                                } else {
-                                    photoRef = mMissingPhoto;
-                                }
-                                LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat , placesSearchResults[i].geometry.location.lng);
-                                RestaurantDetails restaurantDetails = new RestaurantDetails(
-                                        placesSearchResults[i].placeId,
-                                        placesSearchResults[i].name,
-                                        placesSearchResults[i].vicinity,
-                                        photoRef,
-                                        openNowCase,
-                                        placesSearchResults[i].rating,
-                                        resLocation
-                                );
-                                allRestaurants.add(restaurantDetails);
-                            }
-
+    private void addAllRestaurantsViewModel(RecyclerViewListAdapter adapter) {
+        RestaurantsViewModel restaurantsViewModel =
+                new ViewModelProvider(requireActivity(), viewModelFactory).get(RestaurantsViewModel.class);
+        restaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+            String photoRef;
+            String mMissingPhoto = MISSING_PHOTO_REFERENCE;
+            ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
+            for (int i = 0; i < (placesSearchResults.length); i++) {
+                String openNowCase = "";
+                if (placesSearchResults[i].permanentlyClosed) {
+                    i++;
+                } else {
+                    if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
+                        if (placesSearchResults[i].openingHours.openNow) {
+                            openNowCase = getString(R.string.openNowCaseTrue);
+                        } else {
+                            openNowCase = getString(R.string.openNowCaseFalse);
                         }
-                        adapter.setData(allRestaurants);
-                        binding.listViewPlaces.setLayoutManager(layoutManager);
-                        binding.listViewPlaces.setAdapter(adapter);
-                    });
-                });
-            });
+                    } else {
+                        openNowCase = getString(R.string.openNowCaseNotShowing);
+                    }
+                    if (placesSearchResults[i].photos != null) {
+                        photoRef = placesSearchResults[i].photos[0].photoReference;
+                    } else {
+                        photoRef = mMissingPhoto;
+                    }
+                    LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
+                    RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowCase, placesSearchResults[i].rating, resLocation
+                    );
+                    allRestaurants.add(restaurantDetails);
+                }
+            }
+            adapter.setData(allRestaurants);
         });
+    }
+
+    private void addLocationViewModel(RecyclerViewListAdapter adapter) {
+        LocationViewModel locationViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(LocationViewModel.class);
+        locationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+            adapter.setLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+        });
+    }
+
+    private void initAdapterAndRv(RecyclerViewListAdapter adapter) {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.listViewPlaces.setLayoutManager(layoutManager);
+        binding.listViewPlaces.setAdapter(adapter);
     }
 
 
