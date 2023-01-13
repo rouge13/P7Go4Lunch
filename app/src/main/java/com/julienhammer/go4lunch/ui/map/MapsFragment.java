@@ -105,32 +105,25 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
                 ArrayList<Marker> allMarkers = new ArrayList<Marker>();
                 for (int i = 0; i <= placesSearchResults.length -1; i++){
-                    String openNowCase = "";
+                    String openNowText = "";
                     String photoRef = "";
                     String mMissingPhoto = MISSING_PHOTO_REFERENCE;
                     if (placesSearchResults[i].permanentlyClosed){
                         i++;
                     } else {
-                        if (placesSearchResults[i].openingHours != null && placesSearchResults[i].openingHours.openNow != null) {
-                            if (placesSearchResults[i].openingHours.openNow) {
-                                openNowCase = getString(R.string.openNowCaseTrue);
-                            } else {
-                                openNowCase = getString(R.string.openNowCaseFalse);
-                            }
-                        } else {
-                            openNowCase = getString(R.string.openNowCaseNotShowing);
-                        }
+                        openNowText = getOpenHourText(placesSearchResults[i].openingHours != null
+                                ? placesSearchResults[i].openingHours.openNow : null);
                         if (placesSearchResults[i].photos != null) {
                             photoRef = placesSearchResults[i].photos[0].photoReference;
                         } else {
                             photoRef = mMissingPhoto;
                         }
                         LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat , placesSearchResults[i].geometry.location.lng);
-                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowCase, placesSearchResults[i].rating, resLocation);
+                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, resLocation);
                         SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
                         String restaurantChoicedId = prefs.getString(PLACE_ID,"");
                         if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
-                            saveValueOfTheRestaurantChoiceAllDataNeeded(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowCase, placesSearchResults[i].rating, (float) placesSearchResults[i].geometry.location.lat, (float) placesSearchResults[i].geometry.location.lng);
+                            saveValueOfTheRestaurantChoiceAllDataNeeded(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, (float) placesSearchResults[i].geometry.location.lat, (float) placesSearchResults[i].geometry.location.lng);
                         }
                         allRestaurants.add(restaurantDetails);
                         MarkerOptions markerOptions = new MarkerOptions().position(
@@ -164,6 +157,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_maps, container, false);
+    }
+
+    @NonNull
+    private String getOpenHourText(Boolean openNow) {
+
+        if (openNow) {
+            return getString(R.string.openNowCaseTrue);
+        } else if (!openNow) {
+            return getString(R.string.openNowCaseFalse);
+        }
+        return getString(R.string.openNowCaseNotShowing);
+
     }
 
     @Override

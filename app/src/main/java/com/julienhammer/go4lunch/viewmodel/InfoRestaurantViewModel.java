@@ -64,7 +64,7 @@ public class InfoRestaurantViewModel extends ViewModel {
         return mInfoRestaurantRepository.countWorkmatesForRestaurant(placeId);
     }
 
-    public LiveData<ArrayList<Boolean>> casesOfStars(Double rating){
+    public LiveData<Integer> casesOfStars(Double rating){
         return mInfoRestaurantRepository.casesOfStars(rating);
     }
 

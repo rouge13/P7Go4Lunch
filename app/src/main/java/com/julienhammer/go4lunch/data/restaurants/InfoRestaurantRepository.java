@@ -126,32 +126,20 @@ public class InfoRestaurantRepository {
 //        }
 //    }
 
-    public LiveData<ArrayList<Boolean>> casesOfStars(Double rating) {
-        MutableLiveData<ArrayList<Boolean>> valuesOfStars = new MutableLiveData<>();
+    public LiveData<Integer> casesOfStars(Double rating) {
+        MutableLiveData<Integer> valuesOfStars = new MutableLiveData<>();
         valuesOfStars.postValue(checkStarsFromRating(rating));
         return valuesOfStars;
     }
 
-    public ArrayList<Boolean> checkStarsFromRating(Double rating) {
-        int size = 3;
-        ArrayList<Boolean> listCheck = new ArrayList<>(size);
-        listCheck.addAll(Collections.nCopies(size, Boolean.FALSE));
-        int percentOfRating = (int) (rating * 100) / 5;
-        if (percentOfRating > 25) {
-            listCheck.set(0, true);
-        }
-        if (percentOfRating > 50) {
-            listCheck.set(1, true);
-        }
-        if (percentOfRating > 75) {
-            listCheck.set(2, true);
-        }
-        return listCheck;
+    public Integer checkStarsFromRating(Double rating) {
+        int percentOfRating = (int) Math.rint(rating * 3 / 5);
+        return percentOfRating;
     }
 
     public LiveData<Integer> distanceFromLocation(LatLng location, LatLng restaurantLocation) {
         MutableLiveData<Integer> distance = new MutableLiveData<>();
-        distance.postValue(countDistance(location,restaurantLocation));
+        distance.postValue(countDistance(location, restaurantLocation));
         return distance;
     }
 
@@ -160,21 +148,12 @@ public class InfoRestaurantRepository {
         return (int) Math.round(distance);
     }
 
-
     public LiveData<Integer> countWorkmatesForRestaurant(String placeId) {
         MutableLiveData<Integer> countWorkmatesLiveData = new MutableLiveData<>();
         db.collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, placeId).addSnapshotListener((value, error) -> {
-            countWorkmatesLiveData.setValue(getCountWorkmates(value));
+            countWorkmatesLiveData.setValue(value != null ? value.size() : 0);
         });
         return countWorkmatesLiveData;
-    }
-
-    private int getCountWorkmates(QuerySnapshot value) {
-        int countWorkmates = 0;
-        if (value != null) {
-            countWorkmates = value.size();
-        }
-        return countWorkmates;
     }
 
     public LiveData<Bitmap> getRestaurantPhotoBitmap() {

@@ -27,4 +27,5 @@ public class RestaurantsViewModel extends ViewModel {
         mRestaurantsRepository.getAllRestaurants(apiKey, userLocation);
     }
 
+
 }
