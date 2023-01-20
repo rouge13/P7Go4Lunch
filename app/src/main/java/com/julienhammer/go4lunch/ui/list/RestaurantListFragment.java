@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
@@ -26,15 +25,15 @@ import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
+ * Use the {@link RestaurantListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListFragment extends Fragment {
+public class RestaurantListFragment extends Fragment {
     FragmentListBinding binding;
     ViewModelFactory viewModelFactory = ViewModelFactory.getInstance();
     private static final String MISSING_PHOTO_REFERENCE = "%20image%20missing%20reference";
 
-    public ListFragment() {
+    public RestaurantListFragment() {
         // Required empty public constructor
     }
 
@@ -42,11 +41,11 @@ public class ListFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment ListFragment.
+     * @return A new instance of fragment RestaurantListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ListFragment newInstance() {
-        ListFragment fragment = new ListFragment();
+    public static RestaurantListFragment newInstance() {
+        RestaurantListFragment fragment = new RestaurantListFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -74,9 +73,9 @@ public class ListFragment extends Fragment {
     }
 
     private void addAllRestaurantsViewModel(RecyclerViewListAdapter adapter) {
-        RestaurantsViewModel restaurantsViewModel =
+        RestaurantsViewModel mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), viewModelFactory).get(RestaurantsViewModel.class);
-        restaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+        mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
             String photoRef;
             String mMissingPhoto = MISSING_PHOTO_REFERENCE;
             ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
@@ -85,8 +84,8 @@ public class ListFragment extends Fragment {
                 if (placesSearchResults[i].permanentlyClosed) {
                     i++;
                 } else {
-                    openNowText = getOpenHourText(placesSearchResults[i].openingHours != null
-                            ? placesSearchResults[i].openingHours.openNow : null);
+                    openNowText = getString(getOpenHourText(placesSearchResults[i].openingHours != null
+                            ? placesSearchResults[i].openingHours.openNow : null));
                     if (placesSearchResults[i].photos != null) {
                         photoRef = placesSearchResults[i].photos[0].photoReference;
                     } else {
@@ -104,14 +103,16 @@ public class ListFragment extends Fragment {
     }
 
     @NonNull
-    private String getOpenHourText(Boolean openNow) {
+    public int getOpenHourText(Boolean openNow) {
 
-        if (openNow) {
-            return getString(R.string.openNowCaseTrue);
-        } else if (!openNow) {
-            return getString(R.string.openNowCaseFalse);
+        if (openNow == null) {
+            return R.string.openNowCaseNotShowing;
         }
-        return getString(R.string.openNowCaseNotShowing);
+        if (openNow) {
+            return R.string.openNowCaseTrue;
+        } else {
+            return R.string.openNowCaseFalse;
+        }
 
     }
 

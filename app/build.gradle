@@ -29,10 +29,6 @@ android {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
     def mapsAPIKey = properties.getProperty('MAPS_API_KEY')
-    def facebookApplicationID = properties.getProperty("FACEBOOK_APPLICATION_ID")
-    def fbLoginProtocolScheme = properties.getProperty("FACEBOOK_LOGIN_PROTOCOL_SCHEME")
-    def facebookClientToken = properties.getProperty("FACEBOOK_CLIENT_TOKEN")
-
     def twitterApiKey = properties.getProperty('TWITTER_APPLICATION_KEY')
     def twitterApiSecretKey = properties.getProperty('TWITTER_APPLICATION_SECRET_KEY')
 
@@ -44,9 +40,6 @@ android {
         }
         debug {
             resValue "string", "google_map_key", mapsAPIKey
-            resValue "string", "facebook_application_id", facebookApplicationID
-            resValue "string", "facebook_login_protocol_scheme", fbLoginProtocolScheme
-            resValue "string", "facebook_client_token", facebookClientToken
             resValue "string", "twitter_api_key", twitterApiKey
             resValue "string", "twitter_api_secret_key", twitterApiSecretKey
 

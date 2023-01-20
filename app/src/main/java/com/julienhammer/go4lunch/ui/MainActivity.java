@@ -548,6 +548,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();
+                getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE).edit().clear().apply();
                 Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
                 finish();

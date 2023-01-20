@@ -6,12 +6,12 @@
     app:startDestination="@id/maps_fragment">
     <fragment
         android:id="@+id/maps_fragment"
-        android:name="com.julienhammer.go4lunch.ui.map.MapsFragment"
+        android:name="com.julienhammer.go4lunch.ui.map.RestaurantMapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/list_fragment"
-        android:name="com.julienhammer.go4lunch.ui.list.ListFragment"
+        android:name="com.julienhammer.go4lunch.ui.list.RestaurantListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" />
     <fragment

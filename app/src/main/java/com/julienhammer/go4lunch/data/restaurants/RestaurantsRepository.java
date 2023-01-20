@@ -1,5 +1,6 @@
 package com.julienhammer.go4lunch.data.restaurants;
 
+import android.app.Application;
 import android.content.Context;
 import android.location.Location;
 
@@ -19,6 +20,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.model.PlacesSearchResult;
+import com.google.rpc.context.AttributeContext;
+import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 
 import java.util.Arrays;

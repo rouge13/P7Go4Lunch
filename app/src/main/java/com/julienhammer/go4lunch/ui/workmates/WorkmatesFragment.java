@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,29 +13,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.common.util.ArrayUtils;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.maps.model.PlacesSearchResult;
-import com.julienhammer.go4lunch.R;
-import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 //import com.julienhammer.go4lunch.models.Workmate;
-import com.julienhammer.go4lunch.ui.list.ListFragment;
-import com.julienhammer.go4lunch.ui.list.RecyclerViewListAdapter;
-import com.julienhammer.go4lunch.utils.NearbySearch;
-import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.Executor;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -72,7 +56,7 @@ public class WorkmatesFragment extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     * @return A new instance of fragment ListFragment.
+     * @return A new instance of fragment RestaurantListFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static WorkmatesFragment newInstance() {

@@ -1,29 +1,15 @@
 package com.julienhammer.go4lunch.data.location;
 
-import android.app.Application;
 import android.location.Location;
-import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import com.google.maps.model.LatLng;
-import com.julienhammer.go4lunch.data.login.LoginRepository;
-import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
-import com.julienhammer.go4lunch.ui.map.MapsFragment;
-
-import java.util.List;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

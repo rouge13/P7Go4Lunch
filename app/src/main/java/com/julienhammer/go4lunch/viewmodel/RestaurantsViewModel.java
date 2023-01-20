@@ -1,5 +1,6 @@
 package com.julienhammer.go4lunch.viewmodel;
 
+import android.content.Context;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,5 @@ public class RestaurantsViewModel extends ViewModel {
     public void getAllRestaurants(String apiKey, Location userLocation){
         mRestaurantsRepository.getAllRestaurants(apiKey, userLocation);
     }
-
 
 }

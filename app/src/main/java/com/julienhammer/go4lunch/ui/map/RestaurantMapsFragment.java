@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
@@ -25,14 +24,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.maps.model.PlacesSearchResult;
 
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
-import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
@@ -40,12 +36,11 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallback {
     // 1 - FOR DATA
     private LocationViewModel mLocationViewModel;
     private RestaurantsViewModel mRestaurantsViewModel;
@@ -53,8 +48,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
     private static final String MISSING_PHOTO_REFERENCE = "%20image%20missing%20reference";
     private Location userLocation = null;
-    public static MapsFragment newInstance() {
-        return new MapsFragment();
+    public static RestaurantMapsFragment newInstance() {
+        return new RestaurantMapsFragment();
     }
     SupportMapFragment mapFragment = null;
     CameraPosition cameraPosition = null;
@@ -111,8 +106,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                     if (placesSearchResults[i].permanentlyClosed){
                         i++;
                     } else {
-                        openNowText = getOpenHourText(placesSearchResults[i].openingHours != null
-                                ? placesSearchResults[i].openingHours.openNow : null);
+                        openNowText = getString(getOpenHourTextId(placesSearchResults[i].openingHours != null
+                                ? placesSearchResults[i].openingHours.openNow : null));
                         if (placesSearchResults[i].photos != null) {
                             photoRef = placesSearchResults[i].photos[0].photoReference;
                         } else {
@@ -160,14 +155,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @NonNull
-    private String getOpenHourText(Boolean openNow) {
+    public int getOpenHourTextId(Boolean openNow) {
 
-        if (openNow) {
-            return getString(R.string.openNowCaseTrue);
-        } else if (!openNow) {
-            return getString(R.string.openNowCaseFalse);
+        if (openNow == null) {
+            return R.string.openNowCaseNotShowing;
         }
-        return getString(R.string.openNowCaseNotShowing);
+        if (openNow) {
+            return R.string.openNowCaseTrue;
+        } else {
+            return R.string.openNowCaseFalse;
+        }
 
     }
 
