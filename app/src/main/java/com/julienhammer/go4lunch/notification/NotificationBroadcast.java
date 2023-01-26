@@ -48,8 +48,6 @@ public class NotificationBroadcast extends BroadcastReceiver {
             });
             Log.d("MyAlarm", "Alarm just fired");
         }
-
-
     }
 
     private void showNotification(Context context, List<User> workmates, SharedPreferences prefs) {
@@ -62,22 +60,12 @@ public class NotificationBroadcast extends BroadcastReceiver {
                 workmatesUserNameAdded.add(workmates.get(i).getUserName());
             }
             // create an object of StringBuilder class
-//        if (workmatesUserNameAdded.iterator().hasNext()) {
             for (String workmatesUserName : workmatesUserNameAdded) {
                 builder.append(workmatesUserName + " ");
             }
-
-//        }
-//        else if (!workmatesUserNameAdded.iterator().hasNext()){
-//            for (String workmatesUserName : workmatesUserNameAdded) {
-//                builder.append(workmatesUserName);
-//            }
-//        }
             // convert StringBuilder object into string
             stringAllWorkmates = builder.toString();
         }
-
-//        SharedPreferences prefsWorkmates = context.getSharedPreferences(context.getString(R.string.shared_workmates), MODE_PRIVATE);
         NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(
                 context, context.getString(R.string.channel_id))
                 .setSmallIcon(R.mipmap.ic_launcher)

@@ -54,6 +54,7 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     SupportMapFragment mapFragment = null;
     CameraPosition cameraPosition = null;
     private static String PLACE_ID = "placeId";
+    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";
@@ -134,7 +135,10 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
                         for (int i = 0; i<allMarkers.size(); i++){
                             if (Objects.equals(allMarkers.get(i).getTitle(), markerName)){
                                 mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
-                                Toast.makeText(getContext(), R.string.clickedLocationIs + markerName, Toast.LENGTH_SHORT).show();
+                                SharedPreferences pref = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+                                SharedPreferences.Editor myEdit = pref.edit();
+                                myEdit.putString(CLICKED_RESTAURANT_ID, allRestaurants.get(i).getIdRes());
+                                myEdit.apply();
                                 EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(allRestaurants.get(i)));
                                 break;
                             }

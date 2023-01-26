@@ -66,6 +66,7 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
     private static String RESTAURANT_LAT = "latRes";
     private static String RESTAURANT_LNG = "lngRes";
     private static final String TAG = "PlacesAutoAdapter";
+    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
     private ArrayList<RestaurantAutoComplete> mResultList = new ArrayList<>();
     ItemRestaurantSearchBinding binding;
     private View.OnClickListener clickListener;
@@ -262,6 +263,10 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                             );
 
                             mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
+                            SharedPreferences pref = context.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+                            SharedPreferences.Editor myEdit = pref.edit();
+                            myEdit.putString(CLICKED_RESTAURANT_ID, restaurantDetails.getIdRes());
+                            myEdit.apply();
                             EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
                         }
                     });

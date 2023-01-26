@@ -104,7 +104,6 @@ public class RestaurantListFragment extends Fragment {
 
     @NonNull
     public int getOpenHourText(Boolean openNow) {
-
         if (openNow == null) {
             return R.string.openNowCaseNotShowing;
         }
@@ -113,7 +112,6 @@ public class RestaurantListFragment extends Fragment {
         } else {
             return R.string.openNowCaseFalse;
         }
-
     }
 
     private void addLocationViewModel(RecyclerViewListAdapter adapter) {
@@ -128,6 +126,4 @@ public class RestaurantListFragment extends Fragment {
         binding.listViewPlaces.setLayoutManager(layoutManager);
         binding.listViewPlaces.setAdapter(adapter);
     }
-
-
 }

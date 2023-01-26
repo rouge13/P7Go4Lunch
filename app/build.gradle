@@ -69,9 +69,6 @@ android {
 
 
 dependencies {
-//    implementation 'com.google.android.gms:play-services-ads:21.1.0'
-//    implementation 'com.google.android.ads:mediation-test-suite:3.0.0'
-//    implementation 'com.google.android.flexbox:flexbox:1.1.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -86,9 +83,6 @@ dependencies {
     implementation 'androidx.databinding:databinding-common:7.3.0'
     implementation 'com.google.firebase:firebase-database:20.0.5'
     implementation 'com.google.maps.android:android-maps-utils:2.4.0'
-//    implementation 'com.google.android.ads:mediation-test-suite:2.0.0'
-
-//    implementation 'androidx.databinding:baseLibrary:3.2.0-alpha11'
 
     //Tests
     testImplementation 'junit:junit:4.13.2'
@@ -128,16 +122,11 @@ dependencies {
     //FIRESTORE
     implementation 'com.google.firebase:firebase-firestore:24.1.2'
 
-    // FACEBOOK
-//    implementation 'com.facebook.android:facebook-login:latest.release'
-    implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
-
     //EventBus
     implementation 'org.greenrobot:eventbus:3.2.0'
 
     //Worker for setting the notification in a specific time if Restaurant is set
     implementation 'androidx.work:work-runtime:2.7.1'
-
 
 }
 

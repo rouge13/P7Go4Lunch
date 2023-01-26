@@ -1,12 +1,19 @@
 package com.julienhammer.go4lunch.data.restaurants;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
@@ -16,8 +23,6 @@ import com.google.android.libraries.places.api.net.FetchPhotoResponse;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.*;
 import com.google.maps.android.SphericalUtil;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
@@ -25,7 +30,6 @@ import com.julienhammer.go4lunch.models.User;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,19 +38,18 @@ import java.util.List;
 public class InfoRestaurantRepository {
     private static final String COLLECTION_NAME = "users";
     private static final String USER_PLACE_ID_FIELD = "userPlaceId";
-    private static final String TAG = "Value is egal to ";
-
+    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
+    private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference userRef = db.collection(COLLECTION_NAME);
-    private static MutableLiveData<Integer> mCountWorkmatesInRestaurant;
+
     private static volatile InfoRestaurantRepository instance;
-    //    FirebaseFirestore mFirestore;
     private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
     private PlacesClient placesClient;
-
+    private String valueRestaurantId;
     private static MutableLiveData<Place> restaurantDetailsInfoMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<Bitmap> restaurantPhotoBitmapMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<List<User>> mAllWorkmatesInThisRestaurantMutableLiveData = new MutableLiveData<>();
+//    private static MutableLiveData<String> clickedRestaurantIdMutableLiveData = new MutableLiveData<>();
 
     public InfoRestaurantRepository() {
         InfoRestaurantRepository.mInfoRestaurantMutableLiveData = new MutableLiveData<>();
@@ -72,59 +75,64 @@ public class InfoRestaurantRepository {
 
     public void initRestaurantsDetailsInfo(String placeId) {
         List<Place.Field> fields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.PHOTO_METADATAS);
-
         // Construct a request object, passing the place ID and fields array.
         final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, fields);
         Task<FetchPlaceResponse> placeTask = placesClient.fetchPlace(request);
-
-
         placeTask.addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
             @Override
             public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
-//                restaurantDetails.add(fetchPlaceResponse);
                 restaurantDetailsInfoMutableLiveData.postValue(fetchPlaceResponse.getPlace());
-
                 final FetchPhotoRequest photoRequest = FetchPhotoRequest.newInstance(fetchPlaceResponse.getPlace().getPhotoMetadatas().get(0));
                 Task<FetchPhotoResponse> photoTask = placesClient.fetchPhoto(photoRequest);
                 photoTask.addOnSuccessListener(fetchPhotoResponse -> restaurantPhotoBitmapMutableLiveData.postValue(fetchPhotoResponse.getBitmap()));
             }
         });
-
     }
 
-    public void initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseUser user, String placeId) {
-        userRef.whereEqualTo(USER_PLACE_ID_FIELD, placeId).addSnapshotListener((value, error) -> {
-            List<User> workmates = new ArrayList<>();
-            if (value != null) {
-                for (QueryDocumentSnapshot doc : value) {
-                    if (doc != null) {
-                        workmates.add(doc.toObject(User.class));
-                    }
+    public void initAllWorkmatesInThisRestaurantMutableLiveData(String restaurantId) {
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, restaurantId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                List<User> workmates = new ArrayList<>();
+                if (task.isSuccessful()) {
+                    List<User> doc = task.getResult().toObjects(User.class);
+                    workmates.addAll(doc);
+                    mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
                 }
             }
-
-            mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
         });
+
+
     }
+
+
+//
+//
+//        EventListener<QuerySnapshot> listener = new EventListener<QuerySnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+//                List<User> workmates = new ArrayList<>();
+//                if (value != null) {
+//                    for (QueryDocumentSnapshot doc : value) {
+//                        if (doc != null) {
+//                            workmates.add(doc.toObject(User.class));
+//                        }
+//                    }
+//                }
+//
+//                mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
+//            }
+//        };
+//        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, prefs.getString(CLICKED_RESTAURANT_ID, "")).addSnapshotListener(listener);
+
 
     public LiveData<List<User>> getAllWorkmatesInThisRestaurantLiveData() {
         return mAllWorkmatesInThisRestaurantMutableLiveData;
     }
 
-
-    // Get the Collection Reference
     private CollectionReference getInfoRestaurantCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
-
-//    public Task<DocumentSnapshot> getInfoRestaurantData(String restaurantPlaceId) {
-//
-//        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//            return this.getInfoRestaurantCollection().document(restaurantPlaceId).get();
-//        } else {
-//            return null;
-//        }
-//    }
 
     public LiveData<Integer> casesOfStars(Double rating) {
         MutableLiveData<Integer> valuesOfStars = new MutableLiveData<>();

@@ -1,5 +1,6 @@
 package com.julienhammer.go4lunch.viewmodel;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -9,12 +10,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.julienhammer.go4lunch.data.restaurants.InfoRestaurantRepository;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,8 +52,8 @@ public class InfoRestaurantViewModel extends ViewModel {
         mInfoRestaurantRepository.initPlacesDetailsClientInfo(context);
     }
 
-    public void initAllWorkmatesInThisRestaurantMutableLiveData(FirebaseUser user, String placeId){
-        mInfoRestaurantRepository.initAllWorkmatesInThisRestaurantMutableLiveData(user, placeId);
+    public void initAllWorkmatesInThisRestaurantMutableLiveData(String restaurantId){
+        mInfoRestaurantRepository.initAllWorkmatesInThisRestaurantMutableLiveData(restaurantId);
     }
 
     public LiveData<List<User>> getAllWorkmatesInThisRestaurantLiveData(){

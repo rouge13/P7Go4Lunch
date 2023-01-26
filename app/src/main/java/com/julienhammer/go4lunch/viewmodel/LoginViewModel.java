@@ -12,13 +12,11 @@ import com.julienhammer.go4lunch.data.login.LoginRepository;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class LoginViewModel extends ViewModel {
-    private static volatile LoginViewModel instance;
     private static LoginRepository loginRepository;
-    boolean mMutableLiveDataCase;
     FirebaseFirestore mFirestore;
 
-    public void isUserAddedInFirebase(String userUID) {
-        loginRepository.isUserAddedInFirebase(userUID);
+    public void isUserAddedInFirebase(String userUIDAdded) {
+        loginRepository.isUserAddedInFirebase(userUIDAdded);
     }
 
     public LiveData<Boolean> getIfUserAlreadyAdded(){
@@ -34,8 +32,8 @@ public class LoginViewModel extends ViewModel {
         loginRepository = LoginRepository.getInstance();
     }
 
-    public void createUser(FirebaseUser user){
-        loginRepository.createUser(user);
+    public void createUserOrNot(FirebaseUser user){
+        loginRepository.createUserOrNot(user);
     }
 
 }
