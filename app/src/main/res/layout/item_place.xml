@@ -143,9 +143,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@+id/constraint_bonus"
             tools:background="@drawable/ic_restaurant_info_example"
-
         />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

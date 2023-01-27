@@ -16,30 +16,6 @@ public class RestaurantDetails {
     private float ratingRes;
     private LatLng locationRes;
 
-
-
-//    public RestaurantDetails(Parcel in) {
-//        idRes = in.readString();
-//        nameRes = in.readString();
-//        addressRes = in.readString();
-//        openNowRes = in.readString();
-//        photoRefRes = in.readString();
-//        ratingRes = in.readDouble();
-//        locationRes =
-//    }
-
-//    public static final Creator<RestaurantDetails> CREATOR = new Creator<RestaurantDetails>() {
-//        @Override
-//        public RestaurantDetails createFromParcel(Parcel in) {
-//            return new RestaurantDetails(in);
-//        }
-//
-//        @Override
-//        public RestaurantDetails[] newArray(int size) {
-//            return new RestaurantDetails[size];
-//        }
-//    };
-
     public LatLng getLocationRes() {
         return locationRes;
     }
@@ -92,11 +68,6 @@ public class RestaurantDetails {
         this.photoRefRes = photoRefRes;
     }
 
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-
     public double getRatingRes() {
         return ratingRes;
     }
@@ -105,13 +76,4 @@ public class RestaurantDetails {
         this.ratingRes = ratingRes;
     }
 
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(idRes);
-//        dest.writeString(nameRes);
-//        dest.writeString(addressRes);
-//        dest.writeString(openNowRes);
-//        dest.writeString(photoRefRes);
-//        dest.writeDouble(ratingRes);
-//    }
 }

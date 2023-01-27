@@ -27,8 +27,6 @@ public class UserRepository {
     private final MutableLiveData<String> userSelectedRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLikeRestaurantMutableLiveData = new MutableLiveData<>();
 
-//    private final MutableLiveData<List<String>> allUserRestaurantLikesMutableLiveData = new MutableLiveData<>();
-
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection(COLLECTION_NAME);
 
@@ -36,49 +34,22 @@ public class UserRepository {
         return userLikeRestaurantMutableLiveData;
     }
 
-//    public LiveData<List<String>> getAllTheRestaurantLikes(){
-//        return allUserRestaurantLikesMutableLiveData;
-//    }
-
     public LiveData<String> getSelectedRestaurantChoiced() {
         return userSelectedRestaurantMutableLiveData;
     }
 
     public void userRestaurantSelected(String userId){
-//        FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-//        CollectionReference userRef = rootRef.collection(COLLECTION_NAME);
         Query query = userRef.whereEqualTo(USER_ID_FIELD, userId);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-//                        Log.d(TAG, document.getId() + " => " + document.getData());
-//                    document.getData().get(USER_PLACE_ID_FIELD).equals(placeId);
                     userSelectedRestaurantMutableLiveData.postValue(document.getString("userPlaceId"));
-//                        userRestaurantChoiceAdded.set(Objects.equals(document.getData(), placeId));
-//                        userRef.document().update(USER_PLACE_ID, "");
                 }
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
     }
-
-//    public void allUserRestaurantLikes(FirebaseUser user){
-//        List<String> mUserRestaurantLikes = new ArrayList<>();
-//        userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-//            @Override
-//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots){
-//                    User userInformation = documentSnapshot.toObject(User.class);
-//                    for (String userRestaurantLikes : userInformation.getUserRestaurantLikes()){
-//
-//                        mUserRestaurantLikes.add(userRestaurantLikes);
-//                    }
-//                }
-//            }
-//        });
-//        allUserRestaurantLikesMutableLiveData.postValue(mUserRestaurantLikes);
-//    }
 
     public void setUserRestaurantChoice(String userId, String placeId){
         userRef.document(userId).update(USER_PLACE_ID_FIELD, placeId).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -100,23 +71,17 @@ public class UserRepository {
                     if (doc != null) {
                         restaurantLiked = doc.isEmpty();
                         if (restaurantLiked) {
-
                             FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(user.getUid()).update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayUnion(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull @NotNull Task<Void> task) {
-
                                     userLikeRestaurantMutableLiveData.postValue(false);
-
                                 }
                             });
-
                         } else {
                             FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(user.getUid()).update(USER_RESTAURANT_LIKES_ARRAY, FieldValue.arrayRemove(placeId)).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull @NotNull Task<Void> task) {
-
                                     userLikeRestaurantMutableLiveData.postValue(true);
-
                                 }
                             });
                         }

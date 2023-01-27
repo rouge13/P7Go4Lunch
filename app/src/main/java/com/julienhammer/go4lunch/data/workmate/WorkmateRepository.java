@@ -28,27 +28,9 @@ public class WorkmateRepository {
     FirebaseFirestore mFirestore;
     MutableLiveData<List<User>> mAllWorkmatesMutableLiveData;
 
-
-    // Get the Collection Reference
-    private CollectionReference getWkmCollection(){
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
-    }
-
     public WorkmateRepository() {
-        // Define Workmates
         mAllWorkmatesMutableLiveData = new MutableLiveData<>();
-        // Define firestore
         mFirestore = FirebaseFirestore.getInstance();
-    }
-
-    // Get Workmate Data from Firestore
-    public Task<DocumentSnapshot> getWorkmateData(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user != null){
-            return this.getWkmCollection().document(user.getUid()).get();
-        }else{
-            return null;
-        }
     }
 
     public MutableLiveData<List<User>> getAllWorkmatesMutableLiveData() {

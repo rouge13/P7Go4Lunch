@@ -33,7 +33,6 @@ public class InfoRestaurantViewModel extends ViewModel {
 
     public void setInfoRestaurant(RestaurantDetails infoRestaurant){
         mInfoRestaurantRepository.setInfoRestaurant(infoRestaurant);
-
     }
 
     public void initRestaurantsDetailsInfo(String placeId){

@@ -23,7 +23,6 @@ import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class ViewModelFactory implements ViewModelProvider.Factory {
-
     private final LocationRepository locationDataSource;
     private static ViewModelFactory factory;
     private static PermissionCheck permissionCheck;

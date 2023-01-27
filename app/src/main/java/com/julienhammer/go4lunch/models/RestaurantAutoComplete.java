@@ -4,7 +4,6 @@ package com.julienhammer.go4lunch.models;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class RestaurantAutoComplete {
-
         public String placeId;
         public CharSequence address, name;
 

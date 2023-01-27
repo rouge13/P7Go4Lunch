@@ -45,15 +45,12 @@ import static android.content.Context.MODE_PRIVATE;
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListViewHolder> {
     ArrayList<RestaurantDetails> mRestaurantArrayList = new ArrayList<>();
     InfoRestaurantViewModel mInfoRestaurantViewModel;
-    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
-    private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private LatLng mLocation;
 
     @NonNull
     @Override
     public RecyclerViewListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new RecyclerViewListViewHolder(ItemPlaceBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
     }
 
     @Override
@@ -107,10 +104,6 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             @Override
             public void onClick(View v) {
                 mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
-                SharedPreferences pref = context.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
-                SharedPreferences.Editor myEdit = pref.edit();
-                myEdit.putString(CLICKED_RESTAURANT_ID, restaurantDetails.getIdRes());
-                myEdit.apply();
                 EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
             }
         });

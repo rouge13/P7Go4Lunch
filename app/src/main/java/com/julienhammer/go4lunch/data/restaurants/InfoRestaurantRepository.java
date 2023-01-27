@@ -38,18 +38,13 @@ import java.util.List;
 public class InfoRestaurantRepository {
     private static final String COLLECTION_NAME = "users";
     private static final String USER_PLACE_ID_FIELD = "userPlaceId";
-    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
-    private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-
     private static volatile InfoRestaurantRepository instance;
     private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
     private PlacesClient placesClient;
-    private String valueRestaurantId;
     private static MutableLiveData<Place> restaurantDetailsInfoMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<Bitmap> restaurantPhotoBitmapMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<List<User>> mAllWorkmatesInThisRestaurantMutableLiveData = new MutableLiveData<>();
-//    private static MutableLiveData<String> clickedRestaurantIdMutableLiveData = new MutableLiveData<>();
 
     public InfoRestaurantRepository() {
         InfoRestaurantRepository.mInfoRestaurantMutableLiveData = new MutableLiveData<>();
@@ -75,7 +70,6 @@ public class InfoRestaurantRepository {
 
     public void initRestaurantsDetailsInfo(String placeId) {
         List<Place.Field> fields = Arrays.asList(Place.Field.PHONE_NUMBER, Place.Field.WEBSITE_URI, Place.Field.PHOTO_METADATAS);
-        // Construct a request object, passing the place ID and fields array.
         final FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, fields);
         Task<FetchPlaceResponse> placeTask = placesClient.fetchPlace(request);
         placeTask.addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
@@ -88,7 +82,6 @@ public class InfoRestaurantRepository {
             }
         });
     }
-
     public void initAllWorkmatesInThisRestaurantMutableLiveData(String restaurantId) {
         FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, restaurantId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -101,37 +94,10 @@ public class InfoRestaurantRepository {
                 }
             }
         });
-
-
     }
-
-
-//
-//
-//        EventListener<QuerySnapshot> listener = new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//                List<User> workmates = new ArrayList<>();
-//                if (value != null) {
-//                    for (QueryDocumentSnapshot doc : value) {
-//                        if (doc != null) {
-//                            workmates.add(doc.toObject(User.class));
-//                        }
-//                    }
-//                }
-//
-//                mAllWorkmatesInThisRestaurantMutableLiveData.postValue(workmates);
-//            }
-//        };
-//        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, prefs.getString(CLICKED_RESTAURANT_ID, "")).addSnapshotListener(listener);
-
 
     public LiveData<List<User>> getAllWorkmatesInThisRestaurantLiveData() {
         return mAllWorkmatesInThisRestaurantMutableLiveData;
-    }
-
-    private CollectionReference getInfoRestaurantCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
     public LiveData<Integer> casesOfStars(Double rating) {

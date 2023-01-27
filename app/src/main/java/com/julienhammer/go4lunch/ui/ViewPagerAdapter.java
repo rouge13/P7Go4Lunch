@@ -13,7 +13,6 @@ import com.julienhammer.go4lunch.ui.map.RestaurantMapsFragment;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
     public ViewPagerAdapter(FragmentManager fm){
         super(fm);
     }

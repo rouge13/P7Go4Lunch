@@ -39,12 +39,10 @@ public class LoginRepository {
         return userCaseAddedMutableLiveData;
     }
 
-    // Get the Collection Reference
     private CollectionReference getUsersCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    // Create User in Firestore
     public void createUserOrNot(FirebaseUser user) {
         String uid = user.getUid();
         String userName = user.getDisplayName();
@@ -69,7 +67,6 @@ public class LoginRepository {
         });
     }
 
-    // Get User Data from Firestore
     public Task<DocumentSnapshot> getUserData() {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {

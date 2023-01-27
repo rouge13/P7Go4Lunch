@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String RESTAURANT_LAT = "latRes";
     private static final String RESTAURANT_LNG = "lngRes";
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
-    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -195,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
             viewPager.setAdapter(mViewPagerAdapter);
             binding.buttomNavigationView.setOnItemSelectedListener(item -> {
-                //        // Handle item selection
                 switch (item.getItemId()) {
                     case android.R.id.home:
                         toggle();
@@ -341,16 +339,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void saveValueOfTheRestaurantChoicePlaceId(FirebaseUser user, String placeId) {
-        // Storing data into SharedPreferences
         SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
-        // Creating an Editor object to edit(write to the file)
         SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
-        // Storing the key and its value as the data fetched from edittext
         myEdit.putString(PLACE_ID, placeId);
         myEdit.putString(USER_ID, user.getUid());
-        // Once the changes have been made,
-        // we need to commit to apply those changes made,
-        // otherwise, it will throw an error
         myEdit.apply();
     }
 
@@ -429,7 +421,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (user.getUserName() != null) {
                 navHeaderBinding.username.setText(user.getUserName());
                 navHeaderBinding.userEmail.setText(user.getUserEmail());
-
             }
         });
     }
@@ -455,10 +446,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             resLocation
                     );
                     mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetailsChoiced);
-                    SharedPreferences pref = getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
-                    SharedPreferences.Editor myEdit = pref.edit();
-                    myEdit.putString(CLICKED_RESTAURANT_ID, restaurantDetailsChoiced.getIdRes());
-                    myEdit.apply();
                     EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetailsChoiced));
                 } else {
                     Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();

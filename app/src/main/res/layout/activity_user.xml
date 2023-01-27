@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--<androidx.drawerlayout.widget.DrawerLayout-->
-<!--    layout_width="match_parent"-->
-<!--    layout_height="match_parent"-->
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -16,9 +13,6 @@
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <!-- USER DATA CONTAINER -->
-
-        <!-- BUTTONS CONTAINER -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -27,8 +21,6 @@
             android:background="@drawable/ic_launcher_lunch_time_2_people_playstore_shadow"
             android:orientation="vertical">
 
-
-            <!-- PROFILE EMAIL CONTAINER -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,7 +77,6 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-              <!-- RESTAURANT IMAGE AND TEXT -->
               <ImageView
                   android:id="@+id/restaurant_icon"
                   android:layout_width="24dp"
@@ -115,7 +106,6 @@
 
               </TextView>
 
-              <!-- SETTINGS IMAGE AND TEXT -->
               <ImageView
                   android:id="@+id/settings_icon"
                   android:layout_width="24dp"
@@ -145,7 +135,6 @@
 
               </TextView>
 
-              <!-- LOGOUT IMAGE AND TEXT -->
               <ImageView
                   android:id="@+id/logout_icon"
                   android:layout_width="24dp"
@@ -174,7 +163,6 @@
 
               </TextView>
 
-              <!-- FIREBASE IMAGE -->
               <ImageView
                   android:layout_width="150dp"
                   android:layout_height="150dp"
@@ -186,8 +174,6 @@
                   app:layout_constraintStart_toStartOf="parent"
                   />
           </androidx.constraintlayout.widget.ConstraintLayout>
-
         </LinearLayout>
-
     </LinearLayout>
 </androidx.drawerlayout.widget.DrawerLayout>

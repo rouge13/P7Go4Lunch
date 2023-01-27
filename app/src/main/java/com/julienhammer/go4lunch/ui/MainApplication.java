@@ -9,7 +9,6 @@ import com.julienhammer.go4lunch.R;
  */
 public class MainApplication extends Application {
     private static Application sApplication;
-
     @Override
     public void onCreate() {
         super.onCreate();

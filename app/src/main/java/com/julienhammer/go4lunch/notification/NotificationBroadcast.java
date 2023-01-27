@@ -20,15 +20,12 @@ import java.util.Objects;
 import static android.content.Context.MODE_PRIVATE;
 
 public class NotificationBroadcast extends BroadcastReceiver {
-
     private static final String COLLECTION_NAME = "users";
     private static final String USER_PLACE_ID_FIELD = "userPlaceId";
     private static String PLACE_ID = "placeId";
     private static String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static String RESTAURANT_NAME = "nameRes";
     private static String RESTAURANT_ADDRESS = "addressRes";
-    private static String USER_ID_FIELD = "userId";
-
 
     @Override
     public void onReceive(Context context, Intent intent) {

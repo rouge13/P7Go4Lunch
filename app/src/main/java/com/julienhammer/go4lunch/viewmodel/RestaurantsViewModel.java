@@ -13,7 +13,6 @@ import com.julienhammer.go4lunch.data.restaurants.RestaurantsRepository;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class RestaurantsViewModel extends ViewModel {
-
     @NonNull
     RestaurantsRepository mRestaurantsRepository;
     public RestaurantsViewModel() {

@@ -21,19 +21,14 @@ import java.util.List;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class MainRepository {
-
     private static volatile MainRepository instance;
     private static final String COLLECTION_NAME = "users";
-    private static final String USER_PLACE_ID = "userPlaceId";
-    private String uid;
     MutableLiveData<User> mMutableLiveData;
     FirebaseFirestore mFirestore;
     FirebaseUser currentUser;
 
     public MainRepository() {
-        // Define User
         mMutableLiveData = new MutableLiveData<>();
-        // Define firestore
         mFirestore = FirebaseFirestore.getInstance();
     }
 

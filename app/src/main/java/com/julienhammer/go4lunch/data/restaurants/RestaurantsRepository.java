@@ -32,9 +32,6 @@ import java.util.List;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class RestaurantsRepository {
-    private static final String COLLECTION_NAME = "users";
-    public static final String USER_PLACE_FIELD = "userPlaceId";
-    FirebaseFirestore mFirestore;
     private static volatile RestaurantsRepository instance;
     private static MutableLiveData<PlacesSearchResult[]> mRestaurantMutableLiveData;
     private static FusedLocationProviderClient mFusedLocationProviderClient;
@@ -43,11 +40,6 @@ public class RestaurantsRepository {
                                  @NonNull FusedLocationProviderClient mFusedLocationProviderClient){
         RestaurantsRepository.mFusedLocationProviderClient = mFusedLocationProviderClient;
         RestaurantsRepository.mRestaurantMutableLiveData = new MutableLiveData<>();
-    }
-
-    // Get the Collection Reference
-    private CollectionReference getRestaurantsCollection(){
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
     public LiveData<PlacesSearchResult[]> getRestaurantsLiveData() {
@@ -63,7 +55,6 @@ public class RestaurantsRepository {
     }
 
     public static RestaurantsRepository getInstance(){
-
         RestaurantsRepository result = instance;
         if (result != null){
             return result;

@@ -66,9 +66,7 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
     private static String RESTAURANT_LAT = "latRes";
     private static String RESTAURANT_LNG = "lngRes";
     private static final String TAG = "PlacesAutoAdapter";
-    private static String CLICKED_RESTAURANT_ID = "clickedRestaurantId";
     private ArrayList<RestaurantAutoComplete> mResultList = new ArrayList<>();
-    ItemRestaurantSearchBinding binding;
     private View.OnClickListener clickListener;
     InfoRestaurantViewModel mInfoRestaurantViewModel;
 
@@ -115,14 +113,11 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                 if (results != null && results.count > 0) {
                     // The API returned at least one result, update the data.
                     notifyDataSetChanged();
-                } else {
-                    // The API did not return any results, invalidate the data set.
-                    //notifyDataSetInvalidated();
-                }
+                }  // The API did not return any results, invalidate the data set.
+
             }
         };
     }
-
 
     private ArrayList<RestaurantAutoComplete> getPredictions(CharSequence constraint) {
 
@@ -167,10 +162,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
             //https://gist.github.com/graydon/11198540
             // Use the builder to create a FindAutocompletePredictionsRequest.
             FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                    // Call either setLocationBias() OR setLocationRestriction().
-                    //.setLocationBias(bounds)
-                    //.setCountry("BD")
-                    //.setTypeFilter(TypeFilter.ADDRESS)
                     .setTypeFilter(TypeFilter.ESTABLISHMENT)
                     .setLocationRestriction(RectangularBounds.newInstance(boundUserLocation.getSouthwest(), boundUserLocation.getNortheast()))
                     .setCountries(Collections.singletonList("FR"))
@@ -187,7 +178,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
             } catch (ExecutionException | InterruptedException | TimeoutException e) {
                 e.printStackTrace();
             }
-
             if (autocompletePredictions.isSuccessful()) {
                 FindAutocompletePredictionsResponse findAutocompletePredictionsResponse = autocompletePredictions.getResult();
                 if (findAutocompletePredictionsResponse != null)
@@ -203,10 +193,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
         } else {
             return resultList;
         }
-
-
-
-
     }
 
     @NonNull
@@ -220,8 +206,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
         Context context = holder.itemView.getContext();
         initInfoRestaurantViewModel(context);
         RestaurantAutoComplete item = mResultList.get(position);
-
-
         List<Place.Field> placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS,Place.Field.PHOTO_METADATAS);
         final FetchPlaceRequest request = FetchPlaceRequest.builder(item.placeId, placeFields).build();
         Task<FetchPlaceResponse> restaurantTask = placesClient.fetchPlace(request);
@@ -247,11 +231,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                             if (response.getPlace().isOpen() != null){
                                 openNowRes = response.getPlace().isOpen().toString();
                             }
-//                            if (((zzap) ((zzar) ((zzh) response).zza).zzj.get(0)).zzd != null){
-//                                photoRefRes = response.getPlace().getPhotoMetadatas().get(0).toString();
-//                            }
-
-
                             RestaurantDetails restaurantDetails = new RestaurantDetails(
                                     response.getPlace().getId(),
                                     response.getPlace().getName(),
@@ -261,12 +240,7 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                                     ratingRes,
                                     locationRes
                             );
-
                             mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
-                            SharedPreferences pref = context.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
-                            SharedPreferences.Editor myEdit = pref.edit();
-                            myEdit.putString(CLICKED_RESTAURANT_ID, restaurantDetails.getIdRes());
-                            myEdit.apply();
                             EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
                         }
                     });
@@ -280,10 +254,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                 }
             }
         });
-
-//        holder.bindingItemRestaurantSearch.textViewRestaurantName.setText(mResultList.get(position).placeId);
-//        mPredictionHolder.address.setText(mResultList.get(i).address);
-//        mPredictionHolder.area.setText(mResultList.get(i).area);
     }
 
     @Override
@@ -296,6 +266,4 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
         mInfoRestaurantViewModel =
                 new ViewModelProvider((FragmentActivity) context, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
     }
-
-
 }

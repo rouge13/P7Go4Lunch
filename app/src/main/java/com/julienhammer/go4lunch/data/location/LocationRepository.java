@@ -15,17 +15,12 @@ import com.google.android.gms.tasks.Task;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class LocationRepository {
-//    private static final int LOCATION_REQUEST_INTERVAL_MS = 10_000;
-//    private static final float SMALLEST_DISPLACEMENT_THRESHOLD_METER = 25;
-
     @NonNull
     private final FusedLocationProviderClient fusedLocationProviderClient;
 
     @NonNull
     private final MutableLiveData<Location> locationMutableLiveData = new MutableLiveData<>();
-
     private LocationCallback callback;
-
     public LocationRepository(@NonNull FusedLocationProviderClient fusedLocationProviderClient) {
         this.fusedLocationProviderClient = fusedLocationProviderClient;
     }
@@ -52,10 +47,8 @@ public class LocationRepository {
     }
 
     public void stopLocationRequest() {
-
         if (callback != null) {
             fusedLocationProviderClient.removeLocationUpdates(callback);
         }
     }
-
 }

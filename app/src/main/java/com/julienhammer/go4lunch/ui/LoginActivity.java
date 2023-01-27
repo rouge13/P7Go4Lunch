@@ -27,9 +27,6 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
     private LoginViewModel loginViewModel;
-    private static final String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
-    private static final String PLACE_ID = "placeId";
-    private static final String USER_ID = "userId";
 
     private void configureViewModel() {
         ViewModelFactory loginViewModelFactory = ViewModelFactory.getInstance();
@@ -41,9 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         configureViewModel();
-        // Si erreur de Firebase concernant le token et l'identification redemander de se connecter.
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-//            loginViewModel.isUserAddedInFirebase(FirebaseAuth.getInstance().getCurrentUser().getUid());
             onLoginSuccess(FirebaseAuth.getInstance().getCurrentUser());
         } else {
             configureLoginActivityInterface();
@@ -61,7 +56,6 @@ public class LoginActivity extends AppCompatActivity {
 
         IdpResponse response = IdpResponse.fromResultIntent(data);
         if (requestCode == RC_SIGN_IN) {
-            // SUCCESS
             if (resultCode == RESULT_OK) {
                 Toast.makeText(getApplicationContext(), getString(R.string.connection_succeed), Toast.LENGTH_SHORT).show();
                 onLoginSuccess(FirebaseAuth.getInstance().getCurrentUser());

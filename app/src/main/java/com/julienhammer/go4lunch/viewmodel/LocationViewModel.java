@@ -24,13 +24,10 @@ import com.julienhammer.go4lunch.di.ViewModelFactory;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class LocationViewModel extends ViewModel {
-
     @NonNull
     private final PermissionCheck permissionCheck;
-
     @NonNull
     private final LocationRepository locationRepository;
-
     public LocationViewModel(
             @NonNull PermissionCheck permissionChecker,
             @NonNull LocationRepository locationRepository

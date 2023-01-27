@@ -70,8 +70,6 @@ public class InfoRestaurantFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initRestaurant();
-
-//        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -86,7 +84,6 @@ public class InfoRestaurantFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         activity = (AppCompatActivity) view.getContext();
-
         mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(getViewLifecycleOwner(), restaurantDetails ->
         {
             binding.restaurantInfoCall.setText(R.string.restaurant_call);
@@ -145,8 +142,6 @@ public class InfoRestaurantFragment extends Fragment {
                         }
                         checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
                         mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
-
-
                     }
                 });
             });
@@ -245,14 +240,6 @@ public class InfoRestaurantFragment extends Fragment {
 
     }
 
-//    private void changeValueOfSharedPreferences(String restaurantId){
-//        // Storing data into SharedPreferences
-//        SharedPreferences shChoice = activity.getSharedPreferences("MyRestaurantChoice",MODE_PRIVATE);
-//        SharedPreferences.Editor myEdit = shChoice.edit();
-//        myEdit.putString("placeId", restaurantId);
-//        myEdit.apply();
-//    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -266,11 +253,8 @@ public class InfoRestaurantFragment extends Fragment {
     }
 
     private void saveValueOfTheRestaurantChoiceAllDataNeeded(String placeId, String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
-        // Storing data into SharedPreferences
         SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
-        // Creating an Editor object to edit(write to the file)
         SharedPreferences.Editor myEdit = shChoice.edit();
-        // Storing the key and its value as the data fetched from edittext
         myEdit.putString(PLACE_ID, placeId);
         myEdit.putString(RESTAURANT_NAME, nameRes);
         myEdit.putString(RESTAURANT_ADDRESS, addressRes);
@@ -279,9 +263,6 @@ public class InfoRestaurantFragment extends Fragment {
         myEdit.putFloat(RESTAURANT_RATING, ratingRes);
         myEdit.putFloat(RESTAURANT_LAT, latRes);
         myEdit.putFloat(RESTAURANT_LNG, lngRes);
-        // Once the changes have been made,
-        // we need to commit to apply those changes made,
-        // otherwise, it will throw an error
         myEdit.apply();
     }
 
