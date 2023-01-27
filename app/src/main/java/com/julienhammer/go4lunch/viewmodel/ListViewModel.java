@@ -28,15 +28,6 @@ public class ListViewModel extends ViewModel {
         this.locationRepository = locationRepository;
     }
 
-//    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
-//    public void onActivityCreated(@Nullable final Bundle SavedInstanceState){
-//
-//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-//        MapsViewModel mapsViewModel =
-//                new ViewModelProvider((ViewModelStoreOwner) this, mapsViewModelFactory).get(MapsViewModel.class);
-//        mapsViewModel.refresh();
-//    }
-
     public LiveData<Location> getLocationForPlacesLiveData() {
         return locationRepository.getLocationLiveData();
     }
@@ -44,8 +35,6 @@ public class ListViewModel extends ViewModel {
     @SuppressLint("MissingPermission")
     public void refresh() {
         boolean hasGpsPermission = permissionCheck.hasLocationPermission();
-//        hasGpsPermissionLiveData.setValue(hasGpsPermission);
-
         if (hasGpsPermission) {
             locationRepository.startLocationRequest();
         } else {

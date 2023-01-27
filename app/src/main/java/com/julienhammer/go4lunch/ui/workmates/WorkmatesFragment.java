@@ -2,13 +2,25 @@ package com.julienhammer.go4lunch.ui.workmates;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.databinding.FragmentWorkmatesBinding;
+import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.models.User;
+//import com.julienhammer.go4lunch.models.Workmate;
+import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
+import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,51 +28,70 @@ import com.julienhammer.go4lunch.R;
  * create an instance of this fragment.
  */
 public class WorkmatesFragment extends Fragment {
+    FragmentWorkmatesBinding binding;
+    private WorkmateViewModel mWorkmateViewModel;
+    private RestaurantsViewModel mRestaurantsViewModel;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    RecyclerViewWorkmateAdapter adapter;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private void initRestaurantsList(){
+        ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
+        mRestaurantsViewModel =
+                new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
 
-    public WorkmatesFragment() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment WorkmatesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static WorkmatesFragment newInstance(String param1, String param2) {
-        WorkmatesFragment fragment = new WorkmatesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    private void configureWormatesViewModel() {
+        ViewModelFactory workmateViewModelFactory = ViewModelFactory.getInstance();
+        mWorkmateViewModel =
+                new ViewModelProvider(this, workmateViewModelFactory).get(WorkmateViewModel.class);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     * @return A new instance of fragment RestaurantListFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static WorkmatesFragment newInstance() {
+        WorkmatesFragment fragment = new WorkmatesFragment();
+        Bundle args = new Bundle();
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_workmates, container, false);
+        binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initRestaurantsList();
+        configureWormatesViewModel();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        adapter = new RecyclerViewWorkmateAdapter(false, getActivity());
+        mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
+            mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+                ArrayList<User> allWorkmates = new ArrayList<User>();
+                ArrayList<String> allRestaurantsName = new ArrayList<>();
+                for (int t = 0; t <= (workmate.size()) -1; t++) {
+                    allWorkmates.add(workmate.get(t));
+                    allRestaurantsName.add("");
+                }
+                adapter.setData(allWorkmates, allRestaurantsName);
+                binding.workmatesView.setLayoutManager(layoutManager);
+                binding.workmatesView.setAdapter(adapter);
+            });
+        });
     }
 }

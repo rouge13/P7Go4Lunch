@@ -1,4 +1,4 @@
-package com.julienhammer.go4lunch.ui;
+package com.julienhammer.go4lunch.ui.list;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,9 +16,9 @@ import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class RecyclerViewViewHolder extends RecyclerView.ViewHolder {
+public class RecyclerViewListViewHolder extends RecyclerView.ViewHolder {
     ItemPlaceBinding bindingItemPlace;
-    public RecyclerViewViewHolder(@NonNull ItemPlaceBinding binding) {
+    public RecyclerViewListViewHolder(@NonNull ItemPlaceBinding binding) {
         super(binding.getRoot());
         bindingItemPlace = binding;
     }

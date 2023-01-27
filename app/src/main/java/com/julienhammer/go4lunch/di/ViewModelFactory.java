@@ -11,20 +11,21 @@ import com.google.android.gms.location.LocationServices;
 import com.julienhammer.go4lunch.ui.MainApplication;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
-import com.julienhammer.go4lunch.viewmodel.MapsViewModel;
+import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
+import com.julienhammer.go4lunch.viewmodel.UserViewModel;
+import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
+import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
+import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class ViewModelFactory implements ViewModelProvider.Factory {
-
     private final LocationRepository locationDataSource;
-//    private final Executor executor;
     private static ViewModelFactory factory;
     private static PermissionCheck permissionCheck;
-//    private final Executor ioExecutor = Executors.newFixedThreadPool(4);
-
     private ViewModelFactory(@NonNull PermissionCheck permissionCheck,
                              @NonNull LocationRepository locationDataSource
                              ) {
@@ -56,8 +57,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(MapsViewModel.class)) {
-            return (T) new MapsViewModel(
+        if (modelClass.isAssignableFrom(LocationViewModel.class)) {
+            return (T) new LocationViewModel(
                     permissionCheck,
                     locationDataSource
             );
@@ -66,43 +67,18 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                     permissionCheck,
                     locationDataSource
             );
+        } else if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
+            return (T) new WorkmateViewModel();
+        } else if (modelClass.isAssignableFrom(UserViewModel.class)) {
+            return (T) new UserViewModel();
+        } else if (modelClass.isAssignableFrom(LoginViewModel.class)) {
+            return (T) new LoginViewModel();
+        } else if (modelClass.isAssignableFrom(RestaurantsViewModel.class)) {
+            return (T) new RestaurantsViewModel();
+        } else if (modelClass.isAssignableFrom(InfoRestaurantViewModel.class)) {
+            return (T) new InfoRestaurantViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }
 
-
-//    private ViewModelFactory(LocationRepository locationDataSource, Executor executor) {
-//        this.locationDataSource = locationDataSource;
-//        this.executor = executor;
-//    }
-//
-//    public static ViewModelFactory getInstance(LocationRepository locationDataSource, Executor executor) {
-//        if (factory == null) {
-//            synchronized (ViewModelFactory.class) {
-//                if (factory == null) {
-//                    factory = new ViewModelFactory(locationDataSource, executor);
-//                }
-//            }
-//        }
-//        return factory;
-//    }
-
-//    @NonNull
-//    @Override
-//    public <T extends ViewModel> T create(Class<T> modelClass) {
-//        if (modelClass.isAssignableFrom(MapsViewModel.class)) {
-//            return (T) new MapsViewModel(permissionChecker,locationDataSource);
-//        }
-//        throw new IllegalArgumentException("Unknown ViewModel class");
-//    }
-
-//    @NotNull
-//    @Override
-//    public <T extends ViewModel>  T create(Class<T> modelClass) {
-//
-//        if (modelClass.isAssignableFrom(TaskViewModel.class)) {
-//            return (T) new TaskViewModel(projectDataSource, taskDataSource, executor);
-//        }
-//        throw new IllegalArgumentException("Unknown ViewModel class");
-//    }
 }

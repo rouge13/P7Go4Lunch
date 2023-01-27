@@ -16,7 +16,6 @@ import java.io.IOException;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class NearbySearch {
-
     public PlacesSearchResponse run(String apiKey, Location userLocation){
         PlacesSearchResponse request = new PlacesSearchResponse();
         GeoApiContext context = new GeoApiContext.Builder()

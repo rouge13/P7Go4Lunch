@@ -17,29 +17,18 @@ import java.util.concurrent.Executor;
 
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
-public class MapsViewModel extends ViewModel {
-
+public class LocationViewModel extends ViewModel {
     @NonNull
     private final PermissionCheck permissionCheck;
-
     @NonNull
     private final LocationRepository locationRepository;
-
-//    private final MutableLiveData<Boolean> hasGpsPermissionLiveData = new MutableLiveData<>();
-//    public void onActivityCreated(@Nullable final Bundle SavedInstanceState){
-//
-//        ViewModelFactory mapsViewModelFactory = ViewModelFactory.getInstance();
-//        MapsViewModel mapsViewModel =
-//                new ViewModelProvider((ViewModelStoreOwner) this, mapsViewModelFactory).get(MapsViewModel.class);
-//        mapsViewModel.refresh();
-//    }
-
-    public MapsViewModel(
+    public LocationViewModel(
             @NonNull PermissionCheck permissionChecker,
             @NonNull LocationRepository locationRepository
     ) {
@@ -50,18 +39,16 @@ public class MapsViewModel extends ViewModel {
 
     public LiveData<Location> getLocationLiveData() {
         return locationRepository.getLocationLiveData();
-
     }
 
     @SuppressLint("MissingPermission")
     public void refresh() {
         boolean hasGpsPermission = permissionCheck.hasLocationPermission();
-//        hasGpsPermissionLiveData.setValue(hasGpsPermission);
-
         if (hasGpsPermission) {
             locationRepository.startLocationRequest();
         } else {
             locationRepository.stopLocationRequest();
         }
     }
+
 }

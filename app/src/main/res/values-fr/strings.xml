@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <string name="app_name">Go4Lunch</string>
+
+        <!-- BOTTOM NAVIGATION VIEW -->
+        <string name="bottom_navigation_menu_map_view">Carte</string>
+        <string name="bottom_navigation_menu_list_view">Liste</string>
+        <string name="bottom_navigation_menu_workmates">Collègues</string>
+        <string name="title_list_view">Liste</string>
+        <string name="title_workmates_view">Collègues</string>
+
+        <!-- Permission granted -->
+        <string name="title_location_permission">Permission :</string>
+        <string name="text_location_permission">Permission accordé pour la localisation de l\'utilisateur.</string>
+        <string name="ok">OK !</string>
+        <string name="dialog_fine_location_rationale_title">Localisation :</string>
+        <string name="dialog_fine_location_rationale_description">Localisation accordé pour l\'utilisateur.</string>
+        <string name="yes">Oui !</string>
+
+        <!-- item place -->
+        <string name="restaurant_name">Le Zinc</string>
+        <string name="restaurant_address">Française - 12 rue du Faubourg Poissonnière</string>
+        <string name="restaurant_hours_opening">Ouvert jusqu\'à 7h de l\après-midi.</string>
+        <string name="google_place_image">L\'image de l\endroit</string>
+        <string name="title_activity_login">S\identifier</string>
+
+        <!-- ACTIVITY / FRAGMENT -->
+        <string name="error_authentication_canceled">Connexion interrompue</string>
+        <string name="error_no_internet">Réseau indisponible</string>
+        <string name="error_unknown_error">Une erreur inconnue est survenue</string>
+        <string name="connection_succeed">Connexion réussie</string>
+        <string name="test">TESTE</string>
+        <string name="text_view_user_name">John SMITH</string>
+        <string name="text_view_user_email">jsmith.1337@gmail.com</string>
+        <string name="user_profile_activity">Profile utilisateur</string>
+        <string name="your_lunch">TON DÉJEUNER</string>
+        <string name="settings">RÉGLAGES</string>
+        <string name="logout">Déconnexion</string>
+        <string name="info_no_username_found">Aucun nom d\'utilisateur trouvé</string>
+        <string name="photo_profile">Photo du profile</string>
+        <string name="drawer_open">Ouvrir le tiroir de navigation</string>
+        <string name="drawer_close">Fermer le tiroir de navigation</string>
+        <string name="hungry">J\'ai faim !</string>
+        <string name="firestore_workmate_image">Photo du collègue</string>
+        <string name="workmate_detail">Scarlett mange français (Le Zinc)</string>
+        <string name="restaurant_call">Appeller</string>
+        <string name="restaurant_like">Aime</string>
+        <string name="restaurant_website">Site internet</string>
+        <string name="Cancel">Annuler</string>
+        <string name="gps_network_not_enabled">GPS inactif</string>
+        <string name="open_location_settings">Paramètre GPS</string>
+        <string name="no_restaurant_phone_number">"Le numéro de téléphone est manquant pour "</string>
+        <string name="no_restaurant_website">"Le site internet est manquant pour "</string>
+        <string name="restaurant_dist_from_location">120m</string>
+        <string name="restaurant_number_of_user_choice">(1)</string>
+        <string name="restaurant_not_selected">" n\a pas séléctionné de restaurant."</string>
+        <string name="not_selected">" n\a pas séléctionné de restaurant."</string>
+        <string name="is_joining">" rejoint!"</string>
+        <string name="is_eating_to">" mange chez : "</string>
+        <string name="no_restaurant_choiced">Aucun restaurant n\'est choisi pour cet utilisateur.</string>
+        <string name="content_name">Nom</string>
+        <string name="Address">Adresse</string>
+        <string name="channel_name">ChaineRappelRestaurant</string>
+        <string name="channel_description">Chaîne pour l\'application Go4Lunch</string>
+        <string name="channel_id">notifierRestaurant</string>
+        <string name="content_title">Restaurant du jour.</string>
+        <string name="shared_workmates">partageCollegue</string>
+        <string name="no_workmates">Aucun collègue ne mange ici.</string>
+        <string name="search_restaurant">Recherche du restaurant</string>
+        <string name="go_to_restaurant_selection">Séléction du Restaurant</string>
+        <string name="openNowCaseTrue">Ouvert</string>
+        <string name="openNowCaseFalse">Fermé</string>
+        <string name="openNowCaseNotShowing">N\'indique pas si c\'est ouvert</string>
+        <string name="clickedLocationIs">Le restaurant selectionné est </string>
+        <string name="notificationSet">Notification mise en place</string>
+</resources>
