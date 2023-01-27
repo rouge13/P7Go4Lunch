@@ -1,3 +1,80 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
+
+
+    <!-- BOTTOM NAVIGATION VIEW -->
+    <string name="bottom_navigation_menu_map_view">Map View</string>
+    <string name="bottom_navigation_menu_list_view">List View</string>
+    <string name="bottom_navigation_menu_workmates">Workmates</string>
+    <string name="title_list_view">List View</string>
+    <string name="title_workmates_view">Workmates</string>
+
+    <!-- Permission granted -->
+    <string name="title_location_permission">Permission :</string>
+    <string name="text_location_permission">Permission granted for location user</string>
+    <string name="ok">OK !</string>
+    <string name="dialog_fine_location_rationale_title">Location :</string>
+    <string name="dialog_fine_location_rationale_description">Location granted for location user</string>
+    <string name="yes">YES !</string>
+
+    <!-- item place -->
+    <string name="restaurant_name">Le Zinc</string>
+    <string name="restaurant_address">French - 12 rue du Faubourg Poissonnière</string>
+    <string name="restaurant_hours_opening">Open until 7pm</string>
+    <string name="google_place_image">Place image</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- ACTIVITY / FRAGMENT -->
+    <string name="error_authentication_canceled">Login aborted</string>
+    <string name="error_no_internet">Network unavailable</string>
+    <string name="error_unknown_error">An unknown error occurred</string>
+    <string name="connection_succeed">Login successful!</string>
+    <string name="test">TEST</string>
+    <string name="text_view_user_name">John SMITH</string>
+    <string name="text_view_user_email">jsmith.1337@gmail.com</string>
+    <string name="user_profile_activity">User profile</string>
+    <string name="your_lunch">YOUR LUNCH</string>
+    <string name="settings">SETTINGS</string>
+    <string name="logout">LOGOUT</string>
+    <string name="info_no_username_found">No username found</string>
+    <string name="photo_profile">Profile image</string>
+    <string name="drawer_open">Open the navigation drawer</string>
+    <string name="drawer_close">Close the navigation drawer</string>
+    <string name="hungry">I\'m hungry!</string>
+    <string name="firestore_workmate_image">photo workmate</string>
+    <string name="workmate_detail">Scarlett is eating french (Le Zinc)</string>
+    <string name="restaurant_call">CALL</string>
+    <string name="restaurant_like">LIKE</string>
+    <string name="restaurant_website">WEBSITE</string>
+    <string name="Cancel">Cancel</string>
+    <string name="gps_network_not_enabled">Inactive GPS</string>
+    <string name="open_location_settings">Parameters GPS</string>
+    <string name="no_restaurant_phone_number">"The phone number is missing for "</string>
+    <string name="no_restaurant_website">"The website is missing for "</string>
+    <string name="restaurant_dist_from_location">120m</string>
+    <string name="restaurant_number_of_user_choice">(1)</string>
+    <string name="restaurant_not_selected">" has not selected a restaurant."</string>
+    <string name="not_selected">" has not selected a restaurant."</string>
+    <string name="is_joining">" is joining!"</string>
+    <string name="is_eating_to">" is eating to : "</string>
+    <string name="no_restaurant_choiced">No restaurant is choiced for this user.</string>
+    <string name="content_name">Name</string>
+    <string name="Address">Address</string>
+    <string name="channel_name">RestaurantReminderChannel</string>
+    <string name="channel_description">Channel for Go4Lunch application</string>
+    <string name="channel_id">notifyRestaurant</string>
+    <string name="content_title">Restaurant of the day.</string>
+    <string name="shared_workmates">sharedWorkmates</string>
+    <string name="no_workmates">No workmates is eating here.</string>
+    <string name="search_restaurant">Search restaurant</string>
+    <string name="go_to_restaurant_selection">Restaurant selection</string>
+    <string name="openNowCaseTrue">Open now</string>
+    <string name="openNowCaseFalse">Closed</string>
+    <string name="openNowCaseNotShowing">Doesn\'t show if it\'s open</string>
+    <string name="clickedLocationIs">Clicked location is </string>
+    <string name="notificationSet">Notification has been set</string>
+
+
+
+
 </resources>

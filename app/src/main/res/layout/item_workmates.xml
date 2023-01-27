@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraint_workmates"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="0dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    >
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/image_workmate_view_photo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:contentDescription="@string/firestore_workmate_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/ic_photo_scarlett"
+        app:shapeAppearanceOverlay="@style/roundedImageViewRounded"
+        />
+
+    <TextView
+        android:id="@+id/text_view_information"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="@string/workmate_detail"
+        android:textSize="15sp"
+        app:layout_constraintStart_toEndOf="@+id/image_workmate_view_photo"
+        app:layout_constraintTop_toTopOf="@+id/image_workmate_view_photo"
+        app:layout_constraintBottom_toBottomOf="@+id/image_workmate_view_photo"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
