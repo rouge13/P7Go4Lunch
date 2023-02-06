@@ -36,6 +36,7 @@ import com.julienhammer.go4lunch.ui.workmates.RecyclerViewWorkmateAdapter;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.R;
+import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class InfoRestaurantFragment extends Fragment {
     FragmentInfoRestaurantBinding binding;
     private RestaurantDetails mRestaurantInfo;
     InfoRestaurantViewModel mInfoRestaurantViewModel;
+    RestaurantsViewModel mRestaurantsViewModel;
     UserViewModel mUserViewModel;
     AppCompatActivity activity;
     RecyclerViewWorkmateAdapter adapter;
@@ -126,6 +128,7 @@ public class InfoRestaurantFragment extends Fragment {
                             mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "");
                             myEdit.putString(PLACE_ID, "");
                             myEdit.apply();
+                            mRestaurantsViewModel.initAllRestaurantChoosed();
                         } else {
                             mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), mRestaurantInfo.getIdRes());
                             myEdit.putString(PLACE_ID, mRestaurantInfo.getIdRes());
@@ -139,6 +142,7 @@ public class InfoRestaurantFragment extends Fragment {
                                     (float) mRestaurantInfo.getRatingRes(),
                                     (float) mRestaurantInfo.getLocationRes().latitude,
                                     (float) mRestaurantInfo.getLocationRes().longitude);
+                            mRestaurantsViewModel.initAllRestaurantChoosed();
                         }
                         checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
                         mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
@@ -237,7 +241,8 @@ public class InfoRestaurantFragment extends Fragment {
         mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
         ViewModelFactory userViewModelFactory = ViewModelFactory.getInstance();
         mUserViewModel = new ViewModelProvider(requireActivity(), userViewModelFactory).get(UserViewModel.class);
-
+        ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
+        mRestaurantsViewModel = new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
     }
 
     @Override

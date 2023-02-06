@@ -1,6 +1,7 @@
 package com.julienhammer.go4lunch.ui.map;
 
 import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,17 +15,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
@@ -36,7 +39,12 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -48,9 +56,11 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     private GoogleMap mMap;
     private static final String MISSING_PHOTO_REFERENCE = "%20image%20missing%20reference";
     private Location userLocation = null;
+
     public static RestaurantMapsFragment newInstance() {
         return new RestaurantMapsFragment();
     }
+
     SupportMapFragment mapFragment = null;
     CameraPosition cameraPosition = null;
     private static String PLACE_ID = "placeId";
@@ -62,6 +72,8 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     private static String RESTAURANT_RATING = "ratingRes";
     private static String RESTAURANT_LAT = "latRes";
     private static String RESTAURANT_LNG = "lngRes";
+    ArrayList<Marker> allMarkers = new ArrayList<>();
+    BitmapDescriptor bitmapDescriptor;
 
     private void configureViewModel() {
         ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
@@ -88,61 +100,82 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
         configureViewModel();
         initRestaurantsViewModel();
         initInfoRestaurantViewModel();
-        mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-            mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
-                userLocation = location;
-                cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(userLocation.getLatitude(),userLocation.getLongitude()))
-                        .zoom(14).build();
-                mMap.getUiSettings().setMapToolbarEnabled(false);
-                mMap.setMyLocationEnabled(true);
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
-                ArrayList<Marker> allMarkers = new ArrayList<Marker>();
-                for (int i = 0; i <= placesSearchResults.length -1; i++){
-                    String openNowText = "";
-                    String photoRef = "";
-                    String mMissingPhoto = MISSING_PHOTO_REFERENCE;
-                    if (placesSearchResults[i].permanentlyClosed){
-                        i++;
-                    } else {
-                        openNowText = getString(getOpenHourTextId(placesSearchResults[i].openingHours != null
-                                ? placesSearchResults[i].openingHours.openNow : null));
-                        if (placesSearchResults[i].photos != null) {
-                            photoRef = placesSearchResults[i].photos[0].photoReference;
-                        } else {
-                            photoRef = mMissingPhoto;
-                        }
-                        LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat , placesSearchResults[i].geometry.location.lng);
-                        RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, resLocation);
-                        SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
-                        String restaurantChoicedId = prefs.getString(PLACE_ID,"");
-                        if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
-                            saveValueOfTheRestaurantChoiceAllDataNeeded(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, (float) placesSearchResults[i].geometry.location.lat, (float) placesSearchResults[i].geometry.location.lng);
-                        }
-                        allRestaurants.add(restaurantDetails);
-                        MarkerOptions markerOptions = new MarkerOptions().position(
-                                new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng)).
-                                title(placesSearchResults[i].name);
-                        allMarkers.add(mMap.addMarker(markerOptions));
+        mRestaurantsViewModel.getAllRestaurantChoosed().observe(this, list -> {
+            mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
+                mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+                    userLocation = location;
+                    cameraPosition = new CameraPosition.Builder()
+                            .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
+                            .zoom(14).build();
+                    mMap.getUiSettings().setMapToolbarEnabled(false);
+                    mMap.setMyLocationEnabled(true);
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                    ArrayList<RestaurantDetails> allRestaurants = new ArrayList<>();
+                    for (int i = 0; i <= placesSearchResults.length - 1; i++) {
+                        i = initPlacesSearchResult(placesSearchResults, allRestaurants, allMarkers, i, list);
                     }
-                }
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(@NonNull Marker marker) {
-                        String markerName = marker.getTitle();
-                        for (int i = 0; i<allMarkers.size(); i++){
-                            if (Objects.equals(allMarkers.get(i).getTitle(), markerName)){
-                                mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
-                                EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(allRestaurants.get(i)));
-                                break;
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(@NonNull Marker marker) {
+                            String markerName = marker.getTitle();
+                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                            for (int i = 0; i < allMarkers.size(); i++) {
+                                if (Objects.equals(allMarkers.get(i).getTitle(), markerName)) {
+                                    mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
+                                    EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(allRestaurants.get(i)));
+                                    break;
+                                }
                             }
+//                            mRestaurantsViewModel.initAllRestaurantChoosed();
+                            return false;
                         }
-                        return false;
-                    }
+                    });
                 });
             });
         });
+    }
+
+    private int initPlacesSearchResult(PlacesSearchResult[] placesSearchResults, ArrayList<RestaurantDetails> allRestaurants, ArrayList<Marker> allMarkers, int i, List<String> listOfRestaurantsChoosed) {
+        String openNowText = "";
+        String photoRef = "";
+        String mMissingPhoto = MISSING_PHOTO_REFERENCE;
+        if (placesSearchResults[i].permanentlyClosed) {
+            i++;
+        } else {
+            openNowText = getString(getOpenHourTextId(placesSearchResults[i].openingHours != null
+                    ? placesSearchResults[i].openingHours.openNow : null));
+            if (placesSearchResults[i].photos != null) {
+                photoRef = placesSearchResults[i].photos[0].photoReference;
+            } else {
+                photoRef = mMissingPhoto;
+            }
+            LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
+            RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, resLocation);
+            SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
+            String restaurantChoicedId = prefs.getString(PLACE_ID, "");
+            if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
+                saveValueOfTheRestaurantChoiceAllDataNeeded(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, (float) placesSearchResults[i].geometry.location.lat, (float) placesSearchResults[i].geometry.location.lng);
+            }
+            allRestaurants.add(restaurantDetails);
+            initMarker(allMarkers, placesSearchResults[i], listOfRestaurantsChoosed);
+        }
+        return i;
+    }
+
+    private void initMarker(ArrayList<Marker> allMarkers, PlacesSearchResult placesSearchResults, List<String> listOfRestaurantsChoosed) {
+        if (listOfRestaurantsChoosed.contains(placesSearchResults.placeId)) {
+            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
+        } else {
+            bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+        }
+        initMarkerColor(allMarkers, placesSearchResults);
+    }
+
+    private void initMarkerColor(ArrayList<Marker> allMarkers, PlacesSearchResult placesSearchResults) {
+        MarkerOptions markerOptions = new MarkerOptions().position(
+                        new LatLng(placesSearchResults.geometry.location.lat, placesSearchResults.geometry.location.lng)).
+                title(placesSearchResults.name).icon(bitmapDescriptor);
+        allMarkers.add(mMap.addMarker(markerOptions));
     }
 
     @Nullable
@@ -189,7 +222,7 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     }
 
     private void saveValueOfTheRestaurantChoiceAllDataNeeded(String placeId, String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
-        SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
         SharedPreferences.Editor myEdit = shChoice.edit();
         myEdit.putString(PLACE_ID, placeId);
         myEdit.putString(RESTAURANT_NAME, nameRes);
