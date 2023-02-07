@@ -27,6 +27,7 @@ public class RestaurantsRepository {
     private static MutableLiveData<PlacesSearchResult[]> mRestaurantMutableLiveData;
     private static FusedLocationProviderClient mFusedLocationProviderClient;
     MutableLiveData<List<String>> allChoosedRestaurants = new MutableLiveData<>();
+    MutableLiveData<Boolean> alreadySomeone = new MutableLiveData<>();
 
 //    public void initIsSomeoneEatingHere(String resId){
 //        alreadySomeone.postValue(resId);
@@ -41,6 +42,23 @@ public class RestaurantsRepository {
 
     public LiveData<PlacesSearchResult[]> getRestaurantsLiveData() {
         return mRestaurantMutableLiveData;
+    }
+
+    public LiveData<Boolean> getIfEatingHere() {
+        return alreadySomeone;
+    }
+
+    public void initIsSomeoneEatingThere(String resId){
+        alreadySomeone.postValue(false);
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID, resId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                        alreadySomeone.postValue(document.exists());
+                }
+            } else {
+                Log.d(TAG, "Error getting documents: ", task.getException());
+            }
+        });
     }
 
     public void getAllRestaurants(String apiKey, Location userLocation) {

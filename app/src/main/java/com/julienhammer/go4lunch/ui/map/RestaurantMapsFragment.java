@@ -118,7 +118,13 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
                         @Override
                         public boolean onMarkerClick(@NonNull Marker marker) {
                             String markerName = marker.getTitle();
-                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+                            mRestaurantsViewModel.getIfEatingHere().observe(getViewLifecycleOwner(), isEatingHere -> {
+                                if (isEatingHere) {
+                                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                                } else {
+                                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                                }
+                            });
                             for (int i = 0; i < allMarkers.size(); i++) {
                                 if (Objects.equals(allMarkers.get(i).getTitle(), markerName)) {
                                     mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));

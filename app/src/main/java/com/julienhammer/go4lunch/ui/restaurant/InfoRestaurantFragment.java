@@ -33,7 +33,6 @@ import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.workmates.RecyclerViewWorkmateAdapter;
-import com.julienhammer.go4lunch.utils.ConvertToImage;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
@@ -88,35 +87,14 @@ public class InfoRestaurantFragment extends Fragment {
         activity = (AppCompatActivity) view.getContext();
         mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(getViewLifecycleOwner(), restaurantDetails ->
         {
-            binding.restaurantInfoCall.setText(R.string.restaurant_call);
-            binding.restaurantInfoLike.setText(R.string.restaurant_like);
-            binding.restaurantInfoWebsite.setText(R.string.restaurant_website);
+            setTextToView();
             mRestaurantInfo = restaurantDetails;
             mInfoRestaurantViewModel.initRestaurantsDetailsInfo(mRestaurantInfo.getIdRes());
             mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
-
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-            binding.workmatesView.setLayoutManager(layoutManager);
-            adapter = new RecyclerViewWorkmateAdapter(true, getActivity());
-            // Supprimer l'observe
-            mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(getViewLifecycleOwner(), allWorkmatesInThisRestaurant -> {
-                ArrayList<User> allWorkmatesInThisRestaurantList = new ArrayList<User>();
-                ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<>();
-                for (int i = 0; i <= (allWorkmatesInThisRestaurant.size()) - 1; i++) {
-                    allWorkmatesInThisRestaurantList.add(allWorkmatesInThisRestaurant.get(i));
-                }
-                binding.workmatesView.setAdapter(adapter);
-                adapter.setData(allWorkmatesInThisRestaurantList, restaurantNameWhereTheWorkmateEat);
-            });
-
+            initAllWorkmates();
             mUserViewModel.thisRestaurantIsLiked(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()), mRestaurantInfo.getIdRes());
             mUserViewModel.getSelectedRestaurantIsChoiced().observe(getViewLifecycleOwner(), placeId -> {
-                if (!Objects.equals(placeId, "") && Objects.equals(mRestaurantInfo.getIdRes(), placeId)) {
-                    checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
-                } else {
-                    binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_block_48));
-
-                }
+                initChoosedRestaurant(placeId);
                 binding.restaurantInfoName.setText(mRestaurantInfo.getNameRes());
                 binding.itemChoiceRestaurantButton.setOnClickListener(new View.OnClickListener() {
                     @SuppressLint("UseCompatLoadingForDrawables")
@@ -127,65 +105,97 @@ public class InfoRestaurantFragment extends Fragment {
                         if (Objects.equals(mRestaurantInfo.getIdRes(), placeId)) {
                             mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "");
                             myEdit.putString(PLACE_ID, "");
-                            myEdit.apply();
                             mRestaurantsViewModel.initAllRestaurantChoosed();
+                            mRestaurantsViewModel.initIsSomeoneEatingThere("NotHere");
                         } else {
                             mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), mRestaurantInfo.getIdRes());
                             myEdit.putString(PLACE_ID, mRestaurantInfo.getIdRes());
-                            myEdit.apply();
-                            saveValueOfTheRestaurantChoiceAllDataNeeded(
-                                    mRestaurantInfo.getIdRes(),
-                                    mRestaurantInfo.getNameRes(),
-                                    mRestaurantInfo.getAddressRes(),
-                                    mRestaurantInfo.getPhotoRefRes(),
-                                    mRestaurantInfo.getOpenNowRes(),
-                                    (float) mRestaurantInfo.getRatingRes(),
-                                    (float) mRestaurantInfo.getLocationRes().latitude,
-                                    (float) mRestaurantInfo.getLocationRes().longitude);
+                            saveValueOfTheRestaurantChoiceAllDataNeeded(mRestaurantInfo);
                             mRestaurantsViewModel.initAllRestaurantChoosed();
+                            mRestaurantsViewModel.initIsSomeoneEatingThere(mRestaurantInfo.getIdRes());
                         }
+                        myEdit.apply();
                         checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
                         mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
                     }
                 });
             });
-
             mUserViewModel.getIfRestaurantIsLiked().observe(getViewLifecycleOwner(), isNotInListOfLikes -> {
                 checkIfRestaurantIsLiked(isNotInListOfLikes);
-                binding.cardLike.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mUserViewModel.setUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser(), mRestaurantInfo.getIdRes());
-                        checkIfRestaurantIsLiked(isNotInListOfLikes);
-                    }
-                });
+                initRestaurantLike(isNotInListOfLikes);
             });
-
             mInfoRestaurantViewModel.getRestaurantDetailsInfoLiveData().observe(getViewLifecycleOwner(), place -> {
-                mInfoRestaurantViewModel.getRestaurantPhotoBitmap().observe(getViewLifecycleOwner(), bitmap -> {
-                    binding.itemRestaurantImage.setImageBitmap(bitmap);
-                });
-                binding.cardCall.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        callOnPhoneNumber(place);
-                    }
-                });
-                binding.cardWebsite.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        goOnWebsiteOfThePlace(place);
-                    }
-                });
+                initRestaurantBtnCallWebsiteAndImage(place);
             });
-
-            binding.itemBackwardButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    getActivity().onBackPressed();
-                }
-            });
+            initBackButton();
         });
+    }
+
+    private void initBackButton() {
+        binding.itemBackwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().onBackPressed();
+            }
+        });
+    }
+
+    private void initRestaurantLike(Boolean isNotInListOfLikes) {
+        binding.cardLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mUserViewModel.setUserRestaurantLikes(FirebaseAuth.getInstance().getCurrentUser(), mRestaurantInfo.getIdRes());
+                checkIfRestaurantIsLiked(isNotInListOfLikes);
+            }
+        });
+    }
+
+    private void initRestaurantBtnCallWebsiteAndImage(Place place) {
+        mInfoRestaurantViewModel.getRestaurantPhotoBitmap().observe(getViewLifecycleOwner(), bitmap -> {
+            binding.itemRestaurantImage.setImageBitmap(bitmap);
+        });
+        binding.cardCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callOnPhoneNumber(place);
+            }
+        });
+        binding.cardWebsite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goOnWebsiteOfThePlace(place);
+            }
+        });
+    }
+
+    private void initChoosedRestaurant(String placeId) {
+        if (!Objects.equals(placeId, "") && Objects.equals(mRestaurantInfo.getIdRes(), placeId)) {
+            checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
+        } else {
+            binding.itemChoiceRestaurantButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_block_48));
+        }
+    }
+
+    private void initAllWorkmates() {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        binding.workmatesView.setLayoutManager(layoutManager);
+        adapter = new RecyclerViewWorkmateAdapter(true, getActivity());
+        // Supprimer l'observe
+        mInfoRestaurantViewModel.getAllWorkmatesInThisRestaurantLiveData().observe(getViewLifecycleOwner(), allWorkmatesInThisRestaurant -> {
+            ArrayList<User> allWorkmatesInThisRestaurantList = new ArrayList<User>();
+            ArrayList<String> restaurantNameWhereTheWorkmateEat = new ArrayList<>();
+            for (int i = 0; i <= (allWorkmatesInThisRestaurant.size()) - 1; i++) {
+                allWorkmatesInThisRestaurantList.add(allWorkmatesInThisRestaurant.get(i));
+            }
+            binding.workmatesView.setAdapter(adapter);
+            adapter.setData(allWorkmatesInThisRestaurantList, restaurantNameWhereTheWorkmateEat);
+        });
+    }
+
+    private void setTextToView() {
+        binding.restaurantInfoCall.setText(R.string.restaurant_call);
+        binding.restaurantInfoLike.setText(R.string.restaurant_like);
+        binding.restaurantInfoWebsite.setText(R.string.restaurant_website);
     }
 
     private void checkIfRestaurantIsChoiced(String idRes, String placeId) {
@@ -257,17 +267,17 @@ public class InfoRestaurantFragment extends Fragment {
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
     }
 
-    private void saveValueOfTheRestaurantChoiceAllDataNeeded(String placeId, String nameRes, String addressRes, String photoRefRes, String openNowRes, float ratingRes, float latRes, float lngRes) {
+    private void saveValueOfTheRestaurantChoiceAllDataNeeded(RestaurantDetails mRestaurantInfo) {
         SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
         SharedPreferences.Editor myEdit = shChoice.edit();
-        myEdit.putString(PLACE_ID, placeId);
-        myEdit.putString(RESTAURANT_NAME, nameRes);
-        myEdit.putString(RESTAURANT_ADDRESS, addressRes);
-        myEdit.putString(RESTAURANT_PHOTO_REF, photoRefRes);
-        myEdit.putString(RESTAURANT_OPEN_NOW, openNowRes);
-        myEdit.putFloat(RESTAURANT_RATING, ratingRes);
-        myEdit.putFloat(RESTAURANT_LAT, latRes);
-        myEdit.putFloat(RESTAURANT_LNG, lngRes);
+        myEdit.putString(PLACE_ID, mRestaurantInfo.getIdRes());
+        myEdit.putString(RESTAURANT_NAME, mRestaurantInfo.getNameRes());
+        myEdit.putString(RESTAURANT_ADDRESS, mRestaurantInfo.getAddressRes());
+        myEdit.putString(RESTAURANT_PHOTO_REF, mRestaurantInfo.getPhotoRefRes());
+        myEdit.putString(RESTAURANT_OPEN_NOW, mRestaurantInfo.getOpenNowRes());
+        myEdit.putFloat(RESTAURANT_RATING, (float) mRestaurantInfo.getRatingRes());
+        myEdit.putFloat(RESTAURANT_LAT, (float) mRestaurantInfo.getLocationRes().latitude);
+        myEdit.putFloat(RESTAURANT_LNG, (float) mRestaurantInfo.getLocationRes().longitude);
         myEdit.apply();
     }
 

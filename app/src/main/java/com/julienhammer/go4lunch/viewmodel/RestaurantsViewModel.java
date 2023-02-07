@@ -24,6 +24,14 @@ public class RestaurantsViewModel extends ViewModel {
        return mRestaurantsRepository.getRestaurantsLiveData();
     }
 
+    public void initIsSomeoneEatingThere(String resId){
+        mRestaurantsRepository.initIsSomeoneEatingThere(resId);
+    }
+
+    public LiveData<Boolean> getIfEatingHere(){
+        return mRestaurantsRepository.getIfEatingHere();
+    }
+
     public LiveData<List<String>> getAllRestaurantChoosed(){
         return mRestaurantsRepository.getAllRestaurantChoosed();
     }
