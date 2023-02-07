@@ -10,7 +10,6 @@ import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.WindowManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,7 +46,6 @@ import android.view.View;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -136,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mLocationViewModel.refresh();
             mLocationViewModel.getLocationLiveData().observe(this, location -> {
                 if (location != null){
-                    mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
+                    mRestaurantsViewModel.initAllRestaurant(getString(R.string.google_map_key),location);
                     saveLocationInSharedPref(location);
                 }
             });

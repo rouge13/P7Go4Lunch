@@ -75,25 +75,25 @@ public class RestaurantListFragment extends Fragment {
     private void addAllRestaurantsViewModel(RecyclerViewListAdapter adapter) {
         RestaurantsViewModel mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), viewModelFactory).get(RestaurantsViewModel.class);
-        mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+        mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), places -> {
             String photoRef;
             String mMissingPhoto = MISSING_PHOTO_REFERENCE;
             ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
-            for (int i = 0; i < (placesSearchResults.length); i++) {
+            for (int i = 0; i < (places.results.length); i++) {
                 String openNowText = "";
-                if (placesSearchResults[i].permanentlyClosed) {
+                if (places.results[i].permanentlyClosed) {
                     i++;
                 } else {
-                    openNowText = getString(getOpenHourText(placesSearchResults[i].openingHours != null
-                            ? placesSearchResults[i].openingHours.openNow : null));
-                    if (placesSearchResults[i].photos != null) {
-                        photoRef = placesSearchResults[i].photos[0].photoReference;
+                    openNowText = getString(getOpenHourText(places.results[i].openingHours != null
+                            ? places.results[i].openingHours.openNow : null));
+                    if (places.results[i].photos != null) {
+                        photoRef = places.results[i].photos[0].photoReference;
                     } else {
                         photoRef = mMissingPhoto;
 
                     }
-                    LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
-                    RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, resLocation
+                    LatLng resLocation = new LatLng(places.results[i].geometry.location.lat, places.results[i].geometry.location.lng);
+                    RestaurantDetails restaurantDetails = new RestaurantDetails(places.results[i].placeId, places.results[i].name, places.results[i].vicinity, photoRef, openNowText, places.results[i].rating, resLocation
                     );
                     allRestaurants.add(restaurantDetails);
                 }

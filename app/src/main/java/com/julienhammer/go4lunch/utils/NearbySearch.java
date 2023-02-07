@@ -1,6 +1,7 @@
 package com.julienhammer.go4lunch.utils;
 
 import android.location.Location;
+import android.telecom.Call;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.PlacesApi;
@@ -12,11 +13,14 @@ import com.google.maps.model.RankBy;
 
 import java.io.IOException;
 
+import retrofit2.Callback;
+import retrofit2.Response;
+
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class NearbySearch {
-    public PlacesSearchResponse run(String apiKey, Location userLocation){
+    public PlacesSearchResponse run(String apiKey, Location userLocation) {
         PlacesSearchResponse request = new PlacesSearchResponse();
         GeoApiContext context = new GeoApiContext.Builder()
                 .apiKey(apiKey)
@@ -35,4 +39,5 @@ public class NearbySearch {
             return request;
         }
     }
+
 }

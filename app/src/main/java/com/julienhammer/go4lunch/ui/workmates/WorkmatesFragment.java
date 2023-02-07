@@ -81,7 +81,7 @@ public class WorkmatesFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         adapter = new RecyclerViewWorkmateAdapter(false, getActivity());
         mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
-            mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+            mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), placesSearchResults -> {
                 ArrayList<User> allWorkmates = new ArrayList<User>();
                 ArrayList<String> allRestaurantsName = new ArrayList<>();
                 for (int t = 0; t <= (workmate.size()) -1; t++) {

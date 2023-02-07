@@ -102,20 +102,21 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
         initInfoRestaurantViewModel();
         mRestaurantsViewModel.getAllRestaurantChoosed().observe(this, list -> {
             mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
-                mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
-                    userLocation = location;
-                    cameraPosition = new CameraPosition.Builder()
-                            .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-                            .zoom(14).build();
-                    mMap.getUiSettings().setMapToolbarEnabled(false);
-                    mMap.setMyLocationEnabled(true);
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                userLocation = location;
+                cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
+                        .zoom(14).build();
+                mMap.getUiSettings().setMapToolbarEnabled(false);
+                mMap.setMyLocationEnabled(true);
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), places -> {
                     ArrayList<RestaurantDetails> allRestaurants = new ArrayList<>();
-                    for (int i = 0; i <= placesSearchResults.length - 1; i++) {
-                        i = initPlacesSearchResult(placesSearchResults, allRestaurants, allMarkers, i, list);
+                    for (int i = 0; i <= places.results.length - 1; i++) {
+                        i = initPlacesSearchResult(places.results, allRestaurants, allMarkers, i, list);
                     }
                     mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
+
                         public boolean onMarkerClick(@NonNull Marker marker) {
                             String markerName = marker.getTitle();
                             mRestaurantsViewModel.getIfEatingHere().observe(getViewLifecycleOwner(), isEatingHere -> {

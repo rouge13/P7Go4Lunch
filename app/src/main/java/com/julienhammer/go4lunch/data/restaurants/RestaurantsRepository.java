@@ -10,11 +10,19 @@ import androidx.lifecycle.MutableLiveData;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
+import com.julienhammer.go4lunch.data.GooglePlaceApi;
 import com.julienhammer.go4lunch.utils.NearbySearch;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -28,6 +36,8 @@ public class RestaurantsRepository {
     private static FusedLocationProviderClient mFusedLocationProviderClient;
     MutableLiveData<List<String>> allChoosedRestaurants = new MutableLiveData<>();
     MutableLiveData<Boolean> alreadySomeone = new MutableLiveData<>();
+
+    private MutableLiveData<PlacesSearchResponse> mNearbyPlaces = new MutableLiveData<>();
 
 //    public void initIsSomeoneEatingHere(String resId){
 //        alreadySomeone.postValue(resId);
@@ -48,6 +58,10 @@ public class RestaurantsRepository {
         return alreadySomeone;
     }
 
+    public LiveData<PlacesSearchResponse> getNearbyPlaces() {
+        return mNearbyPlaces;
+    }
+
     public void initIsSomeoneEatingThere(String resId){
         alreadySomeone.postValue(false);
         FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID, resId).get().addOnCompleteListener(task -> {
@@ -61,11 +75,15 @@ public class RestaurantsRepository {
         });
     }
 
-    public void getAllRestaurants(String apiKey, Location userLocation) {
-        PlacesSearchResult[] results;
+    public void initAllRestaurant(String apiKey, Location userLocation) {
+//        PlacesSearchResult[] results;
         if (userLocation != null && apiKey != null){
-            results = new NearbySearch().run(apiKey,userLocation).results;
-            mRestaurantMutableLiveData.postValue(results);
+//            results = new NearbySearch().run(apiKey,userLocation).results;
+//            mRestaurantMutableLiveData.postValue(results);
+//        }
+//        if (mNearbyPlaces == null) {
+//            mNearbyPlaces = new MutableLiveData<>();
+            loadPlaces(apiKey, userLocation);
         }
     }
 
@@ -108,6 +126,41 @@ public class RestaurantsRepository {
                 }
             }
             allChoosedRestaurants.postValue(choosedRestaurant);
+        });
+    }
+
+    private void loadPlaces(String apiKey, Location userLocation) {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://maps.googleapis.com/maps/api/place/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        GooglePlaceApi googlePlaceApi = retrofit.create(GooglePlaceApi.class);
+
+        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+        Call<PlacesSearchResponse> call = googlePlaceApi.getNearbyPlaces(
+                location,
+                2000,
+                "restaurant",
+                apiKey
+        );
+
+        call.enqueue(new Callback<PlacesSearchResponse>() {
+            @Override
+            public void onResponse(Call<PlacesSearchResponse> call, Response<PlacesSearchResponse> response) {
+                if (response.isSuccessful()) {
+                    PlacesSearchResponse placesSearchResponse = response.body();
+                    mNearbyPlaces.postValue(placesSearchResponse);
+                } else {
+                    // handle the error
+//                    response.message();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<PlacesSearchResponse> call, Throwable t) {
+
+            }
         });
     }
 
