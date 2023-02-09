@@ -1,5 +1,6 @@
 package com.julienhammer.go4lunch.data;
 
+
 import com.google.maps.model.PlacesSearchResponse;
 
 import retrofit2.Call;
@@ -11,9 +12,12 @@ import retrofit2.http.Query;
  */
 public interface GooglePlaceApi {
 
-    @GET("nearbysearch/json")
-    Call<PlacesSearchResponse> getNearbyPlaces(@Query("location") String location,
-                                               @Query("radius") int radius,
-                                               @Query("type") String type,
-                                               @Query("key") String apiKey);
+    @GET("https://maps.googleapis.com/maps/api/place/textsearch/json")
+    Call<PlacesSearchResponse> searchPlaces(@Query("type") String type,
+                                            @Query("location") String location,
+                                            @Query("key") String key,
+                                            @Query("radius") int radius
+
+                                            );
+
 }

@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.julienhammer.go4lunch.R;
@@ -72,7 +72,7 @@ public class NotificationBroadcast extends BroadcastReceiver {
                                 + " : "
                                 + prefs.getString(RESTAURANT_NAME,"")
                                 + ". "
-                                + context.getString(R.string.Address)
+                                + context.getString(R.string.address)
                                 + " : "
                                 + prefs.getString(RESTAURANT_ADDRESS,"")
                                 + ". "

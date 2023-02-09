@@ -4,7 +4,9 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Build;
 import android.speech.RecognizerIntent;
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     RecyclerViewRestaurantsAutoCompleteAdapter adapter;
     Toolbar toolbar;
+    String title = "";
     private static final String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static final String PLACE_ID = "placeId";
     private static final String USER_ID = "userId";
@@ -144,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (placeId != null && !Objects.equals(placeId, "")){
                     saveValueOfTheRestaurantChoicePlaceId(FirebaseAuth.getInstance().getCurrentUser(), placeId);
                     setNotificationAlarm();
-                    Toast.makeText(this, R.string.notificationSet, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.notification_set, Toast.LENGTH_SHORT).show();
                 }
             });
             if (!Places.isInitialized()){
@@ -203,6 +206,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void initSearchWorkmatesOnClickListener(Context context) {
+        binding.searchRestaurantImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, R.string.missing_workmates_search_button, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void initAlertDialogForGPSAndNetworkEnabled() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setMessage(R.string.gps_network_not_enabled);
@@ -212,6 +224,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         alertDialog.setNegativeButton(R.string.Cancel,null);
         alertDialog.show();
+    }
+
+    private void initAlertDialogForNotifications(Boolean stateOfButton) {
+        int buttonColorPositive = (stateOfButton) ? Color.GREEN : Color.RED;
+        int buttonColorNegative = (!stateOfButton) ? Color.GREEN : Color.RED;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setMessage(R.string.option_enable_disable_notification);
+        builder.setPositiveButton(R.string.enable_notification,new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do something here
+
+
+            }
+
+        });
+        builder.setNegativeButton(R.string.disable_notification,new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // do something here
+            }
+
+        });
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonColorPositive);
+                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonColorNegative);
+            }
+        });
+        dialog.show();
+
     }
 
     private void saveLocationInSharedPref(Location location) {
@@ -233,12 +277,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     return true;
                 case R.id.maps_fragment:
                     viewPager.setCurrentItem(0);
+                    toolbar.setTitle(getString(R.string.hungry));
+                    initSearchOnClickListener(this);
                     return true;
                 case R.id.list_fragment:
                     viewPager.setCurrentItem(1);
+                    toolbar.setTitle(getString(R.string.hungry));
+                    initSearchOnClickListener(this);
                     return true;
                 case R.id.workmates_fragment:
                     viewPager.setCurrentItem(2);
+                    toolbar.setTitle(getString(R.string.available_workmates));
+                    initSearchWorkmatesOnClickListener(this);
                     return true;
                 default:
                     return false;
@@ -338,7 +388,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // 1 - Configure the toolbar
     private void configureToolBar() {
         toolbar = binding.activityMainToolbar;
-        toolbar.setTitle(R.string.hungry);
+//        toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -431,7 +481,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 break;
             case R.id.nav_settings:
-                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+//                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
+                    if (placeId != null && !Objects.equals(placeId, "")){
+                        initAlertDialogForNotifications(true);
+                    } else {
+                        Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();
+
+                    }
+                });
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();

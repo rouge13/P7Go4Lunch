@@ -1,6 +1,5 @@
 package com.julienhammer.go4lunch;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
 
 import com.julienhammer.go4lunch.ui.map.RestaurantMapsFragment;
@@ -19,9 +18,9 @@ public class RestaurantListFragmentTest {
     @Test
     public void getOpenHourText() {
         RestaurantMapsFragment fragment = spy(RestaurantMapsFragment.class);
-        Assert.assertEquals(R.string.openNowCaseTrue, fragment.getOpenHourTextId(true));
-        Assert.assertEquals(R.string.openNowCaseFalse, fragment.getOpenHourTextId(false));
-        Assert.assertEquals(R.string.openNowCaseNotShowing, fragment.getOpenHourTextId(null));
+        Assert.assertEquals(R.string.open_now_case_true, fragment.getOpenHourTextId(true));
+        Assert.assertEquals(R.string.open_now_case_false, fragment.getOpenHourTextId(false));
+        Assert.assertEquals(R.string.open_now_case_not_showing, fragment.getOpenHourTextId(null));
 
     }
 }

@@ -59,7 +59,7 @@
         <string name="is_eating_to">" mange chez : "</string>
         <string name="no_restaurant_choiced">Aucun restaurant n\'est choisi pour cet utilisateur.</string>
         <string name="content_name">Nom</string>
-        <string name="Address">Adresse</string>
+        <string name="address">Adresse</string>
         <string name="channel_name">ChaineRappelRestaurant</string>
         <string name="channel_description">Chaîne pour l\'application Go4Lunch</string>
         <string name="channel_id">notifierRestaurant</string>
@@ -68,9 +68,11 @@
         <string name="no_workmates">Aucun collègue ne mange ici.</string>
         <string name="search_restaurant">Recherche du restaurant</string>
         <string name="go_to_restaurant_selection">Séléction du Restaurant</string>
-        <string name="openNowCaseTrue">Ouvert</string>
-        <string name="openNowCaseFalse">Fermé</string>
-        <string name="openNowCaseNotShowing">N\'indique pas si c\'est ouvert</string>
-        <string name="clickedLocationIs">Le restaurant selectionné est </string>
-        <string name="notificationSet">Notification mise en place</string>
+        <string name="open_now_case_true">Ouvert</string>
+        <string name="open_now_case_false">Fermé</string>
+        <string name="open_now_case_not_showing">N\'indique pas si c\'est ouvert</string>
+        <string name="clicked_location_is">Le restaurant selectionné est </string>
+        <string name="notification_set">Notification mise en place</string>
+        <string name="available_workmates">Collègues disponible</string>
+        <string name="missing_workmates_search_button">Le bouton search workmates n\'a pas était ajouté pour ce projet.</string>
 </resources>

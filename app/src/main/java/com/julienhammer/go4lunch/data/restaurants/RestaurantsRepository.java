@@ -8,12 +8,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.GooglePlaceApi;
-import com.julienhammer.go4lunch.utils.NearbySearch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,19 +130,21 @@ public class RestaurantsRepository {
     }
 
     private void loadPlaces(String apiKey, Location userLocation) {
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://maps.googleapis.com/maps/api/place/")
+                .baseUrl("https://maps.googleapis.com/maps/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         GooglePlaceApi googlePlaceApi = retrofit.create(GooglePlaceApi.class);
 
         String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
-        Call<PlacesSearchResponse> call = googlePlaceApi.getNearbyPlaces(
-                location,
-                2000,
+
+        Call<PlacesSearchResponse> call = googlePlaceApi.searchPlaces(
                 "restaurant",
-                apiKey
+                location,
+                apiKey,
+                2000
         );
 
         call.enqueue(new Callback<PlacesSearchResponse>() {
@@ -153,13 +155,13 @@ public class RestaurantsRepository {
                     mNearbyPlaces.postValue(placesSearchResponse);
                 } else {
                     // handle the error
-//                    response.message();
+                    mNearbyPlaces.postValue(null);
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<PlacesSearchResponse> call, Throwable t) {
-
+                mNearbyPlaces.postValue(null);
             }
         });
     }

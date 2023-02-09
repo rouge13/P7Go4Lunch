@@ -59,7 +59,7 @@
     <string name="is_eating_to">" is eating to : "</string>
     <string name="no_restaurant_choiced">No restaurant is choiced for this user.</string>
     <string name="content_name">Name</string>
-    <string name="Address">Address</string>
+    <string name="address">Address</string>
     <string name="channel_name">RestaurantReminderChannel</string>
     <string name="channel_description">Channel for Go4Lunch application</string>
     <string name="channel_id">notifyRestaurant</string>
@@ -68,13 +68,16 @@
     <string name="no_workmates">No workmates is eating here.</string>
     <string name="search_restaurant">Search restaurant</string>
     <string name="go_to_restaurant_selection">Restaurant selection</string>
-    <string name="openNowCaseTrue">Open now</string>
-    <string name="openNowCaseFalse">Closed</string>
-    <string name="openNowCaseNotShowing">Doesn\'t show if it\'s open</string>
-    <string name="clickedLocationIs">Clicked location is </string>
-    <string name="notificationSet">Notification has been set</string>
-
-
+    <string name="open_now_case_true">Open now</string>
+    <string name="open_now_case_false">Closed</string>
+    <string name="open_now_case_not_showing">Doesn\'t show if it\'s open</string>
+    <string name="clicked_location_is">Clicked location is </string>
+    <string name="notification_set">Notification has been set</string>
+    <string name="available_workmates">Available workmates</string>
+    <string name="missing_workmates_search_button">Workmates button has not been added for this project.</string>
+    <string name="option_enable_disable_notification">Option for notifications settings</string>
+    <string name="enable_notification">Enable notification</string>
+    <string name="disable_notification">Disable notification</string>
 
 
 </resources>

@@ -39,12 +39,8 @@ import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -133,7 +129,6 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
                                     break;
                                 }
                             }
-//                            mRestaurantsViewModel.initAllRestaurantChoosed();
                             return false;
                         }
                     });
@@ -196,12 +191,12 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     @NonNull
     public int getOpenHourTextId(Boolean openNow) {
         if (openNow == null) {
-            return R.string.openNowCaseNotShowing;
+            return R.string.open_now_case_not_showing;
         }
         if (openNow) {
-            return R.string.openNowCaseTrue;
+            return R.string.open_now_case_true;
         } else {
-            return R.string.openNowCaseFalse;
+            return R.string.open_now_case_false;
         }
     }
 

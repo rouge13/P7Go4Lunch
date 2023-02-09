@@ -81,8 +81,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.2'
     implementation 'androidx.navigation:navigation-ui:2.5.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -106,7 +106,7 @@ dependencies {
 
     // For the class NearbySearch and Places
     implementation 'com.google.maps:google-maps-services:0.11.0'
-    implementation 'com.google.android.libraries.places:places:2.6.0'
+    implementation 'com.google.android.libraries.places:places:3.0.0'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
 
     // Used to fix nearbySearch query for Android 30+
