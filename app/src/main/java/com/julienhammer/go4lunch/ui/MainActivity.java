@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -100,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String RESTAURANT_RATING = "ratingRes";
     private static final String RESTAURANT_LAT = "latRes";
     private static final String RESTAURANT_LNG = "lngRes";
+    private static final String NOTIFICATION_STATE = "resNotificationState";
+
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -147,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (placeId != null && !Objects.equals(placeId, "")){
                     saveValueOfTheRestaurantChoicePlaceId(FirebaseAuth.getInstance().getCurrentUser(), placeId);
                     setNotificationAlarm();
-                    Toast.makeText(this, R.string.notification_set, Toast.LENGTH_SHORT).show();
+
                 }
             });
             if (!Places.isInitialized()){
@@ -232,19 +235,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setMessage(R.string.option_enable_disable_notification);
-        builder.setPositiveButton(R.string.enable_notification,new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do something here
-
-
-            }
-
+        builder.setPositiveButton(R.string.enable_notification, (dialog, id) -> {
+            // do something here
+            saveValueNotificationState(true);
+            setNotificationAlarm();
         });
-        builder.setNegativeButton(R.string.disable_notification,new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // do something here
-            }
-
+        builder.setNegativeButton(R.string.disable_notification, (dialog, id) -> {
+            // do something here
+            saveValueNotificationState(false);
+            cancelNotification();
+        });
+        //Cancel Button
+        builder.setNeutralButton("Cancel", (dialog, which) -> {
+            Toast.makeText(getApplicationContext(),R.string.Cancel_notification_settings,Toast.LENGTH_LONG).show();
+            dialog.dismiss();
         });
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -255,7 +259,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         dialog.show();
+    }
 
+    private void cancelNotification() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, BroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        alarmManager.cancel(pendingIntent);
+        Toast.makeText(this, R.string.notification_unset, Toast.LENGTH_SHORT).show();
+
+    }
+
+    private Boolean getValueNotificationState(){
+        SharedPreferences pref = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        return pref.getBoolean(NOTIFICATION_STATE, false);
+    }
+
+    private void saveValueNotificationState(Boolean state){
+        SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
+        myEdit.putBoolean(NOTIFICATION_STATE, state);
+        myEdit.apply();
     }
 
     private void saveLocationInSharedPref(Location location) {
@@ -278,17 +302,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.maps_fragment:
                     viewPager.setCurrentItem(0);
                     toolbar.setTitle(getString(R.string.hungry));
+                    binding.searchRestaurantImage.setVisibility(View.VISIBLE);
                     initSearchOnClickListener(this);
                     return true;
                 case R.id.list_fragment:
                     viewPager.setCurrentItem(1);
                     toolbar.setTitle(getString(R.string.hungry));
+                    binding.searchRestaurantImage.setVisibility(View.VISIBLE);
                     initSearchOnClickListener(this);
                     return true;
                 case R.id.workmates_fragment:
                     viewPager.setCurrentItem(2);
                     toolbar.setTitle(getString(R.string.available_workmates));
-                    initSearchWorkmatesOnClickListener(this);
+                    binding.searchRestaurantImage.setVisibility(View.INVISIBLE);
+//                    initSearchWorkmatesOnClickListener(this);
                     return true;
                 default:
                     return false;
@@ -334,22 +361,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 //    @RequiresApi(api = Build.VERSION_CODES.S)
     private void setNotificationAlarm() {
+        saveValueNotificationState(true);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(this, NotificationBroadcast.class);
-
         PendingIntent pendingIntent = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         } else {
             pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         }
-
         // Set the alarm to start at 12:00 a.m.
         Calendar calendar = Calendar.getInstance();
         if (calendar.get(Calendar.HOUR) < 12){
             calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, 12);
-            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.HOUR_OF_DAY, 11);
+            calendar.set(Calendar.MINUTE, 50);
             calendar.set(Calendar.SECOND,0);
             calendar.set(Calendar.MILLISECOND,0);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
@@ -364,6 +390,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             calendar.set(Calendar.MILLISECOND,0);
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
         }
+        Toast.makeText(this, R.string.notification_set, Toast.LENGTH_SHORT).show();
     }
 
     private void saveValueOfTheRestaurantChoicePlaceId(FirebaseUser user, String placeId) {
@@ -484,10 +511,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
                 mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
                     if (placeId != null && !Objects.equals(placeId, "")){
-                        initAlertDialogForNotifications(true);
+                        initAlertDialogForNotifications(getValueNotificationState());
                     } else {
                         Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();
-
                     }
                 });
                 break;

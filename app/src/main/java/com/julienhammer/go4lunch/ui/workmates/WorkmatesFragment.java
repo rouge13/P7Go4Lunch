@@ -37,8 +37,6 @@ public class WorkmatesFragment extends Fragment {
     FragmentWorkmatesBinding binding;
     private WorkmateViewModel mWorkmateViewModel;
     private RestaurantsViewModel mRestaurantsViewModel;
-//    ActivityMainBinding activityMainBinding;
-//    Toolbar toolbar;
     RecyclerViewWorkmateAdapter adapter;
 
     private void initRestaurantsList(){
@@ -75,11 +73,8 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        initBasicToolbar();
-//        initSearchToolbar();
         // Inflate the layout for this fragment
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
-//        configureToolBar();
         return binding.getRoot();
     }
 
@@ -104,30 +99,4 @@ public class WorkmatesFragment extends Fragment {
             });
         });
     }
-
-//    private void configureToolBar() {
-//        toolbar = activityMainBinding.customToolbar;
-//        toolbar.setTitle(R.string.available_workmates);
-//
-//        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-//        ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-//        if (actionBar != null){
-//            actionBar.setDisplayHomeAsUpEnabled(false);
-//            actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
-//        }
-//    }
-
-//    private void initBasicToolbar() {
-//        activityMainBinding.restaurantSearchEditText.getText().clear();
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        activityMainBinding.restaurantsRecyclerView.setVisibility(View.INVISIBLE);
-//        activityMainBinding.searchConstraint.setVisibility(View.GONE);
-//        activityMainBinding.searchRestaurantImage.setVisibility(View.VISIBLE);
-//    }
-//
-//    private void initSearchToolbar() {
-//        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-//        activityMainBinding.searchConstraint.setVisibility(View.VISIBLE);
-//        activityMainBinding.searchRestaurantImage.setVisibility(View.GONE);
-//    }
 }

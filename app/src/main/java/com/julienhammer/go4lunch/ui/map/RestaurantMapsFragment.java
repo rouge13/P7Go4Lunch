@@ -27,10 +27,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
+import com.julienhammer.go4lunch.models.PlacesResponse;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
@@ -107,7 +107,7 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), places -> {
                     ArrayList<RestaurantDetails> allRestaurants = new ArrayList<>();
-                    for (int i = 0; i <= places.results.length - 1; i++) {
+                    for (int i = 0; i <= places.results.size() - 1; i++) {
                         i = initPlacesSearchResult(places.results, allRestaurants, allMarkers, i, list);
                     }
                     mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -137,46 +137,43 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
         });
     }
 
-    private int initPlacesSearchResult(PlacesSearchResult[] placesSearchResults, ArrayList<RestaurantDetails> allRestaurants, ArrayList<Marker> allMarkers, int i, List<String> listOfRestaurantsChoosed) {
+    private int initPlacesSearchResult(ArrayList<PlacesResponse.Result> results, ArrayList<RestaurantDetails> allRestaurants, ArrayList<Marker> allMarkers, int i, List<String> listOfRestaurantsChoosed) {
         String openNowText = "";
         String photoRef = "";
         String mMissingPhoto = MISSING_PHOTO_REFERENCE;
-        if (placesSearchResults[i].permanentlyClosed) {
-            i++;
+        openNowText = getString(getOpenHourTextId(results.get(i).opening_hours != null
+                ? results.get(i).opening_hours.open_now : null));
+        if (results.get(i).photos != null) {
+            photoRef = results.get(i).photos.get(0).photo_reference;
         } else {
-            openNowText = getString(getOpenHourTextId(placesSearchResults[i].openingHours != null
-                    ? placesSearchResults[i].openingHours.openNow : null));
-            if (placesSearchResults[i].photos != null) {
-                photoRef = placesSearchResults[i].photos[0].photoReference;
-            } else {
-                photoRef = mMissingPhoto;
-            }
-            LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
-            RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, resLocation);
-            SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
-            String restaurantChoicedId = prefs.getString(PLACE_ID, "");
-            if (Objects.equals(restaurantChoicedId, placesSearchResults[i].placeId)) {
-                saveValueOfTheRestaurantChoiceAllDataNeeded(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, (float) placesSearchResults[i].geometry.location.lat, (float) placesSearchResults[i].geometry.location.lng);
-            }
-            allRestaurants.add(restaurantDetails);
-            initMarker(allMarkers, placesSearchResults[i], listOfRestaurantsChoosed);
+            photoRef = mMissingPhoto;
         }
+        LatLng resLocation = new LatLng(results.get(i).geometry.location.lat, results.get(i).geometry.location.lng);
+        RestaurantDetails restaurantDetails = new RestaurantDetails(results.get(i).place_id, results.get(i).name, results.get(i).formatted_address, photoRef, openNowText, (float) results.get(i).rating, resLocation);
+        SharedPreferences prefs = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
+        String restaurantChoicedId = prefs.getString(PLACE_ID, "");
+        if (Objects.equals(restaurantChoicedId, results.get(i).place_id)) {
+            saveValueOfTheRestaurantChoiceAllDataNeeded(results.get(i).place_id, results.get(i).name, results.get(i).formatted_address, photoRef, openNowText, (float) results.get(i).rating, (float) results.get(i).geometry.location.lat, (float) results.get(i).geometry.location.lng);
+        }
+        allRestaurants.add(restaurantDetails);
+        initMarker(allMarkers, results.get(i), listOfRestaurantsChoosed);
+//        }
         return i;
     }
 
-    private void initMarker(ArrayList<Marker> allMarkers, PlacesSearchResult placesSearchResults, List<String> listOfRestaurantsChoosed) {
-        if (listOfRestaurantsChoosed.contains(placesSearchResults.placeId)) {
+    private void initMarker(ArrayList<Marker> allMarkers, PlacesResponse.Result result, List<String> listOfRestaurantsChoosed) {
+        if (listOfRestaurantsChoosed.contains(result.place_id)) {
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
         } else {
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
         }
-        initMarkerColor(allMarkers, placesSearchResults);
+        initMarkerColor(allMarkers, result);
     }
 
-    private void initMarkerColor(ArrayList<Marker> allMarkers, PlacesSearchResult placesSearchResults) {
+    private void initMarkerColor(ArrayList<Marker> allMarkers, PlacesResponse.Result result) {
         MarkerOptions markerOptions = new MarkerOptions().position(
-                        new LatLng(placesSearchResults.geometry.location.lat, placesSearchResults.geometry.location.lng)).
-                title(placesSearchResults.name).icon(bitmapDescriptor);
+                        new LatLng(result.geometry.location.lat, result.geometry.location.lng)).
+                title(result.name).icon(bitmapDescriptor);
         allMarkers.add(mMap.addMarker(markerOptions));
     }
 

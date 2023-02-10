@@ -75,35 +75,33 @@ public class RestaurantListFragment extends Fragment {
     private void addAllRestaurantsViewModel(RecyclerViewListAdapter adapter) {
         RestaurantsViewModel mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), viewModelFactory).get(RestaurantsViewModel.class);
-        mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+        mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), places -> {
             String photoRef;
             String mMissingPhoto = MISSING_PHOTO_REFERENCE;
             ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
-            for (int i = 0; i < (placesSearchResults.length); i++) {
+            for (int i = 0; i < (places.results.size()); i++) {
                 String openNowText = "";
-                if (placesSearchResults[i].permanentlyClosed) {
-                    i++;
-                } else {
-                    openNowText = getString(getOpenHourText(placesSearchResults[i].openingHours != null
-                            ? placesSearchResults[i].openingHours.openNow : null));
-                    if (placesSearchResults[i].photos != null) {
-                        photoRef = placesSearchResults[i].photos[0].photoReference;
+
+                    openNowText = getString(getOpenHourTextId(places.results.get(i).opening_hours != null
+                            ? places.results.get(i).opening_hours.open_now : null));
+                    if (places.results.get(i).photos != null) {
+                        photoRef = places.results.get(i).photos.get(0).photo_reference;
                     } else {
                         photoRef = mMissingPhoto;
 
                     }
-                    LatLng resLocation = new LatLng(placesSearchResults[i].geometry.location.lat, placesSearchResults[i].geometry.location.lng);
-                    RestaurantDetails restaurantDetails = new RestaurantDetails(placesSearchResults[i].placeId, placesSearchResults[i].name, placesSearchResults[i].vicinity, photoRef, openNowText, placesSearchResults[i].rating, resLocation
+                    LatLng resLocation = new LatLng(places.results.get(i).geometry.location.lat, places.results.get(i).geometry.location.lng);
+                    RestaurantDetails restaurantDetails = new RestaurantDetails(places.results.get(i).place_id, places.results.get(i).name, places.results.get(i).formatted_address, photoRef, openNowText, (float) places.results.get(i).rating, resLocation
                     );
                     allRestaurants.add(restaurantDetails);
                 }
-            }
+
             adapter.setData(allRestaurants);
         });
     }
 
     @NonNull
-    public int getOpenHourText(Boolean openNow) {
+    public int getOpenHourTextId(Boolean openNow) {
         if (openNow == null) {
             return R.string.open_now_case_not_showing;
         }

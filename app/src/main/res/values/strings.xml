@@ -75,9 +75,11 @@
     <string name="notification_set">Notification has been set</string>
     <string name="available_workmates">Available workmates</string>
     <string name="missing_workmates_search_button">Workmates button has not been added for this project.</string>
-    <string name="option_enable_disable_notification">Option for notifications settings</string>
+    <string name="option_enable_disable_notification">OPTION NOTIFICATIONS SETTINGS :</string>
     <string name="enable_notification">Enable notification</string>
     <string name="disable_notification">Disable notification</string>
+    <string name="notification_unset">Notification has been unset.</string>
+    <string name="Cancel_notification_settings">Cancel notification settings</string>
 
 
 </resources>

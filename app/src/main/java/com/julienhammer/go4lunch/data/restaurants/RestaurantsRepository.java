@@ -8,12 +8,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.GooglePlaceApi;
+import com.julienhammer.go4lunch.models.PlacesResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +36,7 @@ public class RestaurantsRepository {
     MutableLiveData<List<String>> allChoosedRestaurants = new MutableLiveData<>();
     MutableLiveData<Boolean> alreadySomeone = new MutableLiveData<>();
 
-    private MutableLiveData<PlacesSearchResponse> mNearbyPlaces = new MutableLiveData<>();
-
-//    public void initIsSomeoneEatingHere(String resId){
-//        alreadySomeone.postValue(resId);
-//    }
+    private MutableLiveData<PlacesResponse.Root> mNearbyPlaces = new MutableLiveData<>();
 
     public RestaurantsRepository(MutableLiveData<PlacesSearchResult[]> mRestaurantMutableLiveData,
                                  @NonNull FusedLocationProviderClient mFusedLocationProviderClient){
@@ -58,7 +53,7 @@ public class RestaurantsRepository {
         return alreadySomeone;
     }
 
-    public LiveData<PlacesSearchResponse> getNearbyPlaces() {
+    public LiveData<PlacesResponse.Root> getNearbyPlaces() {
         return mNearbyPlaces;
     }
 
@@ -76,13 +71,7 @@ public class RestaurantsRepository {
     }
 
     public void initAllRestaurant(String apiKey, Location userLocation) {
-//        PlacesSearchResult[] results;
         if (userLocation != null && apiKey != null){
-//            results = new NearbySearch().run(apiKey,userLocation).results;
-//            mRestaurantMutableLiveData.postValue(results);
-//        }
-//        if (mNearbyPlaces == null) {
-//            mNearbyPlaces = new MutableLiveData<>();
             loadPlaces(apiKey, userLocation);
         }
     }
@@ -140,19 +129,20 @@ public class RestaurantsRepository {
 
         String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
-        Call<PlacesSearchResponse> call = googlePlaceApi.searchPlaces(
-                "restaurant",
+        Call<PlacesResponse.Root> call = googlePlaceApi.getNearbyPlaces(
                 location,
-                apiKey,
-                2000
+                2000,
+                "restaurant",
+                apiKey
+
         );
 
-        call.enqueue(new Callback<PlacesSearchResponse>() {
+        call.enqueue(new Callback<PlacesResponse.Root>() {
             @Override
-            public void onResponse(Call<PlacesSearchResponse> call, Response<PlacesSearchResponse> response) {
+            public void onResponse(Call<PlacesResponse.Root> call, Response<PlacesResponse.Root> response) {
                 if (response.isSuccessful()) {
-                    PlacesSearchResponse placesSearchResponse = response.body();
-                    mNearbyPlaces.postValue(placesSearchResponse);
+                    PlacesResponse.Root placesResponse = response.body();
+                    mNearbyPlaces.postValue(placesResponse);
                 } else {
                     // handle the error
                     mNearbyPlaces.postValue(null);
@@ -160,7 +150,7 @@ public class RestaurantsRepository {
             }
 
             @Override
-            public void onFailure(retrofit2.Call<PlacesSearchResponse> call, Throwable t) {
+            public void onFailure(retrofit2.Call<PlacesResponse.Root> call, Throwable t) {
                 mNearbyPlaces.postValue(null);
             }
         });
