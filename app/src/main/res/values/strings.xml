@@ -80,6 +80,7 @@
     <string name="disable_notification">Disable notification</string>
     <string name="notification_unset">Notification has been unset.</string>
     <string name="Cancel_notification_settings">Cancel notification settings</string>
+    <string name="cancel_dialog">Cancel</string>
 
 
 </resources>

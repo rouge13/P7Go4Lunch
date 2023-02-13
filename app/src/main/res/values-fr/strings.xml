@@ -80,7 +80,7 @@
         <string name="disable_notification">Désactiver les notifications</string>
         <string name="notification_unset">Les notifications ont été désactiver.</string>
         <string name="Cancel_notification_settings">Sortie des paramètres de notification</string>
-
+        <string name="cancel_dialog">Annuler</string>
 
 
 </resources>
