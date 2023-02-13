@@ -5,7 +5,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.Location;
@@ -13,6 +12,7 @@ import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.WindowManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,8 +27,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -158,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
             PlacesClient placesClient = Places.createClient(this);
             initViewPager();
+//            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
             initSearchOnClickListener(context);
         }
         EventBus.getDefault().register(this);
@@ -204,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         initBasicToolbar();
                     }
                 });
-                initEditTextSearchRecyclerView(context, this);
+                initEditTextSearch(context, this);
             }
         });
     }
@@ -251,12 +250,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             dialog.dismiss();
         });
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonColorPositive);
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonColorNegative);
-            }
+        dialog.setOnShowListener(dialogInterface -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonColorPositive);
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonColorNegative);
         });
         dialog.show();
     }
@@ -303,6 +299,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     viewPager.setCurrentItem(0);
                     toolbar.setTitle(getString(R.string.hungry));
                     binding.searchRestaurantImage.setVisibility(View.VISIBLE);
+//                    getAllRestaurant();
                     initSearchOnClickListener(this);
                     return true;
                 case R.id.list_fragment:
@@ -323,6 +320,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+//    private void getAllRestaurant() {
+//        mRestaurantsViewModel.getNearbyPlaces().observe(this, places -> {
+//
+//            ArrayList<PlacesResponse.Result> searchResult = places.results;
+//            for (int i = 0; i < places.results.size(); i++){
+//                if (places.results.get(i).name.toLowerCase().contains("")){
+//                    searchResult.add(places.results.get(i));
+//                }
+//            }
+//            mRestaurantsViewModel.initSearchRestaurant(searchResult);
+//
+//
+//        });
+//    }
+
     private void initSearchToolbar() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         binding.searchConstraint.setVisibility(View.VISIBLE);
@@ -332,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initBasicToolbar() {
         binding.restaurantSearchEditText.getText().clear();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        binding.restaurantsRecyclerView.setVisibility(View.INVISIBLE);
+//        binding.restaurantsRecyclerView.setVisibility(View.INVISIBLE);
         binding.searchConstraint.setVisibility(View.GONE);
         binding.searchRestaurantImage.setVisibility(View.VISIBLE);
     }
@@ -553,56 +565,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     // This callback is invoked when the Speech Recognizer returns.
     // This is where you process the intent and extract the speech text from the intent.
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
-        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
-            List<String> results = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS);
-            binding.restaurantSearchEditText.setText(results.get(0));
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode,
+//                                    Intent data) {
+//        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+//            List<String> results = data.getStringArrayListExtra(
+//                    RecognizerIntent.EXTRA_RESULTS);
+//            binding.restaurantSearchEditText.setText(results.get(0));
+//
+//            if (!binding.restaurantSearchEditText.getText().toString().equals("") && binding.restaurantSearchEditText.getText().length() > 2) {
+//                binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
+//                adapter.getFilter().filter(binding.restaurantSearchEditText.getText().toString());
+//                if (binding.restaurantsRecyclerView.getVisibility() == View.GONE) {
+//                    binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
+//                }
+//            } else {
+//                if (binding.restaurantsRecyclerView.getVisibility() == View.VISIBLE) {
+//                    binding.restaurantsRecyclerView.setVisibility(View.GONE);
+//                }
+//            }
+//        }
+//        super.onActivityResult(requestCode, resultCode, data);
+//    }
 
-            if (!binding.restaurantSearchEditText.getText().toString().equals("") && binding.restaurantSearchEditText.getText().length() > 2) {
-                binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                adapter.getFilter().filter(binding.restaurantSearchEditText.getText().toString());
-                if (binding.restaurantsRecyclerView.getVisibility() == View.GONE) {
-                    binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                }
-            } else {
-                if (binding.restaurantsRecyclerView.getVisibility() == View.VISIBLE) {
-                    binding.restaurantsRecyclerView.setVisibility(View.GONE);
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+    private void initEditTextSearch(Context context, View.OnClickListener onClick) {
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
+//        binding.restaurantsRecyclerView.setLayoutManager(layoutManager);
+//        adapter = new RecyclerViewRestaurantsAutoCompleteAdapter(context);
+//        adapter.setClickListener(onClick);
+//        binding.restaurantsRecyclerView.setAdapter(adapter);
 
-    private void initEditTextSearchRecyclerView(Context context, View.OnClickListener onClick) {
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
-        binding.restaurantsRecyclerView.setLayoutManager(layoutManager);
-        adapter = new RecyclerViewRestaurantsAutoCompleteAdapter(context);
-        adapter.setClickListener(onClick);
-        binding.restaurantsRecyclerView.setAdapter(adapter);
         binding.restaurantSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
             }
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mRestaurantsViewModel.initAllSearchFilteredRestaurant(charSequence);
             }
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!editable.toString().equals("") && editable.length() > 2) {
-                    binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                    adapter.getFilter().filter(editable.toString());
-                    if (binding.restaurantsRecyclerView.getVisibility() == View.GONE) {
-                        binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    if (binding.restaurantsRecyclerView.getVisibility() == View.VISIBLE) {
-                        binding.restaurantsRecyclerView.setVisibility(View.GONE);
-                        binding.restaurantSearchEditText.getText().clear();
-                    }
-                }
+//                mRestaurantsViewModel.initAllSearchFilteredRestaurant(editable.toString());
+//                if (!editable.toString().equals("") && editable.length() > 2) {
+////                    binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
+//                    adapter.getFilter().filter(editable.toString());
+//                    if (binding.restaurantsRecyclerView.getVisibility() == View.GONE) {
+//                        binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
+//                    }
+//                } else {
+//                    if (binding.restaurantsRecyclerView.getVisibility() == View.VISIBLE) {
+//                        binding.restaurantsRecyclerView.setVisibility(View.GONE);
+//                        binding.restaurantSearchEditText.getText().clear();
+//                    }
+//                }
             }
         });
     }

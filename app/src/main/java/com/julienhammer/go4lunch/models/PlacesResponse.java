@@ -1,5 +1,7 @@
 package com.julienhammer.go4lunch.models;
 
+import com.google.android.libraries.places.api.model.Place;
+
 import java.util.ArrayList;
 
 /**
@@ -57,11 +59,19 @@ public class PlacesResponse {
         public int user_ratings_total;
     }
 
-    public class Root{
+    public static class Root{
         public ArrayList<Object> html_attributions;
         public String next_page_token;
         public ArrayList<Result> results;
         public String status;
+
+        public Root(ArrayList<Object> html_attributions, String next_page_token, ArrayList<Result> results, String status) {
+            this.html_attributions = html_attributions;
+            this.next_page_token = next_page_token;
+            this.results = results;
+            this.status = status;
+        }
+
     }
 
     public class Southwest{

@@ -8,14 +8,18 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.maps.android.SphericalUtil;
 import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.GooglePlaceApi;
 import com.julienhammer.go4lunch.models.PlacesResponse;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,11 +39,12 @@ public class RestaurantsRepository {
     private static FusedLocationProviderClient mFusedLocationProviderClient;
     MutableLiveData<List<String>> allChoosedRestaurants = new MutableLiveData<>();
     MutableLiveData<Boolean> alreadySomeone = new MutableLiveData<>();
+    MutableLiveData <ArrayList<String>> resultOfSearch = new MutableLiveData<>();
 
     private MutableLiveData<PlacesResponse.Root> mNearbyPlaces = new MutableLiveData<>();
 
     public RestaurantsRepository(MutableLiveData<PlacesSearchResult[]> mRestaurantMutableLiveData,
-                                 @NonNull FusedLocationProviderClient mFusedLocationProviderClient){
+                                 @NonNull FusedLocationProviderClient mFusedLocationProviderClient) {
         RestaurantsRepository.mFusedLocationProviderClient = mFusedLocationProviderClient;
         RestaurantsRepository.mRestaurantMutableLiveData = new MutableLiveData<>();
         allChoosedRestaurants = new MutableLiveData<>();
@@ -57,12 +62,30 @@ public class RestaurantsRepository {
         return mNearbyPlaces;
     }
 
-    public void initIsSomeoneEatingThere(String resId){
+    public void initAllSearchFilteredRestaurant(CharSequence query){
+        ArrayList<String> filteredResults = new ArrayList<>();
+        if (mNearbyPlaces.getValue() != null){
+            for (PlacesResponse.Result result : mNearbyPlaces.getValue().results){
+                if (!query.toString().equals("") && result.name.toLowerCase().contains(query.toString().toLowerCase())){
+                    filteredResults.add(result.name);
+                } else {
+                    filteredResults.remove(result.name);
+                }
+            }
+            resultOfSearch.postValue(filteredResults);
+        }
+    }
+
+    public LiveData<ArrayList<String>> getAllSearchFilteredRestaurant(){
+        return resultOfSearch;
+    }
+
+    public void initIsSomeoneEatingThere(String resId) {
         alreadySomeone.postValue(false);
         FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID, resId).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
-                        alreadySomeone.postValue(document.exists());
+                    alreadySomeone.postValue(document.exists());
                 }
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
@@ -71,45 +94,45 @@ public class RestaurantsRepository {
     }
 
     public void initAllRestaurant(String apiKey, Location userLocation) {
-        if (userLocation != null && apiKey != null){
+        if (userLocation != null && apiKey != null) {
             loadPlaces(apiKey, userLocation);
         }
     }
 
-    public static RestaurantsRepository getInstance(){
+    public static RestaurantsRepository getInstance() {
         RestaurantsRepository result = instance;
-        if (result != null){
+        if (result != null) {
             return result;
         }
-        synchronized (RestaurantsRepository.class){
-            if (instance == null){
-                instance = new RestaurantsRepository(mRestaurantMutableLiveData,mFusedLocationProviderClient);
+        synchronized (RestaurantsRepository.class) {
+            if (instance == null) {
+                instance = new RestaurantsRepository(mRestaurantMutableLiveData, mFusedLocationProviderClient);
             }
             return instance;
         }
     }
 
     public LiveData<List<String>> getAllRestaurantChoosed() {
-            FirebaseFirestore.getInstance().collection(COLLECTION_NAME).get().addOnCompleteListener(task -> {
-                List<String> choosedRestaurant = new ArrayList<>();
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot doc : task.getResult()){
-                        if (doc != null){
-                            choosedRestaurant.add(doc.getString(USER_PLACE_ID));
-                        }
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).get().addOnCompleteListener(task -> {
+            List<String> choosedRestaurant = new ArrayList<>();
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    if (doc != null) {
+                        choosedRestaurant.add(doc.getString(USER_PLACE_ID));
                     }
                 }
-                allChoosedRestaurants.postValue(choosedRestaurant);
-            });
-            return allChoosedRestaurants;
+            }
+            allChoosedRestaurants.postValue(choosedRestaurant);
+        });
+        return allChoosedRestaurants;
     }
 
     public void initAllRestaurantChoosed() {
         FirebaseFirestore.getInstance().collection(COLLECTION_NAME).get().addOnCompleteListener(task -> {
             List<String> choosedRestaurant = new ArrayList<>();
             if (task.isSuccessful()) {
-                for (QueryDocumentSnapshot doc : task.getResult()){
-                    if (doc != null){
+                for (QueryDocumentSnapshot doc : task.getResult()) {
+                    if (doc != null) {
                         choosedRestaurant.add(doc.getString(USER_PLACE_ID));
                     }
                 }
@@ -141,8 +164,20 @@ public class RestaurantsRepository {
             @Override
             public void onResponse(Call<PlacesResponse.Root> call, Response<PlacesResponse.Root> response) {
                 if (response.isSuccessful()) {
-                    PlacesResponse.Root placesResponse = response.body();
-                    mNearbyPlaces.postValue(placesResponse);
+                    LatLng userLatLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                        List<PlacesResponse.Result> places = response.body().results.stream()
+                                .sorted(Comparator.comparingDouble(place -> SphericalUtil.computeDistanceBetween(userLatLng,new LatLng(place.geometry.location.lat, place.geometry.location.lng))))
+                                .collect(Collectors.toList());
+
+                        ArrayList<PlacesResponse.Result> placesResults = new ArrayList<>(places);
+                        mNearbyPlaces.postValue(new PlacesResponse.Root(
+                                response.body().html_attributions,
+                                response.body().next_page_token,
+                                placesResults,
+                                response.body().status
+                                ));
+                    }
                 } else {
                     // handle the error
                     mNearbyPlaces.postValue(null);

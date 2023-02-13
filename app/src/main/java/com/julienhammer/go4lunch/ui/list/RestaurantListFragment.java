@@ -17,6 +17,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.models.PlacesResponse;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
@@ -76,36 +77,52 @@ public class RestaurantListFragment extends Fragment {
         RestaurantsViewModel mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), viewModelFactory).get(RestaurantsViewModel.class);
         mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), places -> {
-            String photoRef;
-            String mMissingPhoto = MISSING_PHOTO_REFERENCE;
-            ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
-            for (int i = 0; i < (places.results.size()); i++) {
-                String openNowText = "";
 
-                    openNowText = getString(getOpenHourTextId(places.results.get(i).opening_hours != null
-                            ? places.results.get(i).opening_hours.open_now : null));
-                    if (places.results.get(i).photos != null) {
-                        photoRef = places.results.get(i).photos.get(0).photo_reference;
-                    } else {
-                        photoRef = mMissingPhoto;
-
+            initAllRestaurants(adapter, places);
+            mRestaurantsViewModel.getAllSearchFilteredRestaurant().observe(getViewLifecycleOwner(), filteredRestaurant -> {
+                if (!filteredRestaurant.isEmpty()){
+                    ArrayList<PlacesResponse.Result> filteredPlaces = new ArrayList<>();
+                    for (int i = 0; i < places.results.size(); i++){
+                        if (filteredRestaurant.contains(places.results.get(i).name)){
+                            filteredPlaces.add(places.results.get(i));
+                        }
                     }
-                    LatLng resLocation = new LatLng(places.results.get(i).geometry.location.lat, places.results.get(i).geometry.location.lng);
-                    RestaurantDetails restaurantDetails = new RestaurantDetails(places.results.get(i).place_id, places.results.get(i).name, places.results.get(i).formatted_address, photoRef, openNowText, (float) places.results.get(i).rating, resLocation
-                    );
-                    allRestaurants.add(restaurantDetails);
+                    initAllRestaurants(adapter, new PlacesResponse.Root(null, null, filteredPlaces, "OK"));
+                } else {
+                    initAllRestaurants(adapter, places);
                 }
 
-            adapter.setData(allRestaurants);
+//                places.results..contains(filteredRestaurant);
+            });
         });
+    }
+
+    private void initAllRestaurants(RecyclerViewListAdapter adapter, PlacesResponse.Root places) {
+        String photoRef;
+        String mMissingPhoto = MISSING_PHOTO_REFERENCE;
+        ArrayList<RestaurantDetails> allRestaurants = new ArrayList<RestaurantDetails>();
+        for (int i = 0; i < (places.results.size()); i++) {
+            String openNowText = "";
+            openNowText = getString(getOpenHourTextId(places.results.get(i).opening_hours != null
+                    ? places.results.get(i).opening_hours.open_now : null));
+            if (places.results.get(i).photos != null) {
+                photoRef = places.results.get(i).photos.get(0).photo_reference;
+            } else {
+                photoRef = mMissingPhoto;
+            }
+            LatLng resLocation = new LatLng(places.results.get(i).geometry.location.lat, places.results.get(i).geometry.location.lng);
+            RestaurantDetails restaurantDetails = new RestaurantDetails(places.results.get(i).place_id, places.results.get(i).name, places.results.get(i).formatted_address, photoRef, openNowText, (float) places.results.get(i).rating, resLocation
+            );
+            allRestaurants.add(restaurantDetails);
+        }
+        adapter.setData(allRestaurants);
     }
 
     @NonNull
     public int getOpenHourTextId(Boolean openNow) {
         if (openNow == null) {
             return R.string.open_now_case_not_showing;
-        }
-        if (openNow) {
+        } if (openNow) {
             return R.string.open_now_case_true;
         } else {
             return R.string.open_now_case_false;

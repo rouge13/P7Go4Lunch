@@ -120,41 +120,15 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
     }
 
     private ArrayList<RestaurantAutoComplete> getPredictions(CharSequence constraint) {
-
         final ArrayList<RestaurantAutoComplete> resultList = new ArrayList<>();
         SharedPreferences prefs = mContext.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
         LatLng userLocation;
         if (prefs.getFloat(RESTAURANT_LAT,0) != 0 && prefs.getFloat(RESTAURANT_LNG, 0) != 0){
             userLocation = new LatLng((double) prefs.getFloat(RESTAURANT_LAT,0) , (double) prefs.getFloat(RESTAURANT_LNG,0));
-
-            double distanceFromCenterToCorner = 5000 * Math.sqrt(2.0);
-
+            double distanceFromCenterToCorner = 2000 * Math.sqrt(2.0);
             LatLng southwestCorner = SphericalUtil.computeOffset(new LatLng(userLocation.latitude, userLocation.longitude), distanceFromCenterToCorner, 225.0);
             LatLng northeastCorner = SphericalUtil.computeOffset(new LatLng(userLocation.latitude, userLocation.longitude), distanceFromCenterToCorner, 45.0);
-            RectangularBounds boundUserLocation = new RectangularBounds() {
-                @Override
-                public int describeContents() {
-                    return 0;
-                }
-
-                @Override
-                public void writeToParcel(Parcel parcel, int i) {
-                }
-
-                @NonNull
-                @NotNull
-                @Override
-                public LatLng getNortheast() {
-                    return northeastCorner;
-                }
-
-                @NonNull
-                @NotNull
-                @Override
-                public LatLng getSouthwest() {
-                    return southwestCorner;
-                }
-            };
+            RectangularBounds boundUserLocation = getRectangularBounds(southwestCorner, northeastCorner);
             // Create a new token for the autocomplete session. Pass this to FindAutocompletePredictionsRequest,
             // and once again when the user makes a selection (for example when calling fetchPlace()).
             AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
@@ -168,11 +142,7 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                     .setSessionToken(token)
                     .setQuery(constraint.toString())
                     .build();
-
             Task<FindAutocompletePredictionsResponse> autocompletePredictions = placesClient.findAutocompletePredictions(request);
-
-            // This method should have been called off the main UI thread. Block and wait for at most
-            // 60s for a result from the API.
             try {
                 Tasks.await(autocompletePredictions, 60, TimeUnit.SECONDS);
             } catch (ExecutionException | InterruptedException | TimeoutException e) {
@@ -185,7 +155,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
                         Log.i(TAG, prediction.getPlaceId());
                         resultList.add(new RestaurantAutoComplete(prediction.getPlaceId(), prediction.getPrimaryText(STYLE_NORMAL).toString(), prediction.getFullText(STYLE_BOLD).toString()));
                     }
-
                 return resultList;
             } else {
                 return resultList;
@@ -193,6 +162,35 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
         } else {
             return resultList;
         }
+    }
+
+    @NonNull
+    private RectangularBounds getRectangularBounds(LatLng southwestCorner, LatLng northeastCorner) {
+        RectangularBounds boundUserLocation = new RectangularBounds() {
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(Parcel parcel, int i) {
+            }
+
+            @NonNull
+            @NotNull
+            @Override
+            public LatLng getNortheast() {
+                return northeastCorner;
+            }
+
+            @NonNull
+            @NotNull
+            @Override
+            public LatLng getSouthwest() {
+                return southwestCorner;
+            }
+        };
+        return boundUserLocation;
     }
 
     @NonNull
@@ -213,8 +211,6 @@ public class RecyclerViewRestaurantsAutoCompleteAdapter extends RecyclerView.Ada
             @Override
             public void onSuccess(FetchPlaceResponse response) {
                 if (response.getPlace() != null && response.getPlace().getName() != null){
-
-
                     holder.bindingItemRestaurantSearch.textViewRestaurantName.setText(response.getPlace().getName());
                     holder.bindingItemRestaurantSearch.textViewRestaurantAddress.setText(response.getPlace().getAddress());
                     holder.itemView.setOnClickListener(new View.OnClickListener() {

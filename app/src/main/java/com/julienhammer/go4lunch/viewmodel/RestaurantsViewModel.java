@@ -10,6 +10,7 @@ import com.google.maps.model.PlacesSearchResult;
 import com.julienhammer.go4lunch.data.restaurants.RestaurantsRepository;
 import com.julienhammer.go4lunch.models.PlacesResponse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,6 +49,14 @@ public class RestaurantsViewModel extends ViewModel {
 
     public LiveData<PlacesResponse.Root> getNearbyPlaces() {
         return mRestaurantsRepository.getNearbyPlaces();
+    }
+
+    public void initAllSearchFilteredRestaurant(CharSequence query){
+        mRestaurantsRepository.initAllSearchFilteredRestaurant(query);
+    }
+
+    public LiveData<ArrayList<String>> getAllSearchFilteredRestaurant(){
+        return mRestaurantsRepository.getAllSearchFilteredRestaurant();
     }
 
 }
