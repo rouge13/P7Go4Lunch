@@ -26,7 +26,6 @@ public class UserRepository {
     public static final String USER_RESTAURANT_LIKES_ARRAY = "userRestaurantLikes";
     private final MutableLiveData<String> userSelectedRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLikeRestaurantMutableLiveData = new MutableLiveData<>();
-
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private CollectionReference userRef = db.collection(COLLECTION_NAME);
 
@@ -66,7 +65,6 @@ public class UserRepository {
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
                 boolean restaurantLiked;
                 if (task.isSuccessful()) {
-//                    DocumentReference docIdRef = userRef.document(user.getUid());
                     QuerySnapshot doc = task.getResult();
                     if (doc != null) {
                         restaurantLiked = doc.isEmpty();

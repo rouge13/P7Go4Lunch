@@ -14,6 +14,7 @@ import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
+import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
@@ -77,6 +78,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
             return (T) new RestaurantsViewModel();
         } else if (modelClass.isAssignableFrom(InfoRestaurantViewModel.class)) {
             return (T) new InfoRestaurantViewModel();
+        } else if (modelClass.isAssignableFrom(SharedRestaurantSelectedViewModel.class)) {
+            return (T) new SharedRestaurantSelectedViewModel();
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

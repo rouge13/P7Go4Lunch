@@ -1,6 +1,7 @@
 package com.julienhammer.go4lunch.ui.restaurant;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 
 import static android.Manifest.permission.CALL_PHONE;
@@ -10,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +32,14 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.auth.FirebaseAuth;
 import com.julienhammer.go4lunch.databinding.FragmentInfoRestaurantBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
+import com.julienhammer.go4lunch.interfaces.OnInfoRestaurantSelectedListener;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.workmates.RecyclerViewWorkmateAdapter;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
+import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 
 import java.util.ArrayList;
@@ -49,6 +53,7 @@ public class InfoRestaurantFragment extends Fragment {
     private RestaurantDetails mRestaurantInfo;
     InfoRestaurantViewModel mInfoRestaurantViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
+    SharedRestaurantSelectedViewModel mSharedRestaurantSelectedViewModel;
     UserViewModel mUserViewModel;
     AppCompatActivity activity;
     RecyclerViewWorkmateAdapter adapter;
@@ -70,7 +75,7 @@ public class InfoRestaurantFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initRestaurant();
+        initRestaurantViewModel();
     }
 
     @Override
@@ -85,7 +90,7 @@ public class InfoRestaurantFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         activity = (AppCompatActivity) view.getContext();
-        mInfoRestaurantViewModel.getInfoRestaurantLiveData().observe(getViewLifecycleOwner(), restaurantDetails ->
+        mSharedRestaurantSelectedViewModel.getSelectedRestaurant().observe(getViewLifecycleOwner(), restaurantDetails ->
         {
             setTextToView();
             mRestaurantInfo = restaurantDetails;
@@ -96,28 +101,24 @@ public class InfoRestaurantFragment extends Fragment {
             mUserViewModel.getSelectedRestaurantIsChoiced().observe(getViewLifecycleOwner(), placeId -> {
                 initChoosedRestaurant(placeId);
                 binding.restaurantInfoName.setText(mRestaurantInfo.getNameRes());
-                binding.itemChoiceRestaurantButton.setOnClickListener(new View.OnClickListener() {
-                    @SuppressLint("UseCompatLoadingForDrawables")
-                    @Override
-                    public void onClick(View v) {
-                        SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
-                        SharedPreferences.Editor myEdit = shChoice.edit();
-                        if (Objects.equals(mRestaurantInfo.getIdRes(), placeId)) {
-                            mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "");
-                            myEdit.putString(PLACE_ID, "");
-                            mRestaurantsViewModel.initAllRestaurantChoosed();
-                            mRestaurantsViewModel.initIsSomeoneEatingThere("NotHere");
-                        } else {
-                            mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), mRestaurantInfo.getIdRes());
-                            myEdit.putString(PLACE_ID, mRestaurantInfo.getIdRes());
-                            saveValueOfTheRestaurantChoiceAllDataNeeded(mRestaurantInfo);
-                            mRestaurantsViewModel.initAllRestaurantChoosed();
-                            mRestaurantsViewModel.initIsSomeoneEatingThere(mRestaurantInfo.getIdRes());
-                        }
-                        myEdit.apply();
-                        checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
-                        mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
+                binding.itemChoiceRestaurantButton.setOnClickListener(v -> {
+                    SharedPreferences shChoice = getActivity().getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE, MODE_PRIVATE);
+                    SharedPreferences.Editor myEdit = shChoice.edit();
+                    if (Objects.equals(mRestaurantInfo.getIdRes(), placeId)) {
+                        mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "");
+                        myEdit.putString(PLACE_ID, "");
+                        mRestaurantsViewModel.initAllRestaurantChoosed();
+                        mRestaurantsViewModel.initIsSomeoneEatingThere("NotHere");
+                    } else {
+                        mUserViewModel.setUserRestaurantChoice(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), mRestaurantInfo.getIdRes());
+                        myEdit.putString(PLACE_ID, mRestaurantInfo.getIdRes());
+                        saveValueOfTheRestaurantChoiceAllDataNeeded(mRestaurantInfo);
+                        mRestaurantsViewModel.initAllRestaurantChoosed();
+                        mRestaurantsViewModel.initIsSomeoneEatingThere(mRestaurantInfo.getIdRes());
                     }
+                    myEdit.apply();
+                    checkIfRestaurantIsChoiced(mRestaurantInfo.getIdRes(), placeId);
+                    mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
                 });
             });
             mUserViewModel.getIfRestaurantIsLiked().observe(getViewLifecycleOwner(), isNotInListOfLikes -> {
@@ -154,18 +155,8 @@ public class InfoRestaurantFragment extends Fragment {
         mInfoRestaurantViewModel.getRestaurantPhotoBitmap().observe(getViewLifecycleOwner(), bitmap -> {
             binding.itemRestaurantImage.setImageBitmap(bitmap);
         });
-        binding.cardCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callOnPhoneNumber(place);
-            }
-        });
-        binding.cardWebsite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goOnWebsiteOfThePlace(place);
-            }
-        });
+        binding.cardCall.setOnClickListener(view -> callOnPhoneNumber(place));
+        binding.cardWebsite.setOnClickListener(view -> goOnWebsiteOfThePlace(place));
     }
 
     private void initChoosedRestaurant(String placeId) {
@@ -246,13 +237,15 @@ public class InfoRestaurantFragment extends Fragment {
         }
     }
 
-    private void initRestaurant() {
+    private void initRestaurantViewModel() {
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
         ViewModelFactory userViewModelFactory = ViewModelFactory.getInstance();
         mUserViewModel = new ViewModelProvider(requireActivity(), userViewModelFactory).get(UserViewModel.class);
         ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
         mRestaurantsViewModel = new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
+        ViewModelFactory sharedRestaurantSelectedViewModelFactory = ViewModelFactory.getInstance();
+        mSharedRestaurantSelectedViewModel = new ViewModelProvider(requireActivity(), sharedRestaurantSelectedViewModelFactory).get(SharedRestaurantSelectedViewModel.class);
     }
 
     @Override
@@ -281,5 +274,11 @@ public class InfoRestaurantFragment extends Fragment {
         myEdit.apply();
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        ViewModelFactory sharedRestaurantSelectedViewModelFactory = ViewModelFactory.getInstance();
+        mSharedRestaurantSelectedViewModel = new ViewModelProvider(requireActivity(), sharedRestaurantSelectedViewModelFactory).get(SharedRestaurantSelectedViewModel.class);
 
+    }
 }

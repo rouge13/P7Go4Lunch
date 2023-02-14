@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
-    public static final String TAG = "FacebookAuthentification";
     private static final int RC_SIGN_IN = 123;
     private LoginViewModel loginViewModel;
 

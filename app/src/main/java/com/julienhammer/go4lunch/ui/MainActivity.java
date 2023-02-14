@@ -12,7 +12,7 @@ import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,25 +55,19 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
+import com.julienhammer.go4lunch.interfaces.OnInfoRestaurantSelectedListener;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.notification.NotificationBroadcast;
-//import com.julienhammer.go4lunch.notification.NotificationHandler;
 import com.julienhammer.go4lunch.ui.restaurant.InfoRestaurantFragment;
-import com.julienhammer.go4lunch.ui.restaurantsAutoComplete.RecyclerViewRestaurantsAutoCompleteAdapter;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
+import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
 import java.util.*;
-//import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnInfoRestaurantSelectedListener {
     private UserViewModel mUserViewModel;
     private LocationViewModel mLocationViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
@@ -87,9 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public ActionBarDrawerToggle toggle;
     public DrawerLayout drawer;
     NavigationView navigationView;
-    RecyclerViewRestaurantsAutoCompleteAdapter adapter;
     Toolbar toolbar;
-    String title = "";
+    SharedRestaurantSelectedViewModel mSharedRestaurantSelectedViewModel;
     private static final String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static final String PLACE_ID = "placeId";
     private static final String USER_ID = "userId";
@@ -157,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             initPermissionIfMissing(MY_PERMISSIONS_REQUEST_LOCATION);
         }
-        EventBus.getDefault().register(this);
     }
 
     private void initPermissionIfMissing(int myPermissionsRequestLocation) {
@@ -205,6 +197,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 binding.searchViewBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),0);
                         initBasicToolbar();
                     }
                 });
@@ -321,7 +315,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initBasicToolbar() {
         binding.restaurantSearchEditText.getText().clear();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        binding.restaurantsRecyclerView.setVisibility(View.INVISIBLE);
         binding.searchConstraint.setVisibility(View.GONE);
         binding.searchRestaurantImage.setVisibility(View.VISIBLE);
     }
@@ -396,6 +389,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRestaurantsViewModel = new ViewModelProvider(this, restaurantsViewModelFactory).get(RestaurantsViewModel.class);
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
+        ViewModelFactory sharedRestaurantSelectedViewModelFactory = ViewModelFactory.getInstance();
+        mSharedRestaurantSelectedViewModel = new ViewModelProvider(this, sharedRestaurantSelectedViewModelFactory).get(SharedRestaurantSelectedViewModel.class);
     }
 
     // 1 - Configure the toolbar
@@ -475,8 +470,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (!Objects.equals(restaurantChoicedId, "")){
                     LatLng resLocation = new LatLng(prefs.getFloat(RESTAURANT_LAT,0) , prefs.getFloat(RESTAURANT_LNG,0));
                     RestaurantDetails restaurantDetailsChoiced = initDetailRestaurant(prefs, resLocation);
-                    mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetailsChoiced);
-                    EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetailsChoiced));
+                    mSharedRestaurantSelectedViewModel.initSelectedRestaurant(restaurantDetailsChoiced);
+                    onInfoRestaurantSelected();
                 } else {
                     Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();
                 }
@@ -527,24 +522,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
-
-    /**
-     * Fired if the user clicks on a restaurant
-     * @param event
-     */
-    @Subscribe
-    public void showInfoRestaurantDetailEvent (ShowInfoRestaurantDetailEvent event) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
-    }
-
 
     private void initEditTextSearch(Context context, View.OnClickListener onClick) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        // Show the soft keyboard
+        inputMethodManager.showSoftInput(binding.restaurantSearchEditText, InputMethodManager.SHOW_IMPLICIT);
         binding.restaurantSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -554,5 +540,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void afterTextChanged(Editable editable) {
             }
         });
+    }
+
+    @Override
+    public void onInfoRestaurantSelected() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_layout, InfoRestaurantFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && !matches.isEmpty()) {
+                String speechText = matches.get(0);
+                binding.restaurantSearchEditText.setText(speechText);
+            }
+        }
     }
 }

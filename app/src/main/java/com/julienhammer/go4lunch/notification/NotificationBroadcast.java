@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -63,6 +65,13 @@ public class NotificationBroadcast extends BroadcastReceiver {
             // convert StringBuilder object into string
             stringAllWorkmates = builder.toString();
         }
+        NotificationCompat.Builder notificationCompat = getBuilder(context, prefs, stringAllWorkmates);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        notificationManagerCompat.notify(200, notificationCompat.build());
+    }
+
+    @NonNull
+    private NotificationCompat.Builder getBuilder(Context context, SharedPreferences prefs, String stringAllWorkmates) {
         NotificationCompat.Builder notificationCompat = new NotificationCompat.Builder(
                 context, context.getString(R.string.channel_id))
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -84,8 +93,7 @@ public class NotificationBroadcast extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(200, notificationCompat.build());
+        return notificationCompat;
     }
 
 }

@@ -19,6 +19,7 @@ import com.julienhammer.go4lunch.databinding.FragmentListBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.PlacesResponse;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
+import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 
@@ -67,7 +68,7 @@ public class RestaurantListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        RecyclerViewListAdapter adapter = new RecyclerViewListAdapter();
+        RecyclerViewListAdapter adapter = new RecyclerViewListAdapter((MainActivity) getActivity());
         initAdapterAndRv(adapter);
         addLocationViewModel(adapter);
         addAllRestaurantsViewModel(adapter);
@@ -91,8 +92,6 @@ public class RestaurantListFragment extends Fragment {
                 } else {
                     initAllRestaurants(adapter, places);
                 }
-
-//                places.results..contains(filteredRestaurant);
             });
         });
     }

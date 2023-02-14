@@ -43,7 +43,6 @@ public class WorkmatesFragment extends Fragment {
         ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
         mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
-
     }
 
     private void configureWormatesViewModel() {
@@ -73,7 +72,6 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }

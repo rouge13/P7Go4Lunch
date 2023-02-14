@@ -1,4 +1,4 @@
-package com.julienhammer.go4lunch.data;
+package com.julienhammer.go4lunch.interfaces;
 
 import com.julienhammer.go4lunch.models.PlacesResponse;
 

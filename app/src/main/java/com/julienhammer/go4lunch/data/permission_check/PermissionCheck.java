@@ -14,11 +14,9 @@ import androidx.core.content.ContextCompat;
 public class PermissionCheck {
     @NonNull
     private final Application application;
-
     public PermissionCheck(@NonNull Application application) {
         this.application = application;
     }
-
     public boolean hasLocationPermission() {
         return ContextCompat.checkSelfPermission(application, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
     }

@@ -13,7 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.model.PlacesSearchResult;
-import com.julienhammer.go4lunch.data.GooglePlaceApi;
+import com.julienhammer.go4lunch.interfaces.GooglePlaceApi;
 import com.julienhammer.go4lunch.models.PlacesResponse;
 
 import java.util.ArrayList;
@@ -142,24 +142,13 @@ public class RestaurantsRepository {
     }
 
     private void loadPlaces(String apiKey, Location userLocation) {
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://maps.googleapis.com/maps/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
         GooglePlaceApi googlePlaceApi = retrofit.create(GooglePlaceApi.class);
-
         String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
-
-        Call<PlacesResponse.Root> call = googlePlaceApi.getNearbyPlaces(
-                location,
-                2000,
-                "restaurant",
-                apiKey
-
-        );
-
+        Call<PlacesResponse.Root> call = googlePlaceApi.getNearbyPlaces(location, 2000, "restaurant", apiKey);
         call.enqueue(new Callback<PlacesResponse.Root>() {
             @Override
             public void onResponse(Call<PlacesResponse.Root> call, Response<PlacesResponse.Root> response) {
@@ -171,24 +160,16 @@ public class RestaurantsRepository {
                                 .collect(Collectors.toList());
 
                         ArrayList<PlacesResponse.Result> placesResults = new ArrayList<>(places);
-                        mNearbyPlaces.postValue(new PlacesResponse.Root(
-                                response.body().html_attributions,
-                                response.body().next_page_token,
-                                placesResults,
-                                response.body().status
-                                ));
+                        mNearbyPlaces.postValue(new PlacesResponse.Root(response.body().html_attributions, response.body().next_page_token, placesResults, response.body().status));
                     }
                 } else {
-                    // handle the error
                     mNearbyPlaces.postValue(null);
                 }
             }
-
             @Override
             public void onFailure(retrofit2.Call<PlacesResponse.Root> call, Throwable t) {
                 mNearbyPlaces.postValue(null);
             }
         });
     }
-
 }

@@ -29,14 +29,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.PlacesResponse;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
+import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
-
-import org.greenrobot.eventbus.EventBus;
+import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +49,7 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     private LocationViewModel mLocationViewModel;
     private RestaurantsViewModel mRestaurantsViewModel;
     private InfoRestaurantViewModel mInfoRestaurantViewModel;
+    private SharedRestaurantSelectedViewModel mSharedRestaurantSelectedViewModel;
     private GoogleMap mMap;
     private static final String MISSING_PHOTO_REFERENCE = "%20image%20missing%20reference";
     private Location userLocation = null;
@@ -72,37 +72,30 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     ArrayList<Marker> allMarkers = new ArrayList<>();
     BitmapDescriptor bitmapDescriptor;
 
-    private void configureViewModel() {
+    private void configureViewModels() {
         ViewModelFactory locationViewModelFactory = ViewModelFactory.getInstance();
         mLocationViewModel =
                 new ViewModelProvider(requireActivity(), locationViewModelFactory).get(LocationViewModel.class);
-    }
-
-    private void initRestaurantsViewModel() {
         ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
         mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
-    }
-
-    private void initInfoRestaurantViewModel() {
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel =
                 new ViewModelProvider(requireActivity(), infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
+        ViewModelFactory sharedRestaurantSelectedViewModelFactory = ViewModelFactory.getInstance();
+        mSharedRestaurantSelectedViewModel =
+                new ViewModelProvider(requireActivity(), sharedRestaurantSelectedViewModelFactory).get(SharedRestaurantSelectedViewModel.class);
     }
 
     @SuppressLint({"MissingPermission", "PotentialBehaviorOverride"})
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-        configureViewModel();
-        initRestaurantsViewModel();
-        initInfoRestaurantViewModel();
+        configureViewModels();
         mRestaurantsViewModel.getAllRestaurantChoosed().observe(this, list -> {
             mLocationViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), location -> {
                 userLocation = location;
-                cameraPosition = new CameraPosition.Builder()
-                        .target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude()))
-                        .zoom(14).build();
+                cameraPosition = new CameraPosition.Builder().target(new LatLng(userLocation.getLatitude(), userLocation.getLongitude())).zoom(14).build();
                 mMap.getUiSettings().setMapToolbarEnabled(false);
                 mMap.setMyLocationEnabled(true);
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
@@ -111,29 +104,43 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
                     for (int i = 0; i <= places.results.size() - 1; i++) {
                         i = initPlacesSearchResult(places.results, allRestaurants, allMarkers, i, list);
                     }
-                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(@NonNull Marker marker) {
-                            String markerName = marker.getTitle();
-                                    mRestaurantsViewModel.getIfEatingHere().observe(getViewLifecycleOwner(), isEatingHere -> {
-                                        if (isEatingHere) {
-                                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                                        } else {
-                                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                        }
-                                    });
-                            for (int i = 0; i < allMarkers.size(); i++) {
-                                if (Objects.equals(allMarkers.get(i).getTitle(), markerName)) {
-                                    mInfoRestaurantViewModel.setInfoRestaurant(allRestaurants.get(i));
-                                    EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(allRestaurants.get(i)));
-                                    break;
-                                }
+                    mMap.setOnMarkerClickListener(marker -> {
+                        String markerName = marker.getTitle();
+                        getMarkerColor(marker, markerName);
+                        for (int i = 0; i < allMarkers.size(); i++) {
+                            if (Objects.equals(allMarkers.get(i).getTitle(), markerName)) {
+                                mSharedRestaurantSelectedViewModel.initSelectedRestaurant(allRestaurants.get(i));
+                                ((MainActivity) getActivity()).onInfoRestaurantSelected();
+                                break;
                             }
-                            return false;
                         }
+                        return false;
                     });
                 });
             });
+        });
+    }
+
+    private void getMarkerColor(Marker marker, String markerName) {
+        mRestaurantsViewModel.getIfEatingHere().observe(getViewLifecycleOwner(), isEatingHere -> {
+            if (isEatingHere) {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            } else {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            }
+        });
+        mRestaurantsViewModel.getAllSearchFilteredRestaurant().observe(getViewLifecycleOwner(), resultFilteredRestaurantName -> {
+            if (resultFilteredRestaurantName.contains(markerName)) {
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            } else {
+                mRestaurantsViewModel.getIfEatingHere().observe(getViewLifecycleOwner(), isEatingHere -> {
+                    if (isEatingHere) {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    } else {
+                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    }
+                });
+            }
         });
     }
 
@@ -156,7 +163,7 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
             saveValueOfTheRestaurantChoiceAllDataNeeded(results.get(i).place_id, results.get(i).name, results.get(i).formatted_address, photoRef, openNowText, (float) results.get(i).rating, (float) results.get(i).geometry.location.lat, (float) results.get(i).geometry.location.lng);
         }
         allRestaurants.add(restaurantDetails);
-        AtomicReference<ArrayList<String>> filteredResName  = new AtomicReference<>(new ArrayList<>());
+        AtomicReference<ArrayList<String>> filteredResName = new AtomicReference<>(new ArrayList<>());
         initMarker(allMarkers, results.get(i), listOfRestaurantsChoosed, filteredResName);
         mRestaurantsViewModel.getAllSearchFilteredRestaurant().observe(getViewLifecycleOwner(), resultFilteredRestaurantName -> {
             filteredResName.set(resultFilteredRestaurantName);
@@ -168,7 +175,7 @@ public class RestaurantMapsFragment extends Fragment implements OnMapReadyCallba
     private void initMarker(ArrayList<Marker> allMarkers, PlacesResponse.Result result, List<String> listOfRestaurantsChoosed, AtomicReference<ArrayList<String>> resultFilteredRestaurantName) {
         if (listOfRestaurantsChoosed.contains(result.place_id) && !resultFilteredRestaurantName.get().contains(result.name)) {
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-        } else if (resultFilteredRestaurantName.get().contains(result.name)){
+        } else if (resultFilteredRestaurantName.get().contains(result.name)) {
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE);
         } else {
             bitmapDescriptor = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
