@@ -327,7 +327,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
@@ -335,7 +334,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
             channel.setDescription(description);
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }

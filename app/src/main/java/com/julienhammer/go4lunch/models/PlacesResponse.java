@@ -40,7 +40,7 @@ public class PlacesResponse {
         public String global_code;
     }
 
-    public class Result{
+    public static class Result{
         public String business_status;
         public String formatted_address;
         public Geometry geometry;
@@ -72,6 +72,8 @@ public class PlacesResponse {
             this.status = status;
         }
 
+        public Root(String ok, ArrayList<Result> results) {
+        }
     }
 
     public class Southwest{

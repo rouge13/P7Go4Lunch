@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class RestaurantsViewModel extends ViewModel {
     @NonNull
-    RestaurantsRepository mRestaurantsRepository;
+    public RestaurantsRepository mRestaurantsRepository;
     public RestaurantsViewModel() {
         mRestaurantsRepository = RestaurantsRepository.getInstance();
     }

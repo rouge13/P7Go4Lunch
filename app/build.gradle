@@ -5,6 +5,13 @@ plugins {
 }
 
 android {
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            unitTests.returnDefaultValues = true
+        }
+    }
     signingConfigs {
         release {
             storeFile file('C:\\Users\\HAMMER\\.android\\my_release_keystore.jks')
@@ -21,7 +28,6 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -90,6 +96,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:20.0.5'
     implementation 'com.google.maps.android:android-maps-utils:2.4.0'
     implementation 'com.google.firebase:firebase-auth:21.0.3'
+    implementation 'androidx.test:rules:1.5.0'
 
     //Tests
     testImplementation 'junit:junit:4.13.2'
@@ -139,6 +146,16 @@ dependencies {
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // Unit test need Implementation
+    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'org.robolectric:robolectric:4.6.1'
+    androidTestImplementation 'androidx.test:core:1.5.0'
+
+    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
 
 
 
