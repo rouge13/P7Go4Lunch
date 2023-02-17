@@ -22,17 +22,10 @@ import java.util.List;
  */
 public class InfoRestaurantViewModel extends ViewModel {
     @NonNull
+    public
     InfoRestaurantRepository mInfoRestaurantRepository;
     public InfoRestaurantViewModel() {
         mInfoRestaurantRepository = InfoRestaurantRepository.getInstance();
-    }
-
-    public LiveData<RestaurantDetails> getInfoRestaurantLiveData() {
-        return mInfoRestaurantRepository.getInfoRestaurantLiveData();
-    }
-
-    public void setInfoRestaurant(RestaurantDetails infoRestaurant){
-        mInfoRestaurantRepository.setInfoRestaurant(infoRestaurant);
     }
 
     public void initRestaurantsDetailsInfo(String placeId){

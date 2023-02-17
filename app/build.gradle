@@ -11,6 +11,7 @@ android {
             returnDefaultValues = true
             unitTests.returnDefaultValues = true
         }
+
     }
     signingConfigs {
         release {
@@ -40,6 +41,8 @@ android {
     def facebookClientToken = properties.getProperty("FACEBOOK_CLIENT_TOKEN")
     def twitterApiKey = properties.getProperty('TWITTER_APPLICATION_KEY')
     def twitterApiSecretKey = properties.getProperty('TWITTER_APPLICATION_SECRET_KEY')
+    def firebaseDatabaseUrl = properties.getProperty('FIREBASE_DATABASE_URL')
+    def firebaseStorageBucket = properties.getProperty('FIREBASE_STORAGE_BUCKET')
 
     buildTypes {
         release {
@@ -54,6 +57,8 @@ android {
             resValue "string", "facebook_client_token", facebookClientToken
             resValue "string", "twitter_api_key", twitterApiKey
             resValue "string", "twitter_api_secret_key", twitterApiSecretKey
+            resValue "string", "firebase_database_url", firebaseDatabaseUrl
+            resValue "string", "firebase_storage_bucket", firebaseStorageBucket
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -152,11 +157,12 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.6.1'
     androidTestImplementation 'androidx.test:core:1.5.0'
 
-    testImplementation 'org.mockito:mockito-core:3.12.4'
+    testImplementation 'org.mockito:mockito-core:4.0.0'
     testImplementation 'org.mockito:mockito-inline:3.12.4'
     androidTestImplementation 'androidx.test:runner:1.5.2'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
-
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
+    
 
 
 }

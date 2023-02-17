@@ -38,26 +38,13 @@ import java.util.List;
 public class InfoRestaurantRepository {
     private static final String COLLECTION_NAME = "users";
     private static final String USER_PLACE_ID_FIELD = "userPlaceId";
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static volatile InfoRestaurantRepository instance;
-    private static MutableLiveData<RestaurantDetails> mInfoRestaurantMutableLiveData;
     private PlacesClient placesClient;
     private static MutableLiveData<Place> restaurantDetailsInfoMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<Bitmap> restaurantPhotoBitmapMutableLiveData = new MutableLiveData<>();
     private static MutableLiveData<List<User>> mAllWorkmatesInThisRestaurantMutableLiveData = new MutableLiveData<>();
 
     public InfoRestaurantRepository() {
-        InfoRestaurantRepository.mInfoRestaurantMutableLiveData = new MutableLiveData<>();
-    }
-
-    public LiveData<RestaurantDetails> getInfoRestaurantLiveData() {
-        return mInfoRestaurantMutableLiveData;
-    }
-
-    public void setInfoRestaurant(RestaurantDetails restaurantDetails) {
-        if (restaurantDetails != null) {
-            mInfoRestaurantMutableLiveData.postValue(restaurantDetails);
-        }
     }
 
     public void initPlacesDetailsClientInfo(Context context) {
@@ -124,7 +111,7 @@ public class InfoRestaurantRepository {
 
     public LiveData<Integer> countWorkmatesForRestaurant(String placeId) {
         MutableLiveData<Integer> countWorkmatesLiveData = new MutableLiveData<>();
-        db.collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, placeId).addSnapshotListener((value, error) -> {
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_PLACE_ID_FIELD, placeId).addSnapshotListener((value, error) -> {
             countWorkmatesLiveData.setValue(value != null ? value.size() : 0);
         });
         return countWorkmatesLiveData;

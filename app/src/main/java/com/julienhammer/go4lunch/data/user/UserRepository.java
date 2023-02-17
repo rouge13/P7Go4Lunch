@@ -26,8 +26,6 @@ public class UserRepository {
     public static final String USER_RESTAURANT_LIKES_ARRAY = "userRestaurantLikes";
     private final MutableLiveData<String> userSelectedRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLikeRestaurantMutableLiveData = new MutableLiveData<>();
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference userRef = db.collection(COLLECTION_NAME);
 
     public LiveData<Boolean> getRestaurantIfLiked(){
         return userLikeRestaurantMutableLiveData;
@@ -38,7 +36,7 @@ public class UserRepository {
     }
 
     public void userRestaurantSelected(String userId){
-        Query query = userRef.whereEqualTo(USER_ID_FIELD, userId);
+        Query query = FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_ID_FIELD, userId);
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -51,7 +49,7 @@ public class UserRepository {
     }
 
     public void setUserRestaurantChoice(String userId, String placeId){
-        userRef.document(userId).update(USER_PLACE_ID_FIELD, placeId).addOnCompleteListener(new OnCompleteListener<Void>() {
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).document(userId).update(USER_PLACE_ID_FIELD, placeId).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<Void> task) {
                 userSelectedRestaurantMutableLiveData.postValue(placeId);
@@ -102,7 +100,7 @@ public class UserRepository {
         }
     }
     public void thisRestaurantIsLiked(FirebaseUser user, String placeId){
-        userRef.whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, placeId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).whereEqualTo(USER_ID_FIELD, user.getUid()).whereArrayContains(USER_RESTAURANT_LIKES_ARRAY, placeId).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
         {
             @Override
             public void onComplete(@NonNull @NotNull Task<QuerySnapshot> task) {
