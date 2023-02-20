@@ -1,14 +1,9 @@
 package com.julienhammer.go4lunch.data.restaurants;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
@@ -25,7 +20,6 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.*;
 import com.google.maps.android.SphericalUtil;
-import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 
 import java.util.ArrayList;
@@ -47,7 +41,7 @@ public class InfoRestaurantRepository {
     public InfoRestaurantRepository() {
     }
 
-    public void initPlacesDetailsClientInfo(Context context) {
+    public void initPlacesClientInfo(Context context) {
         placesClient = Places.createClient(context);
     }
 
@@ -94,8 +88,8 @@ public class InfoRestaurantRepository {
     }
 
     public Integer checkStarsFromRating(Double rating) {
-        int percentOfRating = (int) Math.rint(rating * 3 / 5);
-        return percentOfRating;
+        int countOfStars = (int) Math.rint(rating * 3 / 5);
+        return countOfStars;
     }
 
     public LiveData<Integer> distanceFromLocation(LatLng location, LatLng restaurantLocation) {

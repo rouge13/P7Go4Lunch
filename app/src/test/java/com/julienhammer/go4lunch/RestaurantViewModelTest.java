@@ -139,10 +139,10 @@ public class RestaurantViewModelTest {
         MutableLiveData<PlacesSearchResult[]> restaurantsLiveData = new MutableLiveData<>();
         restaurantsLiveData.setValue(expectedRestaurants);
         given(mRestaurantsRepository.getRestaurantsLiveData()).willReturn(restaurantsLiveData);
-        String apiKey = "test-api-key";
+        String apiKey = "test_apiKey";
         Location userLocation = new Location("");
-        userLocation.setLatitude(37.7749);
-        userLocation.setLongitude(-122.4194);
+        userLocation.setLatitude(48.5735);
+        userLocation.setLongitude(7.7523);
         mRestaurantsViewModel.initAllRestaurant(apiKey, userLocation);
         // When
         mRestaurantsViewModel.getRestaurantsLiveData().observeForever(mRestaurantsLiveDataObserver);

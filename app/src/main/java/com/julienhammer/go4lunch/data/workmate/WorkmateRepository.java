@@ -25,16 +25,14 @@ import java.util.List;
 public class WorkmateRepository {
     private static volatile WorkmateRepository instance;
     private static final String COLLECTION_NAME = "users";
-    FirebaseFirestore mFirestore;
     MutableLiveData<List<User>> mAllWorkmatesMutableLiveData;
 
     public WorkmateRepository() {
         mAllWorkmatesMutableLiveData = new MutableLiveData<>();
-        mFirestore = FirebaseFirestore.getInstance();
     }
 
     public MutableLiveData<List<User>> getAllWorkmatesMutableLiveData() {
-        mFirestore.collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
+        FirebaseFirestore.getInstance().collection(COLLECTION_NAME).addSnapshotListener((value, error) -> {
             List<User> workmates = new ArrayList<>();
             if (value != null){
                 for (QueryDocumentSnapshot doc : value){

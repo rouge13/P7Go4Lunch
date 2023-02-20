@@ -1,6 +1,7 @@
 package com.julienhammer.go4lunch.di;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -8,11 +9,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.LocationServices;
 
+import com.julienhammer.go4lunch.data.login.LoginRepository;
+import com.julienhammer.go4lunch.data.workmate.WorkmateRepository;
 import com.julienhammer.go4lunch.ui.MainApplication;
 import com.julienhammer.go4lunch.data.location.LocationRepository;
 import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
-import com.julienhammer.go4lunch.viewmodel.ListViewModel;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
@@ -25,13 +27,20 @@ import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
  */
 public class ViewModelFactory implements ViewModelProvider.Factory {
     private final LocationRepository locationDataSource;
+    private final LoginRepository loginDataSource;
+    private final WorkmateRepository workmateDataSource;
     private static ViewModelFactory factory;
     private static PermissionCheck permissionCheck;
     private ViewModelFactory(@NonNull PermissionCheck permissionCheck,
-                             @NonNull LocationRepository locationDataSource
+                             @NonNull LocationRepository locationDataSource,
+                             @NonNull LoginRepository loginDataSource,
+                             @NonNull WorkmateRepository workmateDataSource
                              ) {
         ViewModelFactory.permissionCheck = permissionCheck;
         this.locationDataSource = locationDataSource;
+        this.loginDataSource = loginDataSource;
+        this.workmateDataSource = workmateDataSource;
+
     }
 
     public static ViewModelFactory getInstance() {
@@ -47,7 +56,9 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                                     LocationServices.getFusedLocationProviderClient(
                                             application
                                     )
-                            )
+                            ),
+                            LoginRepository.getInstance(),
+                            WorkmateRepository.getInstance()
                     );
                 }
             }
@@ -63,17 +74,12 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
                     permissionCheck,
                     locationDataSource
             );
-        } else if (modelClass.isAssignableFrom(ListViewModel.class)) {
-            return (T) new ListViewModel(
-                    permissionCheck,
-                    locationDataSource
-            );
         } else if (modelClass.isAssignableFrom(WorkmateViewModel.class)) {
-            return (T) new WorkmateViewModel();
+            return (T) new WorkmateViewModel(workmateDataSource);
         } else if (modelClass.isAssignableFrom(UserViewModel.class)) {
             return (T) new UserViewModel();
         } else if (modelClass.isAssignableFrom(LoginViewModel.class)) {
-            return (T) new LoginViewModel();
+            return (T) new LoginViewModel(loginDataSource);
         } else if (modelClass.isAssignableFrom(RestaurantsViewModel.class)) {
             return (T) new RestaurantsViewModel();
         } else if (modelClass.isAssignableFrom(InfoRestaurantViewModel.class)) {

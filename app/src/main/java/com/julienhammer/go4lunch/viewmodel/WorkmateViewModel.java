@@ -17,19 +17,19 @@ import java.util.List;
  */
 public class WorkmateViewModel extends ViewModel {
 
-    private static volatile WorkmateViewModel instance;
+//    private static volatile WorkmateViewModel instance;
     private final WorkmateRepository workmateRepository;
-    MutableLiveData<List<User>> mAllWorkmatesMutableLiveData;
-    FirebaseFirestore mFirestore;
+//    MutableLiveData<List<User>> mAllWorkmatesMutableLiveData;
+//    FirebaseFirestore mFirestore;
 
     public LiveData<List<User>> getWorkmateMutableLiveData() {
-        return mAllWorkmatesMutableLiveData;
+        return workmateRepository.getAllWorkmatesMutableLiveData();
     }
 
-    public WorkmateViewModel(){
-        workmateRepository = WorkmateRepository.getInstance();
-        mFirestore = FirebaseFirestore.getInstance();
-        mAllWorkmatesMutableLiveData = workmateRepository.getAllWorkmatesMutableLiveData();
+    public WorkmateViewModel( WorkmateRepository repository){
+//        mFirestore = FirebaseFirestore.getInstance();
+        workmateRepository = repository;
+//        mAllWorkmatesMutableLiveData = workmateRepository.getAllWorkmatesMutableLiveData();
     }
 
 }

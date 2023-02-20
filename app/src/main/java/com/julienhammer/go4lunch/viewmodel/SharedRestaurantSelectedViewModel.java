@@ -15,7 +15,6 @@ public class SharedRestaurantSelectedViewModel extends ViewModel {
     public void initSelectedRestaurant(RestaurantDetails restaurant) {
         selectedRestaurant.setValue(restaurant);
     }
-
     public LiveData<RestaurantDetails> getSelectedRestaurant() {
         return selectedRestaurant;
     }
