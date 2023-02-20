@@ -1,6 +1,5 @@
 package com.julienhammer.go4lunch.viewmodel;
 
-import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -10,9 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.julienhammer.go4lunch.data.restaurants.InfoRestaurantRepository;
-import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 
 import java.util.List;
@@ -22,17 +19,10 @@ import java.util.List;
  */
 public class InfoRestaurantViewModel extends ViewModel {
     @NonNull
+    public
     InfoRestaurantRepository mInfoRestaurantRepository;
     public InfoRestaurantViewModel() {
         mInfoRestaurantRepository = InfoRestaurantRepository.getInstance();
-    }
-
-    public LiveData<RestaurantDetails> getInfoRestaurantLiveData() {
-        return mInfoRestaurantRepository.getInfoRestaurantLiveData();
-    }
-
-    public void setInfoRestaurant(RestaurantDetails infoRestaurant){
-        mInfoRestaurantRepository.setInfoRestaurant(infoRestaurant);
     }
 
     public void initRestaurantsDetailsInfo(String placeId){
@@ -48,7 +38,7 @@ public class InfoRestaurantViewModel extends ViewModel {
     }
 
     public void initPlacesClientInfo(Context context){
-        mInfoRestaurantRepository.initPlacesDetailsClientInfo(context);
+        mInfoRestaurantRepository.initPlacesClientInfo(context);
     }
 
     public void initAllWorkmatesInThisRestaurantMutableLiveData(String restaurantId){

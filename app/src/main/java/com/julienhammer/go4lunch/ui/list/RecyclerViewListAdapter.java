@@ -2,14 +2,9 @@ package com.julienhammer.go4lunch.ui.list;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -18,26 +13,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.SphericalUtil;
 import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ItemPlaceBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 
-import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.utils.ConvertToImage;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
-
-import org.greenrobot.eventbus.EventBus;
-
+import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
@@ -45,7 +32,13 @@ import static android.content.Context.MODE_PRIVATE;
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListViewHolder> {
     ArrayList<RestaurantDetails> mRestaurantArrayList = new ArrayList<>();
     InfoRestaurantViewModel mInfoRestaurantViewModel;
+    MainActivity mainActivity;
+    private SharedRestaurantSelectedViewModel mSharedRestaurantSelectedViewModel;
     private LatLng mLocation;
+
+    public RecyclerViewListAdapter(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
+    }
 
     @NonNull
     @Override
@@ -56,64 +49,71 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewListViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Context context = holder.itemView.getContext();
-        initInfoRestaurantViewModel(context);
+        initViewModel(context);
         RestaurantDetails restaurantDetails = mRestaurantArrayList.get(position);
         holder.bindingItemPlace.textViewName.setText(restaurantDetails.getNameRes());
         holder.bindingItemPlace.textViewAddress.setText(restaurantDetails.getAddressRes());
         ConvertToImage.loadGooglePhoto(context, holder.bindingItemPlace.imagePlaceViewPhoto, restaurantDetails.getPhotoRefRes());
         holder.bindingItemPlace.textViewOpeningHours.setText(restaurantDetails.getOpenNowRes());
-
         mInfoRestaurantViewModel.getCountWorkmatesForRestaurant(restaurantDetails.getIdRes()).observe((MainActivity) context, integer -> {
-            if (integer > 0 && !Objects.equals(restaurantDetails.getIdRes(), "")) {
-                holder.bindingItemPlace.textRestaurantNumberUserChoice.setVisibility(View.VISIBLE);
-                holder.bindingItemPlace.imageUserIcon.setVisibility(View.VISIBLE);
-                holder.bindingItemPlace.textRestaurantNumberUserChoice.setText(String.format(Locale.getDefault(), "(%d)", integer));
-                holder.bindingItemPlace.imageUserIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_perm_identity_24));
-            } else {
-                holder.bindingItemPlace.textRestaurantNumberUserChoice.setVisibility(View.INVISIBLE);
-                holder.bindingItemPlace.imageUserIcon.setVisibility(View.INVISIBLE);
-            }
+            initNumberWorkmateForEachRestaurant(holder, context, restaurantDetails, integer);
         });
-        holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
-        holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
-        holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+        initStarsRating(holder, View.INVISIBLE);
         mInfoRestaurantViewModel.casesOfStars(restaurantDetails.getRatingRes()).observe((LifecycleOwner) context, nb -> {
-
-
-            if (Objects.equals(nb, 1)) {
-                holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
-            } else if (Objects.equals(nb, 2)) {
-                holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
-                holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
-            } else if (Objects.equals(nb, 3)) {
-                holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
-                holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
-                holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.VISIBLE);
-            } else {
-                holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
-                holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
-                holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
-            }
+            getStarsRating(holder, nb);
         });
-
         mInfoRestaurantViewModel.distanceFromLocation(mLocation, restaurantDetails.getLocationRes()).observe((LifecycleOwner) context, distance -> {
             holder.bindingItemPlace.textRestaurantDist.setText(String.format(Locale.getDefault(), "%dm", distance));
         });
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetails);
-                EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetails));
-            }
+        holder.itemView.setOnClickListener(v -> {
+            mSharedRestaurantSelectedViewModel.initSelectedRestaurant(restaurantDetails);
+            mainActivity.onInfoRestaurantSelected();
         });
     }
 
+    private void initStarsRating(@NonNull RecyclerViewListViewHolder holder, int invisible) {
+        holder.bindingItemPlace.imageRatingIconOne.setVisibility(invisible);
+        holder.bindingItemPlace.imageRatingIconTwo.setVisibility(invisible);
+        holder.bindingItemPlace.imageRatingIconThree.setVisibility(invisible);
+    }
 
-    private void initInfoRestaurantViewModel(Context context) {
+    private void initNumberWorkmateForEachRestaurant(@NonNull RecyclerViewListViewHolder holder, Context context, RestaurantDetails restaurantDetails, Integer integer) {
+        if (integer > 0 && !Objects.equals(restaurantDetails.getIdRes(), "")) {
+            holder.bindingItemPlace.textRestaurantNumberUserChoice.setVisibility(View.VISIBLE);
+            holder.bindingItemPlace.imageUserIcon.setVisibility(View.VISIBLE);
+            holder.bindingItemPlace.textRestaurantNumberUserChoice.setText(String.format(Locale.getDefault(), "(%d)", integer));
+            holder.bindingItemPlace.imageUserIcon.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_baseline_perm_identity_24));
+        } else {
+            holder.bindingItemPlace.textRestaurantNumberUserChoice.setVisibility(View.INVISIBLE);
+            holder.bindingItemPlace.imageUserIcon.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void getStarsRating(@NonNull RecyclerViewListViewHolder holder, Integer nb) {
+        if (Objects.equals(nb, 1)) {
+            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+        } else if (Objects.equals(nb, 2)) {
+            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
+        } else if (Objects.equals(nb, 3)) {
+            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.VISIBLE);
+            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.VISIBLE);
+            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.VISIBLE);
+        } else {
+            holder.bindingItemPlace.imageRatingIconOne.setVisibility(View.INVISIBLE);
+            holder.bindingItemPlace.imageRatingIconTwo.setVisibility(View.INVISIBLE);
+            holder.bindingItemPlace.imageRatingIconThree.setVisibility(View.INVISIBLE);
+        }
+    }
+
+
+    private void initViewModel(Context context) {
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel =
                 new ViewModelProvider((FragmentActivity) context, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
+        ViewModelFactory sharedRestaurantSelectedViewModelFactory = ViewModelFactory.getInstance();
+        mSharedRestaurantSelectedViewModel =
+                new ViewModelProvider(mainActivity, sharedRestaurantSelectedViewModelFactory).get(SharedRestaurantSelectedViewModel.class);
     }
 
     @Override

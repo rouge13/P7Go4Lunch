@@ -4,12 +4,15 @@ import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.location.Location;
 import android.os.Build;
 import android.speech.RecognizerIntent;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,8 +27,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -46,7 +47,6 @@ import android.view.View;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.net.PlacesClient;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,25 +55,19 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.ActivityMainNavHeaderBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.events.ShowInfoRestaurantDetailEvent;
+import com.julienhammer.go4lunch.interfaces.OnInfoRestaurantSelectedListener;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.notification.NotificationBroadcast;
-//import com.julienhammer.go4lunch.notification.NotificationHandler;
 import com.julienhammer.go4lunch.ui.restaurant.InfoRestaurantFragment;
-import com.julienhammer.go4lunch.ui.restaurantsAutoComplete.RecyclerViewRestaurantsAutoCompleteAdapter;
 import com.julienhammer.go4lunch.viewmodel.InfoRestaurantViewModel;
 import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
+import com.julienhammer.go4lunch.viewmodel.SharedRestaurantSelectedViewModel;
 import com.julienhammer.go4lunch.viewmodel.UserViewModel;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
 import java.util.*;
-//import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnInfoRestaurantSelectedListener {
     private UserViewModel mUserViewModel;
     private LocationViewModel mLocationViewModel;
     RestaurantsViewModel mRestaurantsViewModel;
@@ -82,12 +76,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActivityMainNavHeaderBinding navHeaderBinding;
     private static final int RC_SIGN_IN = 123;
     private final int REQUEST_LOCATION_PERMISSION = 1;
+    private static final int MY_PERMISSIONS_REQUEST_LOCATION = 125;
     private static final int SPEECH_REQUEST_CODE = 0;
     public ActionBarDrawerToggle toggle;
     public DrawerLayout drawer;
     NavigationView navigationView;
-    RecyclerViewRestaurantsAutoCompleteAdapter adapter;
     Toolbar toolbar;
+    SharedRestaurantSelectedViewModel mSharedRestaurantSelectedViewModel;
     private static final String MY_RESTAURANT_CHOICE_PLACE = "MyRestaurantChoicePlace";
     private static final String PLACE_ID = "placeId";
     private static final String USER_ID = "userId";
@@ -98,6 +93,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String RESTAURANT_RATING = "ratingRes";
     private static final String RESTAURANT_LAT = "latRes";
     private static final String RESTAURANT_LNG = "lngRes";
+    private static final String NOTIFICATION_STATE = "resNotificationState";
+
     private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
@@ -127,145 +124,186 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         configureToolBar();
         configureDrawerLayout();
         configureNavigationView();
-        // Add to the else if the checkSelfPermission isn't granted for this user
-        ActivityCompat.requestPermissions(this,
-                new String[]{
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                },
-                PackageManager.PERMISSION_GRANTED
-        );
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
-                ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        requestPermission();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-            boolean gpsEnabled = false;
-            boolean networkEnabled = false;
-
-            try {
-                gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            } catch(Exception ex) {}
-
-            try {
-                networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-            } catch(Exception ex) {}
-
-            if(!gpsEnabled && !networkEnabled) {
-                // notify user
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-                alertDialog.setMessage(R.string.gps_network_not_enabled);
-                alertDialog.setPositiveButton(R.string.open_location_settings, (paramDialogInterface, paramInt) -> {
-                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(intent);
-                });
-                alertDialog.setNegativeButton(R.string.Cancel,null);
-                alertDialog.show();
-            }
+            checkGpsAndNetworkEnabled(lm);
             Context context = this.getApplicationContext();
             mLocationViewModel.refresh();
             mLocationViewModel.getLocationLiveData().observe(this, location -> {
                 if (location != null){
-                    mRestaurantsViewModel.getAllRestaurants(getString(R.string.google_map_key),location);
-                    SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
-                    SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
-                    myEdit.putFloat(RESTAURANT_LAT, (float) location.getLatitude());
-                    myEdit.putFloat(RESTAURANT_LNG, (float) location.getLongitude());
-                    myEdit.apply();
-
+                    mRestaurantsViewModel.initAllRestaurant(getString(R.string.google_map_key),location);
+                    saveLocationInSharedPref(location);
                 }
             });
             initBasicToolbar();
             mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-            mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
+            mUserViewModel.getSelectedRestaurantIsChoosed().observe(this, placeId -> {
                 if (placeId != null && !Objects.equals(placeId, "")){
                     saveValueOfTheRestaurantChoicePlaceId(FirebaseAuth.getInstance().getCurrentUser(), placeId);
-//                    mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(placeId);
-
                     setNotificationAlarm();
-                    Toast.makeText(this, R.string.notificationSet, Toast.LENGTH_SHORT).show();
                 }
             });
-            if (!Places.isInitialized()){
-                Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
-            }
-            PlacesClient placesClient = Places.createClient(this);
-            ViewPager viewPager = binding.viewPager;
-            ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-            viewPager.setAdapter(mViewPagerAdapter);
-            binding.buttomNavigationView.setOnItemSelectedListener(item -> {
-                switch (item.getItemId()) {
-                    case android.R.id.home:
-                        toggle();
-                        return true;
-                    case R.id.maps_fragment:
-                        viewPager.setCurrentItem(0);
-                        return true;
-                    case R.id.list_fragment:
-                        viewPager.setCurrentItem(1);
-                        return true;
-                    case R.id.workmates_fragment:
-                        viewPager.setCurrentItem(2);
-                        return true;
-                    default:
-                        return false;
-                }
-            });
-
-            binding.searchRestaurantImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    initSearchToolbar();
-                    binding.voiceSearchViewBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            displaySpeechRecognizer();
-                        }
-                    });
-                    binding.searchViewBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            initBasicToolbar();
-                        }
-                    });
-                    RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(context);
-                    binding.restaurantsRecyclerView.setLayoutManager(layoutManager);
-                    adapter = new RecyclerViewRestaurantsAutoCompleteAdapter(context);
-                    adapter.setClickListener(this);
-                    binding.restaurantsRecyclerView.setAdapter(adapter);
-                    binding.restaurantSearchEditText.addTextChangedListener(new TextWatcher() {
-                                                                                @Override
-                                                                                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                                                                }
-
-                                                                                @Override
-                                                                                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                                                                }
-
-                                                                                @Override
-                                                                                public void afterTextChanged(Editable editable) {
-                                                                                    if (!editable.toString().equals("") && editable.length() > 2) {
-                                                                                        binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                                                                                        adapter.getFilter().filter(editable.toString());
-                                                                                        if (binding.restaurantsRecyclerView.getVisibility() == View.GONE) {
-                                                                                            binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                                                                                        }
-                                                                                    } else {
-                                                                                        if (binding.restaurantsRecyclerView.getVisibility() == View.VISIBLE) {
-                                                                                            binding.restaurantsRecyclerView.setVisibility(View.GONE);
-                                                                                            binding.restaurantSearchEditText.getText().clear();
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                    );
-                }
-            });
+            initPlacesClient();
+            initViewPager();
+            initSearchOnClickListener(context);
+        } else {
+            initPermissionIfMissing(MY_PERMISSIONS_REQUEST_LOCATION);
         }
-        EventBus.getDefault().register(this);
+    }
 
+    private void initPermissionIfMissing(int myPermissionsRequestLocation) {
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                myPermissionsRequestLocation);
+    }
+
+    private void initPlacesClient() {
+        if (!Places.isInitialized()){
+            Places.initialize(getApplicationContext(), getString(R.string.google_api_key));
+        }
+        PlacesClient placesClient = Places.createClient(this);
+    }
+
+    private void requestPermission() {
+        initPermissionIfMissing(PackageManager.PERMISSION_GRANTED);
+    }
+
+    private void checkGpsAndNetworkEnabled(LocationManager lm) {
+        boolean gpsEnabled = false;
+        boolean networkEnabled = false;
+        try {
+            gpsEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+        try {
+            networkEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+        if(!gpsEnabled && !networkEnabled) {
+            initAlertDialogForGPSAndNetworkEnabled();
+        }
+    }
+
+    private void initSearchOnClickListener(Context context) {
+        binding.searchRestaurantImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initSearchToolbar();
+                binding.voiceSearchViewBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        displaySpeechRecognizer();
+                    }
+                });
+                binding.searchViewBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),0);
+                        initBasicToolbar();
+                    }
+                });
+                initEditTextSearch(context, this);
+            }
+        });
+    }
+
+    private void initAlertDialogForGPSAndNetworkEnabled() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setMessage(R.string.gps_network_not_enabled);
+        alertDialog.setPositiveButton(R.string.open_location_settings, (paramDialogInterface, paramInt) -> {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        });
+        alertDialog.setNegativeButton(R.string.Cancel,null);
+        alertDialog.show();
+    }
+
+    private void initAlertDialogForNotifications(Boolean stateOfButton) {
+        int buttonColorPositive = (stateOfButton) ? Color.GREEN : Color.BLACK;
+        int buttonColorNegative = (!stateOfButton) ? Color.GREEN : Color.BLACK;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setMessage(R.string.option_enable_disable_notification);
+        builder.setPositiveButton(R.string.enable_notification, (dialog, id) -> {
+            // do something here
+            saveValueNotificationState(true);
+            setNotificationAlarm();
+        });
+        builder.setNegativeButton(R.string.disable_notification, (dialog, id) -> {
+            saveValueNotificationState(false);
+            cancelNotification();
+        });
+        builder.setNeutralButton(R.string.cancel_dialog, (dialog, which) -> {
+            Toast.makeText(getApplicationContext(),R.string.Cancel_notification_settings,Toast.LENGTH_LONG).show();
+            dialog.dismiss();
+        });
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(dialogInterface -> {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonColorPositive);
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonColorNegative);
+        });
+        dialog.show();
+    }
+
+    private void cancelNotification() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, BroadcastReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        alarmManager.cancel(pendingIntent);
+        Toast.makeText(this, R.string.notification_unset, Toast.LENGTH_SHORT).show();
+
+    }
+
+    private Boolean getValueNotificationState(){
+        SharedPreferences pref = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        return pref.getBoolean(NOTIFICATION_STATE, false);
+    }
+
+    private void saveValueNotificationState(Boolean state){
+        SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
+        myEdit.putBoolean(NOTIFICATION_STATE, state);
+        myEdit.apply();
+    }
+
+    private void saveLocationInSharedPref(Location location) {
+        SharedPreferences shPlaceIdChoice = this.getSharedPreferences(MY_RESTAURANT_CHOICE_PLACE,MODE_PRIVATE);
+        SharedPreferences.Editor myEdit = shPlaceIdChoice.edit();
+        myEdit.putFloat(RESTAURANT_LAT, (float) location.getLatitude());
+        myEdit.putFloat(RESTAURANT_LNG, (float) location.getLongitude());
+        myEdit.apply();
+    }
+
+    private void initViewPager() {
+        ViewPager viewPager = binding.viewPager;
+        ViewPagerAdapter mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(mViewPagerAdapter);
+        binding.buttomNavigationView.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case android.R.id.home:
+                    toggle();
+                    return true;
+                case R.id.maps_fragment:
+                    viewPager.setCurrentItem(0);
+                    toolbar.setTitle(getString(R.string.hungry));
+                    binding.searchRestaurantImage.setVisibility(View.VISIBLE);
+                    initSearchOnClickListener(this);
+                    return true;
+                case R.id.list_fragment:
+                    viewPager.setCurrentItem(1);
+                    toolbar.setTitle(getString(R.string.hungry));
+                    binding.searchRestaurantImage.setVisibility(View.VISIBLE);
+                    initSearchOnClickListener(this);
+                    return true;
+                case R.id.workmates_fragment:
+                    viewPager.setCurrentItem(2);
+                    toolbar.setTitle(getString(R.string.available_workmates));
+                    binding.searchRestaurantImage.setVisibility(View.INVISIBLE);
+                    return true;
+                default:
+                    return false;
+            }
+        });
     }
 
     private void initSearchToolbar() {
@@ -277,7 +315,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void initBasicToolbar() {
         binding.restaurantSearchEditText.getText().clear();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        binding.restaurantsRecyclerView.setVisibility(View.INVISIBLE);
         binding.searchConstraint.setVisibility(View.GONE);
         binding.searchRestaurantImage.setVisibility(View.VISIBLE);
     }
@@ -290,7 +327,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
-
     private void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
@@ -298,43 +334,39 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(getString(R.string.channel_id), name, importance);
             channel.setDescription(description);
-
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
     }
 
-//    @RequiresApi(api = Build.VERSION_CODES.S)
     private void setNotificationAlarm() {
+        saveValueNotificationState(true);
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent intent = new Intent(this, NotificationBroadcast.class);
-
         PendingIntent pendingIntent = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
             pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
         } else {
             pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         }
-
         // Set the alarm to start at 12:00 a.m.
         Calendar calendar = Calendar.getInstance();
-        if (calendar.get(Calendar.HOUR) < 12){
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, 12);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND,0);
-            calendar.set(Calendar.MILLISECOND,0);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
-        } else {
-            calendar.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH + 1));
-            calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH));
-            calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR));
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, 12);
-            calendar.set(Calendar.MINUTE, 0);
-            calendar.set(Calendar.SECOND,0);
-            calendar.set(Calendar.MILLISECOND,0);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        initCalendarForNotification(calendar);
+        if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        Toast.makeText(this, R.string.notification_set, Toast.LENGTH_SHORT).show();
+    }
+
+    private void initCalendarForNotification(Calendar calendar) {
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 11);
+        calendar.set(Calendar.MINUTE, 50);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        if (calendar.getTimeInMillis() < System.currentTimeMillis()) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
     }
 
@@ -355,12 +387,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRestaurantsViewModel = new ViewModelProvider(this, restaurantsViewModelFactory).get(RestaurantsViewModel.class);
         ViewModelFactory infoRestaurantViewModelFactory = ViewModelFactory.getInstance();
         mInfoRestaurantViewModel = new ViewModelProvider(this, infoRestaurantViewModelFactory).get(InfoRestaurantViewModel.class);
+        ViewModelFactory sharedRestaurantSelectedViewModelFactory = ViewModelFactory.getInstance();
+        mSharedRestaurantSelectedViewModel = new ViewModelProvider(this, sharedRestaurantSelectedViewModelFactory).get(SharedRestaurantSelectedViewModel.class);
     }
 
     // 1 - Configure the toolbar
     private void configureToolBar() {
         toolbar = binding.activityMainToolbar;
-        toolbar.setTitle(R.string.hungry);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null){
@@ -369,7 +402,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    // 2 - Configure the Drawer
     private void configureDrawerLayout() {
         drawer = binding.activityMainDrawerLayout;
         toggle = new ActionBarDrawerToggle(
@@ -417,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        mUserViewModel.getmUserData().observe(this, user -> {
+        mUserViewModel.getUserData().observe(this, user -> {
             if (user.getUserName() != null) {
                 navHeaderBinding.username.setText(user.getUserName());
                 navHeaderBinding.userEmail.setText(user.getUserEmail());
@@ -428,7 +460,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
         int id = item.getItemId();
         switch (id) {
             case R.id.nav_your_lunch:
@@ -436,24 +467,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 String restaurantChoicedId = prefs.getString(PLACE_ID,"");
                 if (!Objects.equals(restaurantChoicedId, "")){
                     LatLng resLocation = new LatLng(prefs.getFloat(RESTAURANT_LAT,0) , prefs.getFloat(RESTAURANT_LNG,0));
-                    RestaurantDetails restaurantDetailsChoiced = new RestaurantDetails(
-                            prefs.getString(PLACE_ID,""),
-                            prefs.getString(RESTAURANT_NAME,""),
-                            prefs.getString(RESTAURANT_ADDRESS,""),
-                            prefs.getString(RESTAURANT_PHOTO_REF,""),
-                            prefs.getString(RESTAURANT_OPEN_NOW,""),
-                            prefs.getFloat(RESTAURANT_RATING,0),
-                            resLocation
-                    );
-                    mInfoRestaurantViewModel.setInfoRestaurant(restaurantDetailsChoiced);
-                    EventBus.getDefault().post(new ShowInfoRestaurantDetailEvent(restaurantDetailsChoiced));
+                    RestaurantDetails restaurantDetailsChoiced = initDetailRestaurant(prefs, resLocation);
+                    mSharedRestaurantSelectedViewModel.initSelectedRestaurant(restaurantDetailsChoiced);
+                    onInfoRestaurantSelected();
                 } else {
                     Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();
                 }
-
                 break;
             case R.id.nav_settings:
-                startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                mUserViewModel.getSelectedRestaurantIsChoosed().observe(this, placeId -> {
+                    if (placeId != null && !Objects.equals(placeId, "")){
+                        initAlertDialogForNotifications(getValueNotificationState());
+                    } else {
+                        Toast.makeText(this.getApplicationContext(), R.string.no_restaurant_choiced, Toast.LENGTH_SHORT).show();
+                    }
+                });
                 break;
             case R.id.nav_logout:
                 FirebaseAuth.getInstance().signOut();
@@ -470,6 +498,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @NonNull
+    private RestaurantDetails initDetailRestaurant(SharedPreferences prefs, LatLng resLocation) {
+        RestaurantDetails restaurantDetailsChoiced = new RestaurantDetails(
+                prefs.getString(PLACE_ID,""),
+                prefs.getString(RESTAURANT_NAME,""),
+                prefs.getString(RESTAURANT_ADDRESS,""),
+                prefs.getString(RESTAURANT_PHOTO_REF,""),
+                prefs.getString(RESTAURANT_OPEN_NOW,""),
+                prefs.getFloat(RESTAURANT_RATING,0),
+                resLocation
+        );
+        return restaurantDetailsChoiced;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -478,39 +520,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        EventBus.getDefault().unregister(this);
     }
 
-    /**
-     * Fired if the user clicks on a restaurant
-     * @param event
-     */
-    @Subscribe
-    public void showInfoRestaurantDetailEvent (ShowInfoRestaurantDetailEvent event) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container_layout, InfoRestaurantFragment.newInstance()).addToBackStack(null).commit();
+    private void initEditTextSearch(Context context, View.OnClickListener onClick) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        // Show the soft keyboard
+        inputMethodManager.showSoftInput(binding.restaurantSearchEditText, InputMethodManager.SHOW_IMPLICIT);
+        binding.restaurantSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mRestaurantsViewModel.initAllSearchFilteredRestaurant(charSequence);
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
     }
-    // This callback is invoked when the Speech Recognizer returns.
-    // This is where you process the intent and extract the speech text from the intent.
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
-        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
-            List<String> results = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS);
-            binding.restaurantSearchEditText.setText(results.get(0));
+    public void onInfoRestaurantSelected() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_layout, InfoRestaurantFragment.newInstance())
+                .addToBackStack(null)
+                .commit();
+    }
 
-            if (!binding.restaurantSearchEditText.getText().toString().equals("") && binding.restaurantSearchEditText.getText().length() > 2) {
-                binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                adapter.getFilter().filter(binding.restaurantSearchEditText.getText().toString());
-                if (binding.restaurantsRecyclerView.getVisibility() == View.GONE) {
-                    binding.restaurantsRecyclerView.setVisibility(View.VISIBLE);
-                }
-            } else {
-                if (binding.restaurantsRecyclerView.getVisibility() == View.VISIBLE) {
-                    binding.restaurantsRecyclerView.setVisibility(View.GONE);
-                }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            if (matches != null && !matches.isEmpty()) {
+                String speechText = matches.get(0);
+                binding.restaurantSearchEditText.setText(speechText);
             }
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }

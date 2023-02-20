@@ -5,6 +5,14 @@ plugins {
 }
 
 android {
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            unitTests.returnDefaultValues = true
+        }
+
+    }
     signingConfigs {
         release {
             storeFile file('C:\\Users\\HAMMER\\.android\\my_release_keystore.jks')
@@ -21,7 +29,6 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -29,8 +36,13 @@ android {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
     def mapsAPIKey = properties.getProperty('MAPS_API_KEY')
+    def facebookApplicationID = properties.getProperty("FACEBOOK_APPLICATION_ID")
+    def fbLoginProtocolScheme = properties.getProperty("FACEBOOK_LOGIN_PROTOCOL_SCHEME")
+    def facebookClientToken = properties.getProperty("FACEBOOK_CLIENT_TOKEN")
     def twitterApiKey = properties.getProperty('TWITTER_APPLICATION_KEY')
     def twitterApiSecretKey = properties.getProperty('TWITTER_APPLICATION_SECRET_KEY')
+    def firebaseDatabaseUrl = properties.getProperty('FIREBASE_DATABASE_URL')
+    def firebaseStorageBucket = properties.getProperty('FIREBASE_STORAGE_BUCKET')
 
     buildTypes {
         release {
@@ -40,8 +52,13 @@ android {
         }
         debug {
             resValue "string", "google_map_key", mapsAPIKey
+            resValue "string", "facebook_application_id", facebookApplicationID
+            resValue "string", "facebook_login_protocol_scheme", fbLoginProtocolScheme
+            resValue "string", "facebook_client_token", facebookClientToken
             resValue "string", "twitter_api_key", twitterApiKey
             resValue "string", "twitter_api_secret_key", twitterApiSecretKey
+            resValue "string", "firebase_database_url", firebaseDatabaseUrl
+            resValue "string", "firebase_storage_bucket", firebaseStorageBucket
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -75,14 +92,16 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.drawerlayout:drawerlayout:1.1.1"
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'androidx.navigation:navigation-fragment:2.5.2'
     implementation 'androidx.navigation:navigation-ui:2.5.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.databinding:databinding-common:7.3.0'
     implementation 'com.google.firebase:firebase-database:20.0.5'
     implementation 'com.google.maps.android:android-maps-utils:2.4.0'
+    implementation 'com.google.firebase:firebase-auth:21.0.3'
+    implementation 'androidx.test:rules:1.5.0'
 
     //Tests
     testImplementation 'junit:junit:4.13.2'
@@ -99,7 +118,7 @@ dependencies {
 
     // For the class NearbySearch and Places
     implementation 'com.google.maps:google-maps-services:0.11.0'
-    implementation 'com.google.android.libraries.places:places:2.6.0'
+    implementation 'com.google.android.libraries.places:places:3.0.0'
     implementation 'com.google.android.gms:play-services-places:17.0.0'
 
     // Used to fix nearbySearch query for Android 30+
@@ -122,11 +141,29 @@ dependencies {
     //FIRESTORE
     implementation 'com.google.firebase:firebase-firestore:24.1.2'
 
-    //EventBus
-    implementation 'org.greenrobot:eventbus:3.2.0'
-
     //Worker for setting the notification in a specific time if Restaurant is set
     implementation 'androidx.work:work-runtime:2.7.1'
+
+    // Facebook sdk
+    implementation 'com.facebook.android:facebook-android-sdk:[8,9)'
+    implementation 'com.facebook.android:facebook-login:latest.release'
+
+    // Retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    // Unit test need Implementation
+    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'org.robolectric:robolectric:4.9'
+    androidTestImplementation 'androidx.test:core:1.5.0'
+
+    testImplementation 'org.mockito:mockito-core:4.0.0'
+    testImplementation 'org.mockito:mockito-inline:3.12.4'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.1.0'
+
+
 
 }
 

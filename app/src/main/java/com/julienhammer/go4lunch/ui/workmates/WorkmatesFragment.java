@@ -31,14 +31,12 @@ public class WorkmatesFragment extends Fragment {
     FragmentWorkmatesBinding binding;
     private WorkmateViewModel mWorkmateViewModel;
     private RestaurantsViewModel mRestaurantsViewModel;
-
     RecyclerViewWorkmateAdapter adapter;
 
     private void initRestaurantsList(){
         ViewModelFactory restaurantsViewModelFactory = ViewModelFactory.getInstance();
         mRestaurantsViewModel =
                 new ViewModelProvider(requireActivity(), restaurantsViewModelFactory).get(RestaurantsViewModel.class);
-
     }
 
     private void configureWormatesViewModel() {
@@ -68,7 +66,6 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -80,8 +77,8 @@ public class WorkmatesFragment extends Fragment {
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         adapter = new RecyclerViewWorkmateAdapter(false, getActivity());
-        mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
-            mRestaurantsViewModel.getRestaurantsLiveData().observe(getViewLifecycleOwner(), placesSearchResults -> {
+        mWorkmateViewModel.getWorkmates().observe(getViewLifecycleOwner(), workmate -> {
+            mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), placesSearchResults -> {
                 ArrayList<User> allWorkmates = new ArrayList<User>();
                 ArrayList<String> allRestaurantsName = new ArrayList<>();
                 for (int t = 0; t <= (workmate.size()) -1; t++) {

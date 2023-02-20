@@ -20,4 +20,5 @@ public class MainApplication extends Application {
     public static Application getApplication() {
         return sApplication;
     }
+
 }

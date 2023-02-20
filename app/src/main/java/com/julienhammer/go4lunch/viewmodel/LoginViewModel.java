@@ -13,23 +13,10 @@ import com.julienhammer.go4lunch.data.login.LoginRepository;
  */
 public class LoginViewModel extends ViewModel {
     private static LoginRepository loginRepository;
-    FirebaseFirestore mFirestore;
 
-    public void isUserAddedInFirebase(String userUIDAdded) {
-        loginRepository.isUserAddedInFirebase(userUIDAdded);
-    }
-
-    public LiveData<Boolean> getIfUserAlreadyAdded(){
-        return loginRepository.getIfUserAlreadyAdded();
-    }
-
-    public LiveData<String> getUserSelectedRestaurantChoice(String userId){
-        return loginRepository.getUserSelectedRestaurantChoice(userId);
-    }
-
-    public LoginViewModel() {
-        mFirestore = FirebaseFirestore.getInstance();
-        loginRepository = LoginRepository.getInstance();
+    public LoginViewModel(LoginRepository repository) {
+//        mFirestore = FirebaseFirestore.getInstance();
+        loginRepository = repository;
     }
 
     public void createUserOrNot(FirebaseUser user){
