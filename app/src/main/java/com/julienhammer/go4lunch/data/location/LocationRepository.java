@@ -36,7 +36,6 @@ public class LocationRepository {
             if(task.isSuccessful()) {
                 Location userLocation = (Location) task.getResult();
                 if (userLocation == null){
-
                     userLocation = new Location("network");
                     userLocation.setLatitude(48.5735);
                     userLocation.setLongitude(7.7523);

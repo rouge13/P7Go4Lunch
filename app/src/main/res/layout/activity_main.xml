@@ -102,17 +102,17 @@
                 app:layout_constraintTop_toBottomOf="@+id/activity_main_app_bar_layout"
         />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/restaurants_recycler_view"
-            android:orientation="vertical"
-            android:background="#FFF"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxHeight="400dp"
-            tools:listitem="@layout/item_restaurant_search"
-            app:layout_constraintTop_toBottomOf="@id/activity_main_app_bar_layout"
-            />
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:id="@+id/restaurants_recycler_view"-->
+<!--            android:orientation="vertical"-->
+<!--            android:background="#FFF"-->
+<!--            app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:maxHeight="400dp"-->
+<!--            tools:listitem="@layout/item_restaurant_search"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/activity_main_app_bar_layout"-->
+<!--            />-->
 
         <FrameLayout
                 android:id="@+id/container_layout"

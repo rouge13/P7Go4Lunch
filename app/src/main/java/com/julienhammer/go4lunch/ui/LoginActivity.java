@@ -1,7 +1,6 @@
 package com.julienhammer.go4lunch.ui;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -9,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.facebook.CallbackManager;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -18,6 +18,9 @@ import com.julienhammer.go4lunch.R;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.viewmodel.LoginViewModel;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +28,7 @@ import java.util.List;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class LoginActivity extends AppCompatActivity {
+    private CallbackManager mCallbackManager;
     private static final int RC_SIGN_IN = 123;
     private LoginViewModel loginViewModel;
 
@@ -38,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         configureViewModel();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        mCallbackManager = CallbackManager.Factory.create();
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             onLoginSuccess(FirebaseAuth.getInstance().getCurrentUser());
         } else {
@@ -91,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.EmailBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build(),
+                new AuthUI.IdpConfig.FacebookBuilder().build(),
                 new AuthUI.IdpConfig.TwitterBuilder().build()
         );
 
