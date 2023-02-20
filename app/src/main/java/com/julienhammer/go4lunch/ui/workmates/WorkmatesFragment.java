@@ -4,9 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,13 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.julienhammer.go4lunch.R;
-import com.julienhammer.go4lunch.databinding.ActivityMainBinding;
 import com.julienhammer.go4lunch.databinding.FragmentWorkmatesBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
 import com.julienhammer.go4lunch.models.User;
 //import com.julienhammer.go4lunch.models.Workmate;
-import com.julienhammer.go4lunch.ui.MainActivity;
 import com.julienhammer.go4lunch.viewmodel.RestaurantsViewModel;
 import com.julienhammer.go4lunch.viewmodel.WorkmateViewModel;
 
@@ -83,7 +77,7 @@ public class WorkmatesFragment extends Fragment {
         configureWormatesViewModel();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
         adapter = new RecyclerViewWorkmateAdapter(false, getActivity());
-        mWorkmateViewModel.getWorkmateMutableLiveData().observe(getViewLifecycleOwner(), workmate -> {
+        mWorkmateViewModel.getWorkmates().observe(getViewLifecycleOwner(), workmate -> {
             mRestaurantsViewModel.getNearbyPlaces().observe(getViewLifecycleOwner(), placesSearchResults -> {
                 ArrayList<User> allWorkmates = new ArrayList<User>();
                 ArrayList<String> allRestaurantsName = new ArrayList<>();

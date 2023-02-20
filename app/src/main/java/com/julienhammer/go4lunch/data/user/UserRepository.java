@@ -11,6 +11,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.*;
 import com.google.firebase.firestore.Query;
+import com.julienhammer.go4lunch.data.main.MainRepository;
+import com.julienhammer.go4lunch.models.User;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,13 +28,20 @@ public class UserRepository {
     public static final String USER_RESTAURANT_LIKES_ARRAY = "userRestaurantLikes";
     private final MutableLiveData<String> userSelectedRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> userLikeRestaurantMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<User> mUserMutableLiveData = new MutableLiveData<>();
 
     public LiveData<Boolean> getRestaurantIfLiked(){
         return userLikeRestaurantMutableLiveData;
     }
 
-    public LiveData<String> getSelectedRestaurantChoiced() {
+    public LiveData<String> getSelectedRestaurantIsChoosed() {
         return userSelectedRestaurantMutableLiveData;
+    }
+
+    public LiveData<User> getUserData() {
+
+        return mUserMutableLiveData = MainRepository.getInstance().getUserMutableLiveData();
+
     }
 
     public void userRestaurantSelected(String userId){

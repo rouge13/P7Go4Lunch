@@ -1,12 +1,9 @@
 package com.julienhammer.go4lunch.viewmodel;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.julienhammer.go4lunch.data.main.MainRepository;
 import com.julienhammer.go4lunch.data.user.UserRepository;
 import com.julienhammer.go4lunch.models.User;
 
@@ -14,14 +11,11 @@ import com.julienhammer.go4lunch.models.User;
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */
 public class UserViewModel extends ViewModel {
-    private static UserRepository mUserRepository;
-    FirebaseFirestore mFirestore;
-    MutableLiveData<User> mUserData;
-    public MutableLiveData<User> getmUserData() {
-        if (mUserData == null){
-            mUserData = MainRepository.getInstance().getUserMutableLiveData();
-        }
-        return mUserData;
+    public UserRepository mUserRepository;
+//    FirebaseFirestore mFirestore;
+
+    public LiveData<User> getUserData() {
+        return mUserRepository.getUserData();
     }
     public void userRestaurantSelected(String userUID) {
         mUserRepository.userRestaurantSelected(userUID);
@@ -30,11 +24,11 @@ public class UserViewModel extends ViewModel {
         mUserRepository.setUserRestaurantChoice(userUID, placeId);
     }
     public UserViewModel() {
-        mFirestore = FirebaseFirestore.getInstance();
+//        mFirestore = FirebaseFirestore.getInstance();
         mUserRepository = UserRepository.getInstance();
     }
-    public LiveData<String> getSelectedRestaurantIsChoiced() {
-        return mUserRepository.getSelectedRestaurantChoiced();
+    public LiveData<String> getSelectedRestaurantIsChoosed() {
+        return mUserRepository.getSelectedRestaurantIsChoosed();
     }
     public void setUserRestaurantLikes(FirebaseUser user, String placeId){
         mUserRepository.setUserRestaurantLikes(user, placeId);

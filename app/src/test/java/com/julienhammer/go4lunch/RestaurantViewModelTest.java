@@ -29,9 +29,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .
  */

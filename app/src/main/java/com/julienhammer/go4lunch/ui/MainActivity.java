@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             initBasicToolbar();
             mUserViewModel.userRestaurantSelected(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
-            mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
+            mUserViewModel.getSelectedRestaurantIsChoosed().observe(this, placeId -> {
                 if (placeId != null && !Objects.equals(placeId, "")){
                     saveValueOfTheRestaurantChoicePlaceId(FirebaseAuth.getInstance().getCurrentUser(), placeId);
                     setNotificationAlarm();
@@ -219,8 +219,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initAlertDialogForNotifications(Boolean stateOfButton) {
-        int buttonColorPositive = (stateOfButton) ? Color.GREEN : Color.RED;
-        int buttonColorNegative = (!stateOfButton) ? Color.GREEN : Color.RED;
+        int buttonColorPositive = (stateOfButton) ? Color.GREEN : Color.BLACK;
+        int buttonColorNegative = (!stateOfButton) ? Color.GREEN : Color.BLACK;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(true);
         builder.setMessage(R.string.option_enable_disable_notification);
@@ -449,7 +449,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
-        mUserViewModel.getmUserData().observe(this, user -> {
+        mUserViewModel.getUserData().observe(this, user -> {
             if (user.getUserName() != null) {
                 navHeaderBinding.username.setText(user.getUserName());
                 navHeaderBinding.userEmail.setText(user.getUserEmail());
@@ -475,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
             case R.id.nav_settings:
-                mUserViewModel.getSelectedRestaurantIsChoiced().observe(this, placeId -> {
+                mUserViewModel.getSelectedRestaurantIsChoosed().observe(this, placeId -> {
                     if (placeId != null && !Objects.equals(placeId, "")){
                         initAlertDialogForNotifications(getValueNotificationState());
                     } else {

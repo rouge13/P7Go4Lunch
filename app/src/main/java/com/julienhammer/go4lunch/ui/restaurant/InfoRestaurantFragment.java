@@ -1,6 +1,5 @@
 package com.julienhammer.go4lunch.ui.restaurant;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 
@@ -11,7 +10,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +30,6 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.firebase.auth.FirebaseAuth;
 import com.julienhammer.go4lunch.databinding.FragmentInfoRestaurantBinding;
 import com.julienhammer.go4lunch.di.ViewModelFactory;
-import com.julienhammer.go4lunch.interfaces.OnInfoRestaurantSelectedListener;
 import com.julienhammer.go4lunch.models.RestaurantDetails;
 import com.julienhammer.go4lunch.models.User;
 import com.julienhammer.go4lunch.ui.workmates.RecyclerViewWorkmateAdapter;
@@ -98,7 +95,7 @@ public class InfoRestaurantFragment extends Fragment {
             mInfoRestaurantViewModel.initAllWorkmatesInThisRestaurantMutableLiveData(mRestaurantInfo.getIdRes());
             initAllWorkmates();
             mUserViewModel.thisRestaurantIsLiked(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()), mRestaurantInfo.getIdRes());
-            mUserViewModel.getSelectedRestaurantIsChoiced().observe(getViewLifecycleOwner(), placeId -> {
+            mUserViewModel.getSelectedRestaurantIsChoosed().observe(getViewLifecycleOwner(), placeId -> {
                 initChoosedRestaurant(placeId);
                 binding.restaurantInfoName.setText(mRestaurantInfo.getNameRes());
                 binding.itemChoiceRestaurantButton.setOnClickListener(v -> {
