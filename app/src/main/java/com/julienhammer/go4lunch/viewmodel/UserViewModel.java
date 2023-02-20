@@ -12,7 +12,6 @@ import com.julienhammer.go4lunch.models.User;
  */
 public class UserViewModel extends ViewModel {
     public UserRepository mUserRepository;
-//    FirebaseFirestore mFirestore;
 
     public LiveData<User> getUserData() {
         return mUserRepository.getUserData();
@@ -24,7 +23,6 @@ public class UserViewModel extends ViewModel {
         mUserRepository.setUserRestaurantChoice(userUID, placeId);
     }
     public UserViewModel() {
-//        mFirestore = FirebaseFirestore.getInstance();
         mUserRepository = UserRepository.getInstance();
     }
     public LiveData<String> getSelectedRestaurantIsChoosed() {

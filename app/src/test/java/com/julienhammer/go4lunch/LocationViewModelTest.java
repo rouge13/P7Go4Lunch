@@ -1,14 +1,6 @@
 package com.julienhammer.go4lunch;
 
-import com.julienhammer.go4lunch.data.location.LocationRepository;
-import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
-import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
-
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -17,11 +9,17 @@ import android.location.Location;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
+
+import com.julienhammer.go4lunch.data.location.LocationRepository;
+import com.julienhammer.go4lunch.data.permission_check.PermissionCheck;
+import com.julienhammer.go4lunch.viewmodel.LocationViewModel;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Created by Julien HAMMER - Apprenti Java with openclassrooms on .

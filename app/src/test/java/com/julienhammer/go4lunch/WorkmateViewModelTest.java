@@ -33,13 +33,10 @@ import java.util.List;
 public class WorkmateViewModelTest {
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
-
     @Mock
     private WorkmateRepository workmateRepository;
-
     @Mock
     private WorkmateViewModel workmateViewModel;
-
     @Mock
     private Observer<List<User>> mWorkmatesObserver;
 

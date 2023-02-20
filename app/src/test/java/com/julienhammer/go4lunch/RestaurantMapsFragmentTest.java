@@ -1,7 +1,5 @@
 package com.julienhammer.go4lunch;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 import com.julienhammer.go4lunch.ui.map.RestaurantMapsFragment;
